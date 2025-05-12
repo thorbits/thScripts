@@ -41,7 +41,7 @@
 
 <div align="center">
   <p><br>
-  <img src="https://img.shields.io/github/commit-activity/t/thorbits">
+  <img src="https://img.shields.io/github/commit-activity/t/thorbits/thScripts">
   <img src="https://komarev.com/ghpvc/?username=thorbits&style=flat-square&color=blue" alt=""/>
   </p>
 </div>
