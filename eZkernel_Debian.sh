@@ -91,8 +91,7 @@ rm linux-master.tar.gz
 # Use 'make olddefconfig' for automation.  Consider adding a way to
 # customize the configuration if the user wants.
 yes '' | make localmodconfig
-make menuconfig # <--- PROBLEM: Blocking, interactive!
-# make olddefconfig # <- Automate with this if you don't want interactive
+make menuconfig
 
 # --- Kernel Compilation ---
 if ! make -j$(nproc) bindeb-pkg; then
