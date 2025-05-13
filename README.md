@@ -11,7 +11,7 @@
 <div>
   <p><br></p>
   
-#### To install:
+#### User Manual
 
 </div>
 <div>
