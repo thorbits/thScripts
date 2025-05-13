@@ -51,10 +51,9 @@
 </div>
 <div align="center">
   <p><br></p>
-  
 ### User Manual
-
 </div>
+
 <div>
   <p><br></p>
 
