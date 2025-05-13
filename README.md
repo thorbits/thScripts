@@ -5,6 +5,47 @@
 </div>
 <div align="center">
   
+## *Welcome to eZkde, an interactive kde deployment tool.*
+
+</div>
+<div align="center">
+  <p><br></p>
+  
+### User Manual
+
+</div>
+<div>
+  <p><br></p>
+
+- **Overview**
+   -  eZkde is a semi-automated shell script designed to automate the installation of a minimal KDE Plasma Wayland desktop environment on a Debian-based system, along with some additional utilities and audio support using PipeWire.
+   -  Includes a custom display of progress information for components installation, automatic download of files, and finally update the system with sddm.
+
+- **Prerequisites**
+    -  A Debian-based Linux distribution.
+    -  Administrative privileges (sudo or root access) to install packages and modify system configurations.
+    -  Internet connection for downloading packages and dependencies.
+
+- **Installation and Usage**
+   -  Download the Script - download ezkde_debian.sh from its source (https://github.com/thorbits/thScripts/blob/main/ezkde_debian.sh).
+   -  Make the Script Executable - open a terminal and navigate to the directory where ezkernel_debian.sh is located, then run the following command to make the script executable **>** _chmod +x ezkde_debian.sh_
+   -  Run the Script - execute the script with root privileges **>** _sudo ./ezkde_debian.sh_
+   -  Follow On-Screen Prompts - the script will display progress information and prompts during execution.
+   -  After the kernel compilation is successful, it will prompt you to continue with a system reboot, if you choose to proceed, your system will restart automatically, loading the newly compiled Linux kernel.
+
+</div>
+
+<div align="center">
+  <p><br><br><br></p>
+
+
+<div align="center">
+  <p>
+    <img src="https://github.com/devicons/devicon/blob/master/icons/bash/bash-plain.svg" width="128" height="128">
+  </p>
+</div>
+<div align="center">
+  
 ## *Welcome to eZkernel, an interactive linux kernel compilation tool.*
 
 </div>
