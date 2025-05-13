@@ -87,8 +87,8 @@ reboot_system() {
   echo -e "\nSystem will reboot now.\n\nPress Enter to continue or Ctrl+C to cancel"
   
   read -rp '' && {
-    cd ~
-    rm -rf "kernel/linux-upstream-$kver"
+    cd
+    rm -rf ~/kernel
 
     if ! grep -q '^GRUB_TIMEOUT=' /etc/default/grub; then
       echo "GRUB_TIMEOUT=1" >> /etc/default/grub || sed -i 's/^GRUB_TIMEOUT=[0-9]\+/GRUB_TIMEOUT=1/' /etc/default/grub
