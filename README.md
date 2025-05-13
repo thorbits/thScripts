@@ -8,7 +8,7 @@
 ## *Welcome to eZkernel, an interactive linux kernel compilation tool.*
 
 </div>
-<div>
+<div align="center">
   <p><br></p>
   
 ### User Manual
