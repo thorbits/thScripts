@@ -37,7 +37,7 @@
 
 <div align="center">
   
-## * *
+## 
 
 </div>
 
