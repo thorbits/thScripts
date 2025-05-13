@@ -11,22 +11,22 @@
 <div>
   <p><br></p>
   
-#### User Manual
+### User Manual
 
 </div>
 <div>
   <p><br></p>
 
-- _Overview_
+- **Overview**
    -  eZkernel is a shell script designed for Debian-based systems to automate the process of compiling and installing the latest Linux kernel from git.kernel.org.
    -  It handles package installation, dependency checking, downloading source files, configuring the build environment, and finally updating the system with the new kernel.
 
-- Prerequisites
+- **Prerequisites**
     -  A Debian-based Linux distribution.
     -  Administrative privileges (sudo or root access) to install packages and modify system configurations.
     -  Internet connection for downloading kernel sources and dependencies.
 
-- Installation and Usage
+- **Installation and Usage**
    -  Download the Script - Download ezkernel.sh from its source: (https://github.com/thorbits/thScripts/blob/main/ezkernel_debian.sh).
    -  Make the Script Executable - open a terminal and navigate to the directory where ezkernel_debian.sh is located. Run the following command to make the script executable: chmod +x ezkernel_debian.sh
    -  Run the Script - execute the script with root privileges using sudo: sudo ./ezkernel_debian.sh
