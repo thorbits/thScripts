@@ -60,9 +60,9 @@ for p in $pkgs; do
 done
 
 # Completion message for package installation
-printf "\rProgress: %3d%% [%-20s] Installed $total packages." 100 "$bar"
+printf "\rProgress: %3d%% [%-20s] Installed $total packages.\n\n" 100 "$bar"
 
-printf '\n\nDownloading kernel sources...\n\n'
+printf 'Downloading kernel sources...\n\n'
 
 # Create directory and download the latest kernel source tarball
 mkdir -p "kernel/linux-upstream-$kver"
