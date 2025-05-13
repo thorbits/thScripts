@@ -11,9 +11,9 @@
 <div align="center">
   <p><br></p>
   
-### User Manual
-
+  ### User Manual
 </div>
+
 <div>
   <p><br></p>
 
@@ -49,7 +49,8 @@
 </div>
 <div align="center">
   <p><br></p>
-### User Manual
+
+  ### User Manual
 </div>
 
 <div>
