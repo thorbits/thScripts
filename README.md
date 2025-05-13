@@ -27,7 +27,7 @@
     -  Internet connection for downloading kernel sources and dependencies.
 
 - **Installation and Usage**
-   -  Download the Script - Download ezkernel.sh from its source: (https://github.com/thorbits/thScripts/blob/main/ezkernel_debian.sh).
+   -  Download the Script - Download ezkernel.sh from its source(https://github.com/thorbits/thScripts/blob/main/ezkernel_debian.sh).
    -  Make the Script Executable - open a terminal and navigate to the directory where ezkernel_debian.sh is located. Run the following command to make the script executable: chmod +x ezkernel_debian.sh
    -  Run the Script - execute the script with root privileges using sudo: sudo ./ezkernel_debian.sh
    -  Follow On-Screen Prompts - the script will display progress information and prompts during execution.
