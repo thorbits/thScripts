@@ -35,10 +35,9 @@
 
 </div>
 
-<div>
-  <p><br></p>
-</div>
 
+
+  
 <div align="center">
   <p>
     <img src="https://github.com/devicons/devicon/blob/master/icons/bash/bash-plain.svg" width="128" height="128">
