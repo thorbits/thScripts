@@ -35,8 +35,6 @@
 
 </div>
 
-<div align="center">
-  <p><br><br><br></p>
 
 
 <div align="center">
