@@ -19,11 +19,11 @@
 
 -
   -  Overview
- -  -  eZkernel is a shell script designed for Debian-based systems to automate the process of compiling and installing the latest Linux kernel from git.kernel.org .
+   -  eZkernel is a shell script designed for Debian-based systems to automate the process of compiling and installing the latest Linux kernel from git.kernel.org .
 It handles package installation, dependency checking, downloading source files, configuring the build environment, and finally updating the system with the new kernel.
 
   -  Prerequisites
- -   -  A Debian-based Linux distribution.
+    -  A Debian-based Linux distribution.
 Administrative privileges (sudo or root access) to install packages and modify system configurations.
 Internet connection for downloading kernel sources and dependencies.
   -  Installation and Usage
