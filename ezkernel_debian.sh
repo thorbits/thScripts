@@ -1,4 +1,10 @@
 #!/bin/bash
+#
+#	_______
+#	\_   _/
+#	  |_|horbits 
+#
+#	eZkernel for Debian
 
 # Clear screen and welcome message
 clear
