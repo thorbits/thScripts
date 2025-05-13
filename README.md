@@ -31,7 +31,7 @@
    -  Make the Script Executable - open a terminal and navigate to the directory where ezkernel_debian.sh is located, then run the following command to make the script executable > _chmod +x ezkernel_debian.sh_
    -  Run the Script - execute the script with root privileges > _sudo ./ezkernel_debian.sh_
    -  Follow On-Screen Prompts - the script will display progress information and prompts during execution.
-   -  After the kernel compilation is successful, it will prompt you to continue with a system reboot, if you choose to proceed,<br/>your system will restart automatically, loading the newly compiled Linux kernel.
+   -  After the kernel compilation is successful, it will prompt you to continue with a system reboot, if you choose to proceed, your system will restart automatically, loading the newly compiled Linux kernel.
 
 </div>
 
