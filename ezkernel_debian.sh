@@ -66,7 +66,7 @@ printf '\n\nDownloading kernel sources...\n\n'
 
 # Create directory and download the latest kernel source tarball
 mkdir -p "kernel/linux-upstream-$kver"
-cd "kernel/linux-upstream-$kver"
+cd "$_"
 wget https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-master.tar.gz
 
 printf 'Extracting kernel sources...\n\n'
