@@ -1,145 +1,102 @@
 #!/bin/bash
 
-# --- Configuration ---
-NUM_STEPS=3
-KERNEL_DIR="$HOME/kernel"
-# ----------------------
+# Clear screen and welcome message
+clear
+printf "\n\nWelcome %s, to eZkernel for Debian.\n\nThe latest linux kernel from git.kernel.org will be compiled and installed.\n\n" "$(whoami)"
 
-# --- Functions ---
-
-# Function: display_step
-# Displays a progress message
-display_step() {
-  local step=$1
-  local total=$2
-  local percent=$(( ($step * 100) / $total ))
-  printf "\rChecking kernels versions... (%d%%)" $percent
+# Define steps and step function for progress indication
+steps=3
+step() {
+  percent=$(( ($1 + 1) * 100 / steps ))
+  printf "\rChecking kernels versions... (%d%%)" "$percent"
 }
 
-# Function: check_dependencies
-# Checks and installs dependencies
-check_dependencies() {
-  local pkgs="$1"
-  local total=$(echo "$pkgs" | wc -w)
-  local count=0
-  local max_len=0
-  for p in $pkgs; do
-    len=${#p}
-    (( len > max_len )) && max_len=$len
-  done
-  local format_str="\rProgress: %3d%% [%-20s] Now installing: %-${max_len}s"
+# Update package list and check connection
+step 0
+apt-get update -qq || { echo -e "\n\nConnection error. Exiting.\n"; exit 1; }
+step 1
 
-  for p in $pkgs; do
-    if ! dpkg -l | grep -q "^ii $p"; then
-      apt install -y "$p" > /dev/null 2>&1
-      if [ $? -ne 0 ]; then
-        echo "Error installing package: $p"
-        return 1  # Indicate failure
-      fi
-    fi
+# Install required tools quietly
+apt-get install -y curl > /dev/null 2>&1
+step 2
+
+# Fetch the latest kernel version
+kver=$(curl -s https://www.kernel.org/ | grep -oP '(?<=<strong>)[^<]+(?=</strong>)' | head -n 2 | tail -n 1)
+
+# Display current and new kernel versions, prompt user to continue
+printf "\n\nCurrent kernel version: %s\n" "$(uname -r)"
+printf "It will be updated to:  %s\n\nPress Enter to continue or Ctrl+C to cancel." "$kver"
+read
+
+printf '\nChecking compilation dependencies...\n\n'
+
+# List of required packages for kernel compilation
+pkgs="crossbuild-essential-amd64 bison flex rsync debhelper libelf-dev libncurses-dev libssl-dev zlib1g-dev bc python3 wget"
+
+# Calculate total number of packages and maximum length for formatting
+total=$(echo "$pkgs" | wc -w)
+count=0
+max_len=0
+
+for p in $pkgs; do
+  len=${#p}
+  (( len > max_len )) && max_len=$len
+done
+
+# Define format string for progress display
+format_str="\rProgress: %3d%% [%-20s] Now installing: %-${max_len}s"
+
+# Install missing packages and track installation progress
+for p in $pkgs; do
+  if ! dpkg -l | grep -q "^ii $p$"; then
     count=$((count + 1))
     percent=$((count * 100 / total))
     unit=$((percent / 5))
     bar=$(printf '#%.0s' $(seq 1 $unit))
+
     printf "$format_str" "$percent" "$bar" "$p"
-  done
-
-  printf "\rProgress: %3d%% [%-20s] Installed $total packages.\n" 100 "$bar"
-  return 0  # Indicate success
-}
-
-# Function: download_and_extract
-# Downloads and extracts the kernel sources
-download_and_extract() {
-  mkdir -p "$KERNEL_DIR"
-  cd "$KERNEL_DIR"
-
-  wget https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-master.tar.gz
-  if [ $? -ne 0 ]; then
-    echo "Error downloading kernel sources"
-    return 1
+    apt-get install -y --no-install-recommends "$p" > /dev/null 2>&1
   fi
+done
 
-  tar -zxf linux-master.tar.gz --strip-components=1
-  if [ $? -ne 0 ]; then
-    echo "Error extracting kernel sources"
-    return 1
-  fi
+# Completion message for package installation
+printf "\rProgress: %3d%% [%-20s] Installed $total packages.\n\n" 100 "$(printf '#%.0s' $(seq 1 20))"
 
-  rm linux-master.tar.gz
-  return 0
+printf '\n\nDownloading kernel sources...\n\n'
+
+# Create directory and download the latest kernel source tarball
+mkdir -p "kernel/linux-upstream-$kver"
+cd "kernel/linux-upstream-$kver"
+wget https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-master.tar.gz
+
+printf 'Extracting kernel sources...\n\n'
+tar -zxf linux-master.tar.gz --strip-components=1
+rm linux-master.tar.gz
+
+# Configure and compile the new kernel version
+yes '' | make localmodconfig
+make menuconfig && time {
+  make -j$(nproc) bindeb-pkg
+  dpkg -i ~/kernel/*.deb
+  
+  printf '\n\neZkernel compilation successful for version: %s\n\nCompilation time:\n' "$kver"
 }
 
-# Function: configure_kernel
-configure_kernel() {
-  yes '' | make localmodconfig
-  make menuconfig # Consider using make olddefconfig for automation
-  return 0
-}
-
-# Function: compile_kernel
-compile_kernel() {
-  # Use time to measure the compilation time
-  time make -j$(nproc) bindeb-pkg
-
-  if [ $? -ne 0 ]; then
-    echo "Error compiling kernel"
-    return 1
-  fi
-
-  return 0
-}
-
-# Function: install_kernel
-install_kernel() {
-  if ! dpkg -i ~/kernel/*.deb; then
-    echo "Error installing kernel packages"
-    return 1
-  fi
-  return 0
-}
-
-# Function: reboot_system
+# Define function to handle system reboot after kernel installation
 reboot_system() {
-  read -p 'System will reboot now. Press Enter to continue or Ctrl+C to cancel: '
-  if [ -z "$REPLY" ]; then
-    reboot
-  fi
-  return 0
+  echo -e "\nSystem will reboot now.\n\nPress Enter to continue or Ctrl+C to cancel"
+  
+  read -rp '' && {
+    cd ~
+    rm -rf "kernel/linux-upstream-$kver"
+
+    if ! grep -q '^GRUB_TIMEOUT=' /etc/default/grub; then
+      echo "GRUB_TIMEOUT=1" >> /etc/default/grub || sed -i 's/^GRUB_TIMEOUT=[0-9]\+/GRUB_TIMEOUT=1/' /etc/default/grub
+    fi
+
+    update-grub >/dev/null 2>&1 && reboot
+  }
 }
 
-# --- Main Script ---
-
-# Display progress steps
-display_step 1 3
-# Check dependencies
-if ! check_dependencies "crossbuild-essential-amd64 bison flex rsync debhelper libelf-dev libncurses-dev libssl-dev zlib1g-dev bc python3 wget"; then
-  echo "Error checking dependencies. Exiting."
-  exit 1
-fi
-
-display_step 2 3
-# Download and extract kernel sources
-if ! download_and_extract; then
-  echo "Error downloading/extracting kernel. Exiting."
-  exit 1
-fi
-
-display_step 3 3
-
-# Configure the kernel
-configure_kernel
-
-# Compile the kernel
-compile_kernel
-
-# Install the kernel
-install_kernel
-
-# Reboot the system
+# Execute the reboot function after kernel compilation
 reboot_system
-
-# Clean up
-rm -rf "$KERNEL_DIR"
-
-exit 0
