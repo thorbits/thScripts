@@ -29,8 +29,7 @@
 - **Installation and Usage**
    -  Download the Script - download ezkernel.sh from its source (https://github.com/thorbits/thScripts/blob/main/ezkernel_debian.sh).
    -  Make the Script Executable - open a terminal and navigate to the directory where ezkernel_debian.sh is located.
-   +
-     Run the following command to make the script executable > chmod +x ezkernel_debian.sh
+     + Run the following command to make the script executable > chmod +x ezkernel_debian.sh
    -  Run the Script - execute the script with root privileges > sudo ./ezkernel_debian.sh
    -  Follow On-Screen Prompts - the script will display progress information and prompts during execution.
    -  After the kernel compilation is successful, it will prompt you to continue with a system reboot,if you choose to proceed, your system will restart automatically, loading the newly compiled Linux kernel.
