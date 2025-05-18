@@ -17,21 +17,48 @@
 <div>
   <p><br></p>
 
-- **Overview**
-   -  eZkde is a shell script designed to automate the installation of a minimal KDE 6 desktop environment (Wayland session) with audio support (PipeWire) along with essential utilities, on a Debian-based system.
-   -  Includes automatic download of files, custom display for progress information and components installation, finally restart the system for sddm login.
+# eZkde: Automated KDE 6 Installation Script
 
-- **Prerequisites**
-    -  A Debian-based Linux distribution.
-    -  Administrative privileges (sudo or root access) to install packages and modify system configurations.
-    -  Internet connection for downloading packages and dependencies.
+eZkde is a shell script designed to automate the installation of a minimal KDE 6 desktop environment (Wayland session) with audio support (PipeWire) and essential utilities on a Debian-based Linux distribution. This script aims to provide a streamlined installation experience, especially for users new to KDE or looking for a quick setup.
 
-- **Installation and Usage**
-   -  Download the Script - download ezkde_debian.sh from its source (https://github.com/thorbits/thScripts/blob/main/ezkde_debian.sh).
-   -  Make the Script Executable - open a terminal and navigate to the directory where ezkernel_debian.sh is located, then run the following command to make the script executable **>** _chmod +x ezkde_debian.sh_
-   -  Run the Script - execute the script with root privileges **>** _sudo ./ezkde_debian.sh_
-   -  Follow On-Screen Prompts - the script will display progress information and prompts during execution.
-   -  After the kernel compilation is successful, it will prompt you to continue with a system reboot, if you choose to proceed, your system will restart automatically, loading the newly compiled Linux kernel.
+## Prerequisites
+
+*   A Debian-based Linux distribution (e.g., Debian, Ubuntu, Mint).
+*   Administrative privileges (sudo or root access) are required to install packages and modify system configurations. **Warning:** Running scripts with root privileges carries inherent risks. Ensure you understand the script's purpose before execution.
+*   A stable internet connection for downloading packages and dependencies.
+*   Minimum hardware requirements: 2GB RAM, 20GB disk space, a CPU with SSE2 support.
+
+## Installation and Usage
+
+1.  **Download the Script:**
+    Download `ezkde_debian.sh` from: [https://github.com/thorbits/thScripts/blob/main/ezkde_debian.sh](https://github.com/thorbits/thScripts/blob/main/ezkde_debian.sh)
+
+2.  **Make the Script Executable:**
+    Open a terminal and navigate to the directory where `ezkde_debian.sh` is located.  Run the following command:
+    ```bash
+    chmod +x ezkde_debian.sh
+    ```
+
+3.  **Run the Script:**
+    Execute the script with root privileges:
+    ```bash
+    sudo ./ezkde_debian.sh
+    ```
+
+4.  **Follow On-Screen Prompts:**
+    The script will display progress information and prompts during execution.  These prompts may include:
+    *   Confirmation to proceed with the installation.
+    *   Automatic components download.
+    *   Progress of components intallation.
+
+5.  **Reboot Your System:**
+    After the installation is complete, the script will prompt you to reboot your system. Choose "yes" to reboot. The system will restart, and you should be greeted with the KDE 6 login screen (SDDM).
+
+## Security Considerations
+
+*   **Script Verification:**  Before running the script, verify its authenticity and integrity.  Check the GitHub repository for updates and reviews.
+*   **Root Access:** Understand the implications of running a script with root access.  Only run scripts from trusted sources.
+
 
 </div>
 
