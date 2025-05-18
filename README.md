@@ -5,8 +5,7 @@
 </div>
 <div align="center">
   
-## *Welcome to eZkde, an interactive kde deployment tool.*
-
+# eZkde: Automated KDE 6 Installation Script
 </div>
 <div align="center">
   <p><br></p>
@@ -16,8 +15,6 @@
 
 <div>
   <p><br></p>
-
-# eZkde: Automated KDE 6 Installation Script
 
 eZkde is a shell script designed to automate the installation of a minimal KDE 6 desktop environment (Wayland session) with audio support (PipeWire) and essential utilities on a Debian-based Linux distribution. This script aims to provide a streamlined installation experience, especially for users new to KDE or looking for a quick setup.
 
