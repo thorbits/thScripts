@@ -71,7 +71,7 @@ eZkde is a shell script designed to automate the installation of a minimal KDE 6
 </div>
 <div align="center">
   
-# ezkernel: Linux Kernel Compilation tool for Debian Systems
+# ezkernel: Interactive Linux Kernel Compilation tool
 
 </div>
 <div align="center">
