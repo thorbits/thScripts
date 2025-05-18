@@ -83,7 +83,7 @@ eZkde is a shell script designed to automate the installation of a minimal KDE 6
 <div>
   <p><br></p>
 
-ezkernel is a semi-automated shell script designed for Debian-based systems to simplify the process of compiling and installing the latest Linux kernel from kernel.org. It aims to provide a user-friendly experience, automating key steps like source code download, dependency checking, and system configuration.
+ezkernel is a semi-automated shell script designed for Debian-based systems to simplify the process of compiling and installing the latest Linux kernel from git.kernel.org. It aims to provide a user-friendly experience, automating key steps like source code download, dependency checking, and system configuration.
 
 **⚠️ Important Disclaimer:** Compiling and installing a new kernel can be a complex process. While ezkernel strives to minimize risks, incorrect configuration or unforeseen errors can lead to system instability or a non-bootable system.  **Always create a system backup before proceeding.**
 
