@@ -10,7 +10,7 @@
 <div align="center">
   <p><br></p>
   
-  ## User Manual
+  ##User Manual##
 </div>
 
 <div>
