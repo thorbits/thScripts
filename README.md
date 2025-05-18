@@ -18,8 +18,8 @@
   <p><br></p>
 
 - **Overview**
-   -  eZkde is a semi-automated shell script designed to automate the installation of a minimal KDE Plasma Wayland desktop environment on a Debian-based system, along with some additional utilities and audio support using PipeWire.
-   -  Includes a custom display of progress information for components installation, automatic download of files, and finally update the system with sddm.
+   -  eZkde is a shell script designed to automate the installation of a minimal KDE 6 desktop environment (Wayland session) with audio support (PipeWire) along with essential utilities, on a Debian-based system.
+   -  Includes automatic download of files, custom display for progress information and components installation, finally restart the system for sddm login.
 
 - **Prerequisites**
     -  A Debian-based Linux distribution.
