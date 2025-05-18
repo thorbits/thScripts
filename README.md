@@ -71,13 +71,13 @@ eZkde is a shell script designed to automate the installation of a minimal KDE 6
 </div>
 <div align="center">
   
-## ezkernel: Linux Kernel Compilation tool for Debian Systems
+# ezkernel: Linux Kernel Compilation tool for Debian Systems
 
 </div>
 <div align="center">
   <p><br></p>
 
-  ## User Manual
+## User Manual
 </div>
 
 <div>
@@ -104,18 +104,16 @@ ezkernel is a semi-automated shell script designed for Debian-based systems to s
     *   **Confirm installation:**  This allows you to continue with the script.
     *   **Dependencies and sources:** The script will install necessary dependencies and download kernel sources.
     *   **Customization:** Advanced users can customize the kernel configuration by modifying the `.config` file before compilation via menuconfig.
-    *   **Initiate Compilation:**  The kernel will be compiled.  This can take a significant amount of time depending on your system's hardware.
+    *   **Initiate Compilation:**  The kernel will be compiled when you exit configuration. This can take a significant amount of time depending on your system's hardware.
 5.  **Reboot:**  After successful compilation, the script will prompt you to reboot your system.  Select "Yes" to reboot and load the newly compiled kernel.
 
 **Important Considerations:**
 
 *   **Backup:** **Always back up your system before proceeding.** This allows you to restore your system if something goes wrong.
 *   **Error Handling:** The script includes basic error handling, but be prepared to troubleshoot issues. Refer to the script's documentation or seek help from the online community if you encounter problems.
-*   **Rollback:** If the new kernel causes problems, you can typically boot into your previous kernel using your bootloader's menu (e.g., Grub).
-*   
+*   **Rollback:** If the new kernel causes problems, you can typically boot into your previous kernel using your bootloader's menu (e.g., Grub).   
 
 </div>
-
 
 
 <div align="center">
