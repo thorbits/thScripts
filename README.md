@@ -23,7 +23,6 @@ eZkde is a shell script designed to automate the installation of a minimal KDE 6
 *   A Debian-based Linux distribution (e.g., Debian, Ubuntu, Mint).
 *   Administrative privileges (sudo or root access) are required to install packages and modify system configurations. **Warning:** Running scripts with root privileges carries inherent risks. Ensure you understand the script's purpose before execution.
 *   A stable internet connection for downloading packages and dependencies.
-*   Minimum hardware requirements: 2GB RAM, 20GB disk space, a CPU with SSE2 support.
 
 ## Installation and Usage
 
@@ -55,7 +54,6 @@ eZkde is a shell script designed to automate the installation of a minimal KDE 6
 
 *   **Script Verification:**  Before running the script, verify its authenticity and integrity.  Check the GitHub repository for updates and reviews.
 *   **Root Access:** Understand the implications of running a script with root access.  Only run scripts from trusted sources.
-
 
 </div>
 
