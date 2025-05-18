@@ -6,7 +6,6 @@
 #
 #	eZkernel for Debian
 
-# Clear screen and welcome message
 clear
 printf "\n\nWelcome %s, to eZkernel for Debian.\n\nThe latest linux kernel from git.kernel.org will be compiled and installed.\n\n" "$(whoami)"
 
@@ -54,12 +53,11 @@ format_str="\rProgress: %3d%% [%-20s] Now installing: %-${max_len}s"
 
 # Install missing packages and track installation progress
 for p in $pkgs; do
-  if ! dpkg -l | grep -q "^ii $p$"; then
+  if ! dpkg-query -W -f="${Status}\n" "$p" 2>/dev/null | grep -q "install ok"; then
     count=$((count + 1))
     percent=$((count * 100 / total))
     unit=$((percent / 5))
     bar=$(printf '#%.0s' $(seq 1 $unit))
-
     printf "$format_str" "$percent" "$bar" "$p"
     apt-get install -y --no-install-recommends "$p" > /dev/null 2>&1
   fi
