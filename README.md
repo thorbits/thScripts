@@ -71,33 +71,48 @@ eZkde is a shell script designed to automate the installation of a minimal KDE 6
 </div>
 <div align="center">
   
-## *Welcome to eZkernel, an interactive linux kernel compilation tool.*
+## ezkernel: Linux Kernel Compilation tool for Debian Systems
 
 </div>
 <div align="center">
   <p><br></p>
 
-  ### User Manual
+  ## User Manual
 </div>
 
 <div>
   <p><br></p>
 
-- **Overview**
-   -  eZkernel is a semi-automated shell script designed for Debian-based systems, to facilitate the process of compiling and installing the latest Linux kernel from git.kernel.org.
-   -  Includes a custom display of progress information for kernel versions checking, dependency checking and packages installation, automatic download of source files, allow configuring kernel features, and finally update the system with the new kernel.
+ezkernel is a semi-automated shell script designed for Debian-based systems to simplify the process of compiling and installing the latest Linux kernel from kernel.org. It aims to provide a user-friendly experience, automating key steps like source code download, dependency checking, and system configuration.
 
-- **Prerequisites**
-    -  A Debian-based Linux distribution.
-    -  Administrative privileges (sudo or root access) to install packages and modify system configurations.
-    -  Internet connection for downloading kernel sources and dependencies.
+**⚠️ Important Disclaimer:** Compiling and installing a new kernel can be a complex process. While ezkernel strives to minimize risks, incorrect configuration or unforeseen errors can lead to system instability or a non-bootable system.  **Always create a system backup before proceeding.**
 
-- **Installation and Usage**
-   -  Download the Script - download ezkernel_debian.sh from its source (https://github.com/thorbits/thScripts/blob/main/ezkernel_debian.sh).
-   -  Make the Script Executable - open a terminal and navigate to the directory where ezkernel_debian.sh is located, then run the following command to make the script executable **>** _chmod +x ezkernel_debian.sh_
-   -  Run the Script - execute the script with root privileges **>** _sudo ./ezkernel_debian.sh_
-   -  Follow On-Screen Prompts - the script will display progress information and prompts during execution.
-   -  After the kernel compilation is successful, it will prompt you to continue with a system reboot, if you choose to proceed, your system will restart automatically, loading the newly compiled Linux kernel.
+**Prerequisites:**
+
+*   A Debian-based Linux distribution (e.g., Debian, Ubuntu, Mint).
+*   Administrative privileges (sudo or root access).
+*   A stable internet connection.
+*   Approximately 20GB of free disk space.
+
+**Installation and Usage:**
+
+1.  **Download the Script:** Download `ezkernel_debian.sh` from [GitHub](https://github.com/thorbits/thScripts/blob/main/ezkernel_debian.sh).
+2.  **Make the Script Executable:** Open a terminal and navigate to the directory where you downloaded the script. Then, run: `chmod +x ezkernel_debian.sh`
+3.  **Run the Script:** Execute the script with root privileges: `sudo ./ezkernel_debian.sh`
+4.  **Follow On-Screen Prompts:** The script will guide you through the process. You'll be prompted to:
+    *   **Check Kernel Version:** The latest kernel version available will be displayed.
+    *   **Confirm installation:**  This allows you to continue with the script.
+    *   **Dependencies and sources:** The script will install necessary dependencies and download kernel sources.
+    *   **Customization:** Advanced users can customize the kernel configuration by modifying the `.config` file before compilation via menuconfig.
+    *   **Initiate Compilation:**  The kernel will be compiled.  This can take a significant amount of time depending on your system's hardware.
+5.  **Reboot:**  After successful compilation, the script will prompt you to reboot your system.  Select "Yes" to reboot and load the newly compiled kernel.
+
+**Important Considerations:**
+
+*   **Backup:** **Always back up your system before proceeding.** This allows you to restore your system if something goes wrong.
+*   **Error Handling:** The script includes basic error handling, but be prepared to troubleshoot issues. Refer to the script's documentation or seek help from the online community if you encounter problems.
+*   **Rollback:** If the new kernel causes problems, you can typically boot into your previous kernel using your bootloader's menu (e.g., Grub).
+*   
 
 </div>
 
