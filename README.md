@@ -27,7 +27,7 @@ eZkde is a shell script designed to automate the installation of a minimal KDE 6
 ## Installation and Usage
 
 1.  **Download the Script:**
-    Download `ezkde_debian.sh` from: [https://github.com/thorbits/thScripts/blob/main/ezkde_debian.sh](https://github.com/thorbits/thScripts/blob/main/ezkde_debian.sh)
+    Download `ezkde_debian.sh` from: [GitHub](https://github.com/thorbits/thScripts/blob/main/ezkde_debian.sh).
 
 2.  **Make the Script Executable:**
     Open a terminal and navigate to the directory where `ezkde_debian.sh` is located.  Run the following command:
