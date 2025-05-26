@@ -95,7 +95,7 @@ ezkernel is a semi-automated shell script designed for Debian-based systems to s
 
 1.  **Download the Script:** Download `ezkernel_debian.sh` from [GitHub](https://github.com/thorbits/thScripts/blob/main/ezkernel_debian.sh).
 2.  **Make the Script Executable:**
-    Open a terminal and navigate to the directory where `ezkde_debian.sh` is located.  Run the following command:
+    Open a terminal and navigate to the directory where `ezkernel_debian.sh` is located.  Run the following command:
     ```bash
     chmod +x ezkernel_debian.sh
     ```
