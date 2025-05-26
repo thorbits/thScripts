@@ -58,7 +58,7 @@ eZkde is a shell script designed to automate the installation of a minimal KDE 6
 </div>
 
 <div align="center">
-  <p><br><br><br>><br>><br></p>
+  <p><br><br><br><br><br></p>
 </div>
 
 <div align="center">
@@ -123,7 +123,7 @@ ezkernel is a semi-automated shell script designed for Debian-based systems to s
 
 
 <div align="center">
-  <p><br><br><br>><br>><br></p>
+  <p><br><br><br><br><br></p>
 
 ## *About me*
 
