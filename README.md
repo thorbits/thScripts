@@ -120,7 +120,6 @@ ezkernel is a semi-automated shell script designed for Debian-based systems to s
 
 </div>
 
-
 <div align="center">
   <p><br><br><br><br><br></p>
 </div>
@@ -133,7 +132,6 @@ ezkernel is a semi-automated shell script designed for Debian-based systems to s
 <div align="center">
 
 ## *About me*
-
 </div>
 
 <div align="center">
