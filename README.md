@@ -108,10 +108,10 @@ ezkernel is a semi-automated shell script designed for Debian-based systems to s
 4.  **Follow On-Screen Prompts:** The script will guide you through the process. You'll be prompted to:
     *   **Check Kernel Version:** The latest kernel version available will be displayed.
     *   **Confirm installation:**  This allows you to continue with the script.
-    *   **Dependencies and sources:** The script will install necessary dependencies and download kernel sources.
-    *   **Customization:** Advanced users can customize the kernel configuration by modifying the `.config` file before compilation via menuconfig.
-    *   **Initiate Compilation:**  The kernel will be compiled when you exit configuration. This can take a significant amount of time depending on your system's hardware.
-5.  **Reboot:**  After successful compilation, the script will prompt you to reboot your system.  Select "Yes" to reboot and load the newly compiled kernel.
+    *   **Dependencies and sources:** The script will install necessary dependencies and then download the latest kernel sources.
+    *   **Configuration:** Advanced users can customize the kernel configuration by modifying the `.config` file before compilation via menuconfig.
+    *   **Compilation:**  The kernel will be compiled once you manually exit the configuration screen. This can take a significant amount of time depending on your system's hardware.
+5.  **Reboot:**  After successful compilation, the script will prompt you to reboot your system.  Select "Yes" to reboot with the newly compiled kernel.
 
 **Important Considerations:**
 
