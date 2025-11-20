@@ -115,6 +115,7 @@ ezkernel is a semi-automated shell script designed for Debian-based systems to s
 
 **Important Considerations:**
 
+*   **Compilation:** The script is configured to utilize ALL available CPU threads during compilation time. Refer to the script's documentation or seek help from the online community if you encounter problems.
 *   **Error Handling:** The script includes basic error handling, but be prepared to troubleshoot issues. Refer to the script's documentation or seek help from the online community if you encounter problems.
 *   **Rollback:** If the new kernel causes problems, you can typically boot into your previous kernel using your bootloader's menu (e.g., Grub).   
 
