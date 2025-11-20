@@ -15,7 +15,7 @@ STEPS=3
 step() {
     local current_step=$1
     local percent=$(( (current_step + 1) * 100 / STEPS ))
-    printf "\rChecking system and dependencies... (%d%%)" "$percent"
+    printf "\rChecking kernels versions... (%d%%)" "$percent"
 }
 
 step 0
@@ -117,3 +117,4 @@ reboot_system() {
 
 # Call reboot function
 reboot_system
+
