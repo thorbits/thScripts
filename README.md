@@ -5,7 +5,7 @@
 </div>
 <div align="center">
   
-# eZkde: Automated KDE 6 Installation Script
+# eZkde - Automated KDE 6 Installation Script
 </div>
 <div align="center">
   <p><br></p>
@@ -41,13 +41,13 @@ eZkde is a shell script designed to automate the installation of a minimal KDE 6
     sudo ./ezkde_debian.sh
     ```
 
-4.  **Follow On-Screen Prompts:**
+4.  **Follow On-Screen Prompts -**
     The script will display progress information and prompts during execution.  These prompts may include:
     *   Confirmation to proceed with the installation.
     *   Automatic components download.
     *   Progress of components intallation.
 
-5.  **Reboot Your System:**
+5.  **Reboot -**
     After the installation is complete, the script will prompt you to reboot your system. Choose "yes" to reboot. The system will restart, and you should be greeted with the KDE 6 login screen (SDDM).
 
 ## Security Considerations
@@ -70,7 +70,7 @@ eZkde is a shell script designed to automate the installation of a minimal KDE 6
 
 
 
-# eZkernel: Interactive Linux Kernel Compilation Script
+# eZkernel - Interactive Linux Kernel Compilation Script
 </div>
 <div align="center">
   <p><br></p>
