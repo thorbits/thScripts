@@ -40,29 +40,10 @@ printf 'Extracting kernel sources...\n\n'
 tar -zxf *.gz --strip-components=1
 rm *.tar.gz
 
-# configure & build
+# configure-compile & reboot/error handling
 yes '' | make localmodconfig
-make menuconfig && (
-    time {
-        make -j$(nproc) bindeb-pkg &&
-        dpkg -i ~/kernel/*.deb &&
-        printf "\n\neZkernel compilation successful for version: %s\n\nCompilation time:\n" "$KVER"
-    }
-) || (
-    printf "\n\nCompilation or installation error. Exiting.\n"
-    exit 1
-)
-
-# reboot function
-reboot_system(){
-    printf "\nSystem will reboot now.\n\nPress Enter to continue or Ctrl+C to cancel"
-    read -rp '' &&
-    cd
-    rm -rf ~/kernel
-    (sed -i 's/^GRUB_TIMEOUT=[0-9]\+/GRUB_TIMEOUT=1/' /etc/default/grub || echo "GRUB_TIMEOUT=1" >> /etc/default/grub)
-    update-grub >/dev/null 2>&1
-    reboot
-}
-reboot_system
-
-
+make menuconfig &&
+(time make -j"$(nproc)" bindeb-pkg && dpkg -i ~/kernel/*.deb && printf "\n\neZkernel compilation successful for version: %s\n" "$KVER") &&
+reboot_system(){ printf "\nSystem will reboot now.\n\nPress Enter to continue or Ctrl+C to cancel"; read -rp '' && cd && rm -rf ~/kernel && { sed -i 's/^GRUB_TIMEOUT=[0-9]\+/GRUB_TIMEOUT=1/' /etc/default/grub || echo "GRUB_TIMEOUT=1" >> /etc/default/grub; } && update-grub >/dev/null 2>&1 && reboot; } &&
+reboot_system ||
+( printf "\n\nCompilation or installation error. Exiting.\n\n"; exit 1 )
