@@ -5,7 +5,7 @@
 #      |_|horbits 
 #
 #    eZkernel for Debian
-#    Interactive kernel compilation and installation script
+#    Interactive Linux kernel compilation and installation script
 
 clear
 printf "\n\nWelcome %s, to eZkernel for Debian.\n\nThe latest mainline Linux kernel from www.kernel.org will be compiled and installed.\n\n" "$USER"
@@ -64,4 +64,5 @@ reboot_system(){
     reboot
 }
 reboot_system
+
 
