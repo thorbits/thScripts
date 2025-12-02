@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#    _______
+#	_______
 #   \_   _/
 #     |_|horbits
 #
@@ -80,4 +80,5 @@ make menuconfig && (
     printf "\n\nCompilation or installation error. Exiting.\n\n"
     exit 1
 )
+
 
