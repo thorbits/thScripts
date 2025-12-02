@@ -91,26 +91,26 @@ ezkernel is a semi-automated shell script designed for Debian-based systems to s
 
 ## Installation and Usage
 
-1.  **Download the Script -** Download `ezkernel_debian.sh` from [GitHub](https://github.com/thorbits/thScripts/blob/main/ezkernel_debian.sh).
-2.  **Make the Script Executable -**
-    Open a terminal and navigate to the directory where `ezkernel_debian.sh` is located.  Run the following command:
+1.  **Get the script -**
+    This command download `ezkernel_debian.sh` , save it to /usr/local/bin/ and make it executable.
     ```bash
-    chmod +x ezkernel_debian.sh
+    curl -fsSL https://raw.githubusercontent.com/thorbits/thScripts/f8b9096371a81ebb684217a5226fad95e997219d/ezkernel_debian.sh -o /usr/local/bin/ezkernel_debian.sh && chmod +x /usr/local/bin/ezkernel_debian.sh
     ```
 
-3.  **Run the Script -**
+2.  **Run the Script -**
     Execute the script with root privileges
     ```bash
     sudo ./ezkernel_debian.sh
     ```
 
-4.  **Follow On-Screen Prompts -** The script will guide you through the process such as:
+3.  **Follow On-Screen Prompts -** The script will guide you through the process such as:
     *   **Check Kernel Version -** The latest kernel version available will be displayed.
     *   **Confirm installation -**  This allows you to continue with the script.
     *   **Dependencies and sources -** The script will install necessary dependencies and then download the latest kernel sources.
     *   **Configuration -** Advanced users can customize the kernel configuration by modifying the `.config` file before compilation via menuconfig.
     *   **Compilation -**  The kernel will be compiled once you manually exit the configuration screen. This can take a significant amount of time depending on your system's hardware.
-5.  **Reboot -**  After successful compilation, the script will prompt you to reboot your system.  Select "Yes" to reboot with the newly compiled kernel.
+
+4.  **Reboot -**  After successful compilation, the script will prompt you to reboot your system.  Select "Yes" to reboot with the newly compiled kernel.
 
 ## Important Considerations
 
