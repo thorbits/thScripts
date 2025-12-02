@@ -17,12 +17,24 @@ set -euo pipefail
 IFS=$'\n\t'
 
 # ---------- package list & installer ----------
-declare -a KDE_PKGS=( … )   # your list stays unchanged
+declare -a PKGS=(
+    plasma-wayland-protocols
+    kwin-wayland
+    kpipewire
+    sddm
+    plasma-workspace
+    plasma-nm
+    plasma-discover
+    kinfocenter
+    systemsettings
+    dolphin
+    konsole
+)
 
 install_minimal_kde() {
-    local total=${#KDE_PKGS[@]} count=0
+    local total=${#PKGS[@]} count=0
     {
-        for pkg in "${KDE_PKGS[@]}"; do
+        for pkg in "${PKGS[@]}"; do
             ((count++))
             percent=$(( count * 100 / total ))
             echo "$percent Installing $pkg…"
@@ -60,8 +72,8 @@ main() {
     # -----------------------------------------------------------------------
     ui_msgbox "Success" "KDE has been installed. You may want to:\n\n• enable/start SDDM\n• reboot or start a Wayland session.\n\nEnjoy!"
 }
-# ---------------------------------------------------------------------------
 
+# ---------------------------------------------------------------------------
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     main "$@"
 fi
