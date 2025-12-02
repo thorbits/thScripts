@@ -16,9 +16,7 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-# ---------------------------------------------------------------------------
-# Helper functions (ensure_whiptail and UI wrappers)
-# ---------------------------------------------------------------------------
+# Helper functions (ensure_whiptail, centering)
 ensure_whiptail() {
     if ! command -v whiptail >/dev/null 2>&1; then
         echo -e "\e[33mwhiptail not found - installing it now...\e[0m"
@@ -27,19 +25,40 @@ ensure_whiptail() {
     fi
 }
 
-ui_msgbox() { local t="$1" txt="$2"; whiptail --title "$t" --msgbox "$txt" 12 78; }
-ui_yesno()  { local t="$1" txt="$2"; whiptail --title "$t" --yesno "$txt" 12 78; }
-ui_menu()   { local t="$1" p="$2"; shift 2; whiptail --title "$t" --menu "$p" 15 60 2 "$@"; }
-ui_gauge()  { local t="$1" txt="$2"; whiptail --title "$t" --gauge "$txt" 8 78 0; }
+# Pad each line with spaces so it appears centered in a box of $width columns.
+# Arguments:
+#   $1 – the raw text (may contain new‑lines)
+#   $2 – width of the box (default 78, must be an integer)
+center_text() {
+    local raw="${1}"
+    local width="${2:-78}"
+    local line padded
+    local result=""
 
-# ---------------------------------------------------------------------------
+    while IFS= read -r line; do
+        if (( ${#line} < width )); then
+            local pad=$(( (width - ${#line}) / 2 ))
+            padded="$(printf "%*s%s" "$pad" "" "$line")"
+        else
+            padded="$line"
+        fi
+        result+="${padded}"$'\n'
+    done <<< "$raw"
+
+    printf "%s" "${result%$'\n'}"
+}
+
 # Package list & installer
-# ---------------------------------------------------------------------------
 declare -a PKGS=(
     plasma-wayland-protocols
     kwin-wayland
-    pipewire
+    kpipewire
     sddm
+    plasma-workspace
+    plasma-nm
+    plasma-discover
+    kinfocenter
+    systemsettings
     dolphin
     konsole
 )
@@ -53,11 +72,11 @@ install_minimal_kde() {
             echo "$percent Installing $pkg..."
             apt-get install -y -qq --no-install-recommends "$pkg" \
                 || { echo -e "\e[31mFailed to install $pkg\e[0m"; exit 1; }
-            # Small pause makes the gauge move more smoothly (optional)
-            sleep 0.2
+            sleep 0.2   # optional – smoother gauge movement
         done
         echo "100 Installation complete."
-    } | ui_gauge "KDE Installation" "Downloading and installing components, this may take a while..." || true
+    } | whiptail --title "KDE Installation" --gauge "Installing minimal KDE packages…" 8 78 0 || true
+    # The gauge returns a non‑zero status when it finishes; ignore it.
 }
 
 enable_and_start_sddm() {
@@ -67,9 +86,7 @@ enable_and_start_sddm() {
     echo -e "\e[32mSDDM is now active.\e[0m"
 }
 
-# ---------------------------------------------------------------------------
-# Main flow (no interactive menu any more)
-# ---------------------------------------------------------------------------
+# Main flow
 main() {
     # Must be run as root
     if [[ "$(id -u)" -ne 0 ]]; then
@@ -79,30 +96,25 @@ main() {
 
     ensure_whiptail
 
-    # -----------------------------------------------------------------------
-    # Intro – keep or comment out if you want a completely silent run
-    # -----------------------------------------------------------------------
-    ui_msgbox "KDE Installation" \
-        "KDE 6 (Wayland session) will be installed with audio support (PipeWire) \
-and a minimal set of utilities.\n\nPress OK to continue." || true
+# Intro – keep or comment out if you want a completely silent run
+    intro_text="KDE 6 (Wayland session) will be installed with audio support (PipeWire)
+and a minimal set of utilities.
 
-    # -----------------------------------------------------------------------
-    # Install the packages
-    # -----------------------------------------------------------------------
+Press OK to continue."
+    centered_intro=$(center_text "$intro_text" 78)
+    # Ignore ESC/Cancel so the script continues even if the user aborts the box
+    whiptail --title "KDE Installation" --msgbox "$centered_intro" 12 78 || true
+
     install_minimal_kde
 
-    # -----------------------------------------------------------------------
-    # Enable and start SDDM
-    # -----------------------------------------------------------------------
     enable_and_start_sddm
 
-    # -----------------------------------------------------------------------
-    # Final menu with clickable actions (plain ASCII only)
-    # -----------------------------------------------------------------------
-    choice=$(ui_menu "Installation Complete" \
-        "Select what to do next:" \
+# Final menu with clickable actions (plain ASCII only)
+    choice=$(whiptail --title "Installation Complete" \
+        --menu "Select what to do next:" 15 60 2 \
         1 "Reboot now" \
-        2 "Switch to graphical target now")
+        2 "Switch to graphical target now" \
+        3>&1 1>&2 2>&3)   # capture the selected tag
 
     case "$choice" in
         1)
@@ -119,9 +131,7 @@ and a minimal set of utilities.\n\nPress OK to continue." || true
     esac
 }
 
-# ---------------------------------------------------------------------------
 # Run when the file is executed directly
-# ---------------------------------------------------------------------------
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     main "$@"
 fi
