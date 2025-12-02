@@ -40,7 +40,6 @@ pkgs=(
     systemsettings
     dolphin
     konsole
-    kitty
 )
 
 sum=${#pkgs[@]}
