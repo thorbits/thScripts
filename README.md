@@ -29,7 +29,7 @@ eZkde is a shell script designed to automate the installation of a minimal KDE 6
 1.  **Get the script -**
     This command download `ezkde_debian.sh` , save it to /usr/local/bin/ and make it executable.
     ```bash
-    curl -fsSL https://raw.githubusercontent.com/thorbits/thScripts/9c1c0ce5c11c3d6776638303595e8af8a8bb18d8/ezkde_debian.sh -o /usr/local/bin/ezkde_debian.sh && chmod +x /usr/local/bin/ezkde_debian.sh
+    curl -fsSL https://raw.githubusercontent.com/thorbits/thScripts/refs/heads/main/ezkde_debian.sh -o /usr/local/bin/ezkde_debian.sh && chmod +x /usr/local/bin/ezkde_debian.sh
     ```
 
 2.  **Run the Script -**
@@ -94,7 +94,7 @@ ezkernel is a semi-automated shell script designed for Debian-based systems to s
 1.  **Get the script -**
     This command download `ezkernel_debian.sh` , save it to /usr/local/bin/ and make it executable.
     ```bash
-    curl -fsSL https://raw.githubusercontent.com/thorbits/thScripts/f8b9096371a81ebb684217a5226fad95e997219d/ezkernel_debian.sh -o /usr/local/bin/ezkernel_debian.sh && chmod +x /usr/local/bin/ezkernel_debian.sh
+    curl -fsSL https://raw.githubusercontent.com/thorbits/thScripts/refs/heads/main/ezkernel_debian.sh -o /usr/local/bin/ezkernel_debian.sh && chmod +x /usr/local/bin/ezkernel_debian.sh
     ```
 
 2.  **Run the Script -**
