@@ -57,12 +57,12 @@ install_minimal_kde() {
             sleep 0.2
         done
         echo "100 Installation complete."
-    } | ui_gauge "KDE Installation" "Installing minimal KDE packages…" || true
+    } | ui_gauge "KDE Installation" "Downloading and installing components, this may take a while..." || true
 }
 
 enable_and_start_sddm() {
     echo -e "\e[32mEnabling and starting SDDM...\e[0m"
-    systemctl enable --now sddm >/dev/null 2>&1 \
+    systemctl enable sddm >/dev/null 2>&1 \
         || { echo -e "\e[31mFailed to enable/start SDDM\e[0m"; exit 1; }
     echo -e "\e[32mSDDM is now active.\e[0m"
 }
