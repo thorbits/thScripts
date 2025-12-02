@@ -62,14 +62,14 @@ for p in "${pkgs[@]}"; do
         apt-get install -y "$p" &>/dev/null && ((ok++))
     }
 
-    printf "\rProgress: %3d%% [%-20s] %-*s" \
+    printf "\rProgress: %3d%% [%-40s] %-*s" \
         $((i*100/sum)) \
-        "$(printf '|%.0s' $(seq 1 $((i*20/sum))))" \
+        "$(printf '|%.0s' $(seq 1 $((i*40/sum))))" \
         "$pkg_len" "$p"
 done
 
-printf "\rProgress: 100%% [%-20s] Installed %d new component(s).\n\n" \
-    "$(printf '|%.0s' $(seq 1 20))" "$ok"
+printf "\rProgress: 100%% [%-40s] Installed %d new component(s).\n\n" \
+    "$(printf '|%.0s' $(seq 1 40))" "$ok"
 
 # Enable SDDM display manager
 systemctl enable sddm >/dev/null 2>&1
