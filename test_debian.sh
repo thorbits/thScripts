@@ -38,13 +38,8 @@ ui_gauge()  { local t="$1" txt="$2"; whiptail --title "$t" --gauge "$txt" 8 78 0
 declare -a PKGS=(
     plasma-wayland-protocols
     kwin-wayland
-    kpipewire
+    pipewire
     sddm
-    plasma-workspace
-    plasma-nm
-    plasma-discover
-    kinfocenter
-    systemsettings
     dolphin
     konsole
 )
