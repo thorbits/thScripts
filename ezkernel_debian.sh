@@ -6,7 +6,7 @@
 #
 #   eZkernel for Debian
 #   Interactive Linux kernel compilation and installation script
-#
+# ------------------------------------------------------------
 
 clear
 
@@ -80,3 +80,4 @@ make menuconfig && (
     printf "\n\nCompilation or installation error. Exiting.\n\n"
     exit 1
 )
+
