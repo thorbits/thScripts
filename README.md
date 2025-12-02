@@ -35,7 +35,7 @@ eZkde is a shell script designed to automate the installation of a minimal KDE 6
 2.  **Run the Script -**
     Execute the script with root privileges
     ```bash
-    sudo ./ezkde_debian.sh
+    sudo ezkde_debian.sh
     ```
 
 3.  **Follow On-Screen Prompts -**
@@ -100,7 +100,7 @@ ezkernel is a semi-automated shell script designed for Debian-based systems to s
 2.  **Run the Script -**
     Execute the script with root privileges
     ```bash
-    sudo ./ezkernel_debian.sh
+    sudo ezkernel_debian.sh
     ```
 
 3.  **Follow On-Screen Prompts -** The script will guide you through the process such as:
