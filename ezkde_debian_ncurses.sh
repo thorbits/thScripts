@@ -61,23 +61,33 @@ declare -a PKGS=(
 # Now downloading and installing:
 install_minimal_kde() {
     local total=${#PKGS[@]} count=0
+
     {
         for pkg in "${PKGS[@]}"; do
             ((count++))
+            # Percentage for the gauge
             local percent=$(( count * 100 / total ))
-            printf "Now downloading and installing: %s\n" "$pkg"
-            if (( percent % 5 == 0 )) || (( count == 1 )) || (( count == total )); then
-                echo "$percent"
-            fi
+
+            # Text that will be shown above the gauge
+            printf "Now installing: %s\n" "$pkg"
+
+            # Send the percentage to whiptail
+            echo "$percent"
+
+            # Install the package
             apt-get install -y -qq "$pkg" \
                 || { echo -e "\e[31mFailed to install $pkg\e[0m"; exit 1; }
+
+            # Small pause so the user can see the change
             sleep 0.2
         done
+
+        # Ensure the gauge ends at 100 %
         echo "100"
     } | whiptail --title "eZkde for Debian" --gauge "" 8 78 0
 
-    # Check whiptail's exit status
-    if [ $? -eq 255 ]; then  # 255 is the exit code when ESC is pressed
+    # Handle ESC‑press (whiptail returns 255)
+    if [ $? -eq 255 ]; then
         whiptail --title "eZkde for Debian" --msgbox "KDE install canceled." 8 78
         exit 1
     fi
