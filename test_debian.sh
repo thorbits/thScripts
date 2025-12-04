@@ -19,7 +19,6 @@ IFS=$'\n\t'
 # Helper functions (ensure_whiptail, centering)
 ensure_whiptail() {
     if ! command -v whiptail >/dev/null 2>&1; then
-        echo -e "\e[33mwhiptail not found - installing it now...\e[0m"
         apt-get update -qq
         apt-get install -y -qq whiptail
     fi
@@ -28,7 +27,7 @@ ensure_whiptail() {
 # Pad each line with spaces so it appears centered in a box of $width columns.
 # Arguments:
 #   $1 – the raw text (may contain new‑lines)
-#   $2 – width of the box (default 78, must be an integer)
+#   $2 – width of the box
 center_text() {
     local raw="${1}"
     local width="${2:-$(tput cols)}"  # Use terminal width if $2 is unset
@@ -81,10 +80,8 @@ install_minimal_kde() {
 }
 
 enable_and_start_sddm() {
-    echo -e "\e[32mEnabling and starting SDDM...\e[0m"
     systemctl enable sddm >/dev/null 2>&1 \
         || { echo -e "\e[31mFailed to enable/start SDDM\e[0m"; exit 1; }
-    echo -e "\e[32mSDDM is now active.\e[0m"
 }
 
 # Main flow
