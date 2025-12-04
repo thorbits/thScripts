@@ -30,18 +30,17 @@ center_text() {
     local line padded
     local result=""
     
-    while IFS= read -r line; do
-        # Calculate left padding
-        local pad_len=$(( (width - ${#line}) / 2 ))
-        if (( pad_len > 0 )); then
-            printf -v padded "%*s%s" "$pad_len" "" "$line"
-        else
-            padded="$line"
-        fi
-        result+="$padded"$'\n'
-    done <<< "$raw"
-    
-    echo -n "$result"
+while IFS= read -r line; do
+    if (( ${#line} < width )); then
+        local pad=$(( (width - ${#line}) / 2 ))
+        padded="$(printf "%*s%s" "$pad" "" "$line")"
+    else
+        padded="$line"
+    fi
+    result+="${padded}"$'\n'
+done <<< "$raw"
+
+printf "%s" "${result%$'\n'}"
 }
 
 # Package list
