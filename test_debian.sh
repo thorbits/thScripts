@@ -16,7 +16,7 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-# Helper functions (ensure_whiptail, centering)
+# Helper functions (ensure_whiptail, centering, final menu)
 ensure_whiptail() {
     if ! command -v whiptail >/dev/null 2>&1; then
         apt-get update -qq
@@ -25,9 +25,6 @@ ensure_whiptail() {
 }
 
 # Pad each line with spaces so it appears centered in a box of $width columns.
-# Arguments:
-#   $1 – the raw text (may contain new‑lines)
-#   $2 – width of the box
 center_text() {
     local raw="${1}"
     local width="${2:-$(tput cols)}"  # Use terminal width if $2 is unset
@@ -45,6 +42,31 @@ center_text() {
     done <<< "$raw"
 
     printf "%s" "${result%$'\n'}"
+}
+
+# Final menu with choices
+final_menu() {
+    local menu_width=$(tput cols)
+    local menu_height=$(( $(tput lines) - 5 ))  # Leave 5 lines for margins
+    local menu_item_height=2
+
+    choice=$(whiptail --title "Installation Complete" \
+        --menu "$(center_text "Select what to do next:")" \
+        "$menu_height" "$menu_width" "$menu_item_height" \
+        "1" "$(center_text "Reboot now")" \
+        "2" "$(center_text "Switch to graphical target now")" \
+        3>&1 1>&2 2>&3 || true)
+
+    case "$choice" in
+        1)
+            echo -e "\e[32mRebooting now...\e[0m"
+            systemctl reboot
+            ;;
+        2)
+            echo -e "\e[32mSwitching to graphical.target...\e[0m"
+            systemctl isolate graphical.target
+            ;;
+    esac
 }
 
 # Package list & installer
@@ -123,22 +145,7 @@ Press OK to continue."
 
     # Only show final menu if not in silent mode
     if [[ "$silent" == false ]]; then
-        choice=$(whiptail --title "Installation Complete" \
-            --menu "$(center_text "Select what to do next:")" \
-            15 $(tput cols) 2 \
-            "1" "$(center_text "Reboot now")" \
-            "2" "$(center_text "Switch to graphical target now")" \
-            3>&1 1>&2 2>&3 || true)
-
-        case "$choice" in
-            1)
-                echo -e "\e[32mRebooting now...\e[0m"
-                systemctl reboot
-                ;;
-            2)
-                echo -e "\e[32mSwitching to graphical.target...\e[0m"
-                systemctl isolate graphical.target
-                ;;
-        esac
+        # Final menu with improvements
+        final_menu
     fi
 }
