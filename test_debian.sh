@@ -47,7 +47,7 @@ center_text() {
 # Final menu with choices
 final_menu() {
     local menu_width=$(tput cols)
-    local menu_height=$(( $(tput lines) - 5 ))  # Leave 5 lines for margins
+    local menu_height=$(( $(tput lines) - 5 ))
     local menu_item_height=2
 
     choice=$(whiptail --title "Installation Complete" \
@@ -65,6 +65,9 @@ final_menu() {
         2)
             echo -e "\e[32mSwitching to graphical.target...\e[0m"
             systemctl isolate graphical.target
+            ;;
+        *)
+            echo -e "\e[33mNo valid selection made – leaving you at the shell.\e[0m"
             ;;
     esac
 }
