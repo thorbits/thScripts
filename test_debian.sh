@@ -16,7 +16,7 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-# Helper functions (ensure_whiptail, centering, final menu)
+# Helper functions
 ensure_whiptail() {
     if ! command -v whiptail >/dev/null 2>&1; then
         apt-get update -qq
@@ -24,10 +24,9 @@ ensure_whiptail() {
     fi
 }
 
-# Pad each line with spaces so it appears centered in a box of $width columns.
 center_text() {
     local raw="${1}"
-    local width="${2:-$(tput cols)}"  # Use terminal width if $2 is unset
+    local width="${2:-$(tput cols)}"
     local line padded
     local result=""
 
@@ -44,7 +43,47 @@ center_text() {
     printf "%s" "${result%$'\n'}"
 }
 
-# Final menu with choices
+# Package list
+declare -a PKGS=(
+    plasma-wayland-protocols
+    kwin-wayland
+    pipewire
+    sddm
+    plasma-workspace
+    plasma-nm
+    plasma-discover
+    kinfocenter
+    systemsettings
+    dolphin
+    konsole
+)
+
+install_minimal_kde() {
+    local total=${#PKGS[@]} count=0
+    local gauge_width=$(tput cols)
+    local gauge_text="Downloading and installing components..."
+    {
+        for pkg in "${PKGS[@]}"; do
+            ((count++))
+            percent=$(( count * 100 / total ))
+            stdbuf -oL echo "$percent"
+            stdbuf -oL echo "XXX"
+            stdbuf -oL echo "$(center_text "Installing $pkg" "$gauge_width")"
+            stdbuf -oL echo "XXX"
+            apt-get install -y -qq "$pkg" || { echo -e "\e[31mFailed to install $pkg\e[0m"; exit 1; }
+            sleep 0.2
+        done
+        echo "100"
+    } | whiptail --title "KDE Installation" --gauge "$(center_text "$gauge_text" "$gauge_width")" 8 "$gauge_width" 0 || true
+}
+
+enable_and_start_sddm() {
+    echo -e "\e[32mEnabling and starting SDDM...\e[0m"
+    systemctl enable sddm >/dev/null 2>&1 || { echo -e "\e[31mFailed to enable SDDM\e[0m"; exit 1; }
+    systemctl set-default graphical.target >/dev/null 2>&1
+    echo -e "\e[32mSDDM is now active.\e[0m"
+}
+
 final_menu() {
     local menu_width=$(tput cols)
     local menu_height=$(( $(tput lines) - 5 ))
@@ -67,52 +106,11 @@ final_menu() {
             systemctl isolate graphical.target
             ;;
         *)
-            echo -e "\e[33mNo valid selection made – leaving you at the shell.\e[0m"
+            echo -e "\e[33mNo valid selection made - exiting.\e[0m"
             ;;
     esac
 }
 
-# Package list & installer
-declare -a PKGS=(
-    plasma-wayland-protocols
-    kwin-wayland
-    pipewire
-    sddm
-    plasma-workspace
-    plasma-nm
-    plasma-discover
-    kinfocenter
-    systemsettings
-    dolphin
-    konsole
-)
-
-install_minimal_kde() {
-    local total=${#PKGS[@]} count=0
-    local gauge_width=$(tput cols)
-    local gauge_text="Downloading and installing components..."
-    local centered_text=$(center_text "$gauge_text" "$gauge_width")
-    
-    {
-        for pkg in "${PKGS[@]}"; do
-            ((count++))
-            percent=$(( count * 100 / total ))
-            stdbuf -oL echo "$percent"  # Unbuffered percentage
-            stdbuf -oL echo "Installing $pkg..."
-            apt-get install -y -qq "$pkg" \
-                || { echo -e "\e[31mFailed to install $pkg\e[0m"; exit 1; }
-            sleep 0.2
-        done
-        echo "100"
-    } | whiptail --title "KDE Installation" --gauge "$centered_text" 8 "$gauge_width" 0 || true
-}
-
-enable_and_start_sddm() {
-    systemctl enable sddm >/dev/null 2>&1 \
-        || { echo -e "\e[31mFailed to enable/start SDDM\e[0m"; exit 1; }
-}
-
-# Main flow
 main() {
     local silent=false
 
@@ -148,7 +146,11 @@ Press OK to continue."
 
     # Only show final menu if not in silent mode
     if [[ "$silent" == false ]]; then
-        # Final menu with improvements
         final_menu
     fi
 }
+
+# Run when executed directly
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    main "$@"
+fi
