@@ -26,21 +26,21 @@ ensure_whiptail() {
 
 center_text() {
     local raw="${1}"
-    local width="${2:-$(tput cols)}"
+    local width="${2:-78}"  # Default to 78 columns (80 - 2 for whiptail borders)
     local line padded
     local result=""
-    
-while IFS= read -r line; do
-    if (( ${#line} < width )); then
-        local pad=$(( (width - ${#line}) / 2 ))
-        padded="$(printf "%*s%s" "$pad" "" "$line")"
-    else
-        padded="$line"
-    fi
-    result+="${padded}"$'\n'
-done <<< "$raw"
 
-printf "%s" "${result%$'\n'}"
+    while IFS= read -r line; do
+        if (( ${#line} < width )); then
+            local pad=$(( (width - ${#line}) / 2 ))
+            padded="$(printf "%*s%s" "$pad" "" "$line")"
+        else
+            padded="$line"
+        fi
+        result+="${padded}"$'\n'
+    done <<< "$raw"
+
+    printf "%s" "${result%$'\n'}"
 }
 
 # Package list
@@ -66,14 +66,21 @@ install_minimal_kde() {
         for pkg in "${PKGS[@]}"; do
             ((count++))
             percent=$(( count * 100 / total ))
-            echo "$percent"
-            echo "### Installing $pkg ###"
+
+            # Always show the package message
+            echo "### Now downloading and installing: $pkg ###"
+
+            # Only update percentage at certain intervals
+            if (( percent % 5 == 0 )) || (( count == 1 )) || (( count == total )); then
+                echo "$percent"
+            fi
+
             apt-get install -y -qq "$pkg" \
                 || { echo -e "\e[31mFailed to install $pkg\e[0m"; exit 1; }
             sleep 0.2
         done
         echo "100"
-    } | whiptail --title "KDE Installation" --gauge "Installing packages..." 8 78 0 || true
+    } | whiptail --title "KDE Installation" --gauge "" 8 78 0 || true
 }
 
 enable_and_start_sddm() {
