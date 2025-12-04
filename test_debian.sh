@@ -68,7 +68,7 @@ install_minimal_kde() {
             percent=$(( count * 100 / total ))
             stdbuf -oL echo "$percent"
             stdbuf -oL echo "XXX"
-            stdbuf -oL echo "$(center_text "Installing $pkg" "$gauge_width")"
+            stdbuf -oL echo "$(center_text "Downloading and installing: $pkg" "$gauge_width")"
             stdbuf -oL echo "XXX"
             apt-get install -y -qq "$pkg" || { echo -e "\e[31mFailed to install $pkg\e[0m"; exit 1; }
             sleep 0.2
@@ -86,14 +86,14 @@ enable_and_start_sddm() {
 
 final_menu() {
     local menu_width=$(tput cols)
-    local menu_height=$(( $(tput lines) - 5 ))
+    local menu_height=$(( $(tput lines) - 5 ))  # Leave 5 lines for margins
     local menu_item_height=2
 
     choice=$(whiptail --title "Installation Complete" \
         --menu "$(center_text "Select what to do next:")" \
         "$menu_height" "$menu_width" "$menu_item_height" \
-        "1" "$(center_text "Reboot now")" \
-        "2" "$(center_text "Switch to graphical target now")" \
+        "1" "Reboot now" \
+        "2" "Switch to graphical target now" \
         3>&1 1>&2 2>&3 || true)
 
     case "$choice" in
@@ -104,9 +104,6 @@ final_menu() {
         2)
             echo -e "\e[32mSwitching to graphical.target...\e[0m"
             systemctl isolate graphical.target
-            ;;
-        *)
-            echo -e "\e[33mNo valid selection made - exiting.\e[0m"
             ;;
     esac
 }
