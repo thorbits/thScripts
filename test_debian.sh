@@ -71,9 +71,7 @@ install_minimal_kde() {
             ((count++))
             percent=$(( count * 100 / total ))
             stdbuf -oL echo "$percent"  # Unbuffered percentage
-            stdbuf -oL echo "XXX"       # Start of gauge text block
             stdbuf -oL echo "Installing $pkg..."
-            stdbuf -oL echo "XXX"       # End of gauge text block
             apt-get install -y -qq "$pkg" \
                 || { echo -e "\e[31mFailed to install $pkg\e[0m"; exit 1; }
             sleep 0.2
