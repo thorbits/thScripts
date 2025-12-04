@@ -136,7 +136,7 @@ and a minimal set of utilities.
 
 Press OK to continue."
         local centered_intro=$(center_text "$intro_text")
-        whiptail --title "KDE Installation" --msgbox "$centered_intro" 12 $(tput cols) || true
+        whiptail --title "KDE Installation" --msgbox "$centered_intro" 12 78 || true
     fi
 
     # Execute installation and configuration
