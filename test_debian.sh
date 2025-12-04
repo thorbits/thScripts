@@ -29,18 +29,19 @@ center_text() {
     local width="${2:-$(tput cols)}"
     local line padded
     local result=""
-
+    
     while IFS= read -r line; do
-        if (( ${#line} < width )); then
-            local pad=$(( (width - ${#line}) / 2 ))
-            padded="$(printf "%*s%s" "$pad" "" "$line")"
+        # Calculate left padding
+        local pad_len=$(( (width - ${#line}) / 2 ))
+        if (( pad_len > 0 )); then
+            printf -v padded "%*s%s" "$pad_len" "" "$line"
         else
             padded="$line"
         fi
-        result+="${padded}"$'\n'
+        result+="$padded"$'\n'
     done <<< "$raw"
-
-    printf "%s" "${result%$'\n'}"
+    
+    echo -n "$result"
 }
 
 # Package list
@@ -123,20 +124,22 @@ main() {
 
     ensure_whiptail
 
-    # Only show intro if not in silent mode
+    # Show introduction dialog unless in silent mode
     if [[ "$silent" == false ]]; then
         intro_text="KDE 6 (Wayland session) will be installed with audio support (PipeWire)
 and a minimal set of utilities.
 
 Press OK to continue."
+        local centered_intro
         centered_intro=$(center_text "$intro_text")
         whiptail --title "KDE Installation" --msgbox "$centered_intro" 12 $(tput cols) || true
     fi
 
+    # Execute installation and configuration
     install_minimal_kde
     enable_and_start_sddm
 
-    # Only show final menu if not in silent mode
+    # Show completion menu unless in silent mode
     if [[ "$silent" == false ]]; then
         final_menu
     fi
