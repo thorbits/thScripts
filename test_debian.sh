@@ -65,6 +65,9 @@ declare -a PKGS=(
 install_minimal_kde() {
     local total=${#PKGS[@]} count=0
     local gauge_width=$(tput cols)  # Dynamic width
+    local gauge_text="Downloading and installing components..."
+    local centered_text=$(center_text "$gauge_text" "$gauge_width")  # Center the title
+
     {
         for pkg in "${PKGS[@]}"; do
             ((count++))
@@ -76,7 +79,7 @@ install_minimal_kde() {
             sleep 0.2
         done
         echo "100"
-    } | whiptail --title "KDE Installation" --gauge "Downloading and installing components..." 8 "$gauge_width" 0 || true
+    } | whiptail --title "KDE Installation" --gauge "$centered_text" 8 "$gauge_width" 0 || true
 }
 
 enable_and_start_sddm() {
@@ -95,39 +98,35 @@ main() {
     ensure_whiptail
 
 # Intro – keep or comment out if you want a completely silent run
-    intro_text="KDE 6 (Wayland session) will be installed with audio support (PipeWire)
+intro_text="KDE 6 (Wayland session) will be installed with audio support (PipeWire)
 and a minimal set of utilities.
 
 Press OK to continue."
-    centered_intro=$(center_text "$intro_text" 78)
-    # Ignore ESC/Cancel so the script continues even if the user aborts the box
-    whiptail --title "KDE Installation" --msgbox "$centered_intro" 12 78 || true
+centered_intro=$(center_text "$intro_text")
+whiptail --title "KDE Installation" --msgbox "$centered_intro" 12 $(tput cols) || true
 
     install_minimal_kde
 
     enable_and_start_sddm
 
-# Final menu with clickable actions (plain ASCII only)
-    choice=$(whiptail --title "Installation Complete" \
-        --menu "Select what to do next:" 15 60 2 \
-        1 "Reboot now" \
-        2 "Switch to graphical target now" \
-        3>&1 1>&2 2>&3)   # capture the selected tag
+# Final menu with centered choices and dynamic width
+choice=$(whiptail --title "Installation Complete" \
+    --menu "$(center_text "Select what to do next:")" \
+    15 $(tput cols) 2 \
+    "1" "$(center_text "Reboot now")" \
+    "2" "$(center_text "Switch to graphical target now")" \
+    3>&1 1>&2 2>&3 || true)
 
-    case "$choice" in
-        1)
-            echo -e "\e[32mRebooting now...\e[0m"
-            systemctl reboot
-            ;;
-        2)
-            echo -e "\e[32mSwitching to graphical.target...\e[0m"
-            systemctl isolate graphical.target
-            ;;
-        *)
-            echo -e "\e[33mNo valid selection made – leaving you at the shell.\e[0m"
-            ;;
-    esac
-}
+case "$choice" in
+    1)
+        echo -e "\e[32mRebooting now...\e[0m"
+        systemctl reboot
+        ;;
+    2)
+        echo -e "\e[32mSwitching to graphical.target...\e[0m"
+        systemctl isolate graphical.target
+        ;;
+esac
 
 # Run when the file is executed directly
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
