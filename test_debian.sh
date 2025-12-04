@@ -31,7 +31,7 @@ ensure_whiptail() {
 #   $2 – width of the box (default 78, must be an integer)
 center_text() {
     local raw="${1}"
-    local width="${2:-78}"
+    local width="${2:-$(tput cols)}"  # Use terminal width if $2 is unset
     local line padded
     local result=""
 
@@ -65,18 +65,21 @@ declare -a PKGS=(
 
 install_minimal_kde() {
     local total=${#PKGS[@]} count=0
+    local gauge_width=$(tput cols)  # Dynamic width
     {
         for pkg in "${PKGS[@]}"; do
             ((count++))
             percent=$(( count * 100 / total ))
-            echo "$percent Installing $pkg..."
+            stdbuf -oL echo "$percent"  # Unbuffered percentage
+            stdbuf -oL echo "XXX"       # Start of gauge text block
+            stdbuf -oL echo "Installing $pkg..."
+            stdbuf -oL echo "XXX"       # End of gauge text block
             apt-get install -y -qq --no-install-recommends "$pkg" \
                 || { echo -e "\e[31mFailed to install $pkg\e[0m"; exit 1; }
-            sleep 0.2   # optional – smoother gauge movement
+            sleep 0.2
         done
-        echo "100 Installation complete."
-    } | whiptail --title "KDE Installation" --gauge "Installing minimal KDE packages…" 8 78 0 || true
-    # The gauge returns a non‑zero status when it finishes; ignore it.
+        echo "100"
+    } | whiptail --title "KDE Installation" --gauge "Downloading and installing components..." 8 "$gauge_width" 0 || true
 }
 
 enable_and_start_sddm() {
