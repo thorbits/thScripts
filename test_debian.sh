@@ -106,15 +106,19 @@ final_menu() {
 main() {
     local silent=false
 
-    # Check for --silent flag
-    for arg in "$@"; do
-        case "$arg" in
-            --silent)
+    # Parse command line arguments for silent mode
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --silent|-s)
                 silent=true
+                shift
+                ;;
+            *)
+                shift
                 ;;
         esac
     done
-
+    
     # Must be run as root
     if [[ "$(id -u)" -ne 0 ]]; then
         echo -e "\e[31mThis script must be run as root. Use sudo.\e[0m"
