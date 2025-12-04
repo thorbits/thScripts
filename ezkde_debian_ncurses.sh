@@ -65,19 +65,22 @@ install_minimal_kde() {
         for pkg in "${PKGS[@]}"; do
             ((count++))
             local percent=$(( count * 100 / total ))
-
             echo "### Now downloading and installing: $pkg ###"
-
             if (( percent % 5 == 0 )) || (( count == 1 )) || (( count == total )); then
                 echo "$percent"
             fi
-
             apt-get install -y -qq "$pkg" \
                 || { echo -e "\e[31mFailed to install $pkg\e[0m"; exit 1; }
             sleep 0.2
         done
         echo "100"
-    } | whiptail --title "KDE Installation" --gauge "" 8 78 0 || true
+    } | whiptail --title "eZkde for Debian" --gauge "" 8 78 0
+
+    # Check whiptail's exit status
+    if [ $? -eq 255 ]; then  # 255 is the exit code when ESC is pressed
+        whiptail --title "eZkde for Debian" --msgbox "KDE install canceled." 8 78
+        exit 1
+    fi
 }
 
 enable_and_start_sddm() {
@@ -89,17 +92,24 @@ final_menu() {
     local menu_width=78
     local menu_height=$(( $(tput lines) - 5 ))  # Leave 5 lines for margins
     local menu_item_height=2
-    choice=$(whiptail --title "KDE installation completed" \
-        --menu "$(center_text "Select what to do next:")" \
+
+    choice=$(whiptail --title "eZkde for Debian" \
+        --menu "$(center_text "KDE installation complete!
+\nSelect what to do next:")" \
         "$menu_height" "$menu_width" "$menu_item_height" \
         "1" "Reboot now" \
         "2" "Start a KDE session now" \
         3>&1 1>&2 2>&3 || true)
+
     case "$choice" in
         1)
+            sleep 0.5
+            whiptail --title "eZkde for Debian" --msgbox "$(center_text "The system will reboot now...")" 8 78
             systemctl reboot
             ;;
         2)
+            sleep 0.5
+            whiptail --title "eZkde for Debian" --msgbox "$(center_text "Starting KDE session...")" 8 78
             systemctl isolate graphical.target
             ;;
     esac
@@ -136,7 +146,7 @@ and a minimal set of utilities.
 
 Press OK to continue."
         local centered_intro=$(center_text "$intro_text")
-        whiptail --title "KDE Installation" --msgbox "$centered_intro" 12 78 || true
+        whiptail --title "eZkde for Debian" --msgbox "$centered_intro" 12 78 || true
     fi
 
     # Execute installation and configuration
