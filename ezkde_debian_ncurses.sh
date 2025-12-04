@@ -85,12 +85,6 @@ install_minimal_kde() {
         # Ensure the gauge ends at 100 %
         echo "100"
     } | whiptail --title "eZkde for Debian" --gauge "" 8 78 0
-
-    # Handle ESC‑press (whiptail returns 255)
-    if [ $? -eq 255 ]; then
-        whiptail --title "eZkde for Debian" --msgbox "KDE install canceled." 8 78
-        exit 1
-    fi
 }
 
 enable_and_start_sddm() {
