@@ -58,19 +58,16 @@ declare -a PKGS=(
     konsole
 )
 
-
 # Now downloading and installing:
 install_minimal_kde() {
     local total=${#PKGS[@]} count=0
     {
         for pkg in "${PKGS[@]}"; do
             ((count++))
-            percent=$(( count * 100 / total ))
+            local percent=$(( count * 100 / total ))
 
-            # Always show the package message
             echo "### Now downloading and installing: $pkg ###"
 
-            # Only update percentage at certain intervals
             if (( percent % 5 == 0 )) || (( count == 1 )) || (( count == total )); then
                 echo "$percent"
             fi
@@ -84,24 +81,20 @@ install_minimal_kde() {
 }
 
 enable_and_start_sddm() {
-    echo -e "\e[32mEnabling and starting SDDM...\e[0m"
     systemctl enable sddm >/dev/null 2>&1 || { echo -e "\e[31mFailed to enable SDDM\e[0m"; exit 1; }
     systemctl set-default graphical.target >/dev/null 2>&1
-    echo -e "\e[32mSDDM is now active.\e[0m"
 }
 
 final_menu() {
-    local menu_width=$(tput cols)
+    local menu_width=78
     local menu_height=$(( $(tput lines) - 5 ))  # Leave 5 lines for margins
     local menu_item_height=2
-
-    choice=$(whiptail --title "Installation Complete" \
+    choice=$(whiptail --title "KDE installation completed" \
         --menu "$(center_text "Select what to do next:")" \
         "$menu_height" "$menu_width" "$menu_item_height" \
         "1" "Reboot now" \
         "2" "Start a KDE session now" \
         3>&1 1>&2 2>&3 || true)
-
     case "$choice" in
         1)
             systemctl reboot
@@ -142,8 +135,7 @@ main() {
 and a minimal set of utilities.
 
 Press OK to continue."
-        local centered_intro
-        centered_intro=$(center_text "$intro_text")
+        local centered_intro=$(center_text "$intro_text")
         whiptail --title "KDE Installation" --msgbox "$centered_intro" 12 $(tput cols) || true
     fi
 
