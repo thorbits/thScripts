@@ -142,9 +142,8 @@ Press OK to continue."
     fi
 
     # Execute installation and configuration
-    set +e
     install_minimal_kde
-    set -e
+
     enable_and_start_sddm
 
     # Show completion menu unless in silent mode
