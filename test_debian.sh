@@ -64,10 +64,10 @@ declare -a PKGS=(
 
 install_minimal_kde() {
     local total=${#PKGS[@]} count=0
-    local gauge_width=$(tput cols)  # Dynamic width
+    local gauge_width=$(tput cols)
     local gauge_text="Downloading and installing components..."
-    local centered_text=$(center_text "$gauge_text" "$gauge_width")  # Center the title
-
+    local centered_text=$(center_text "$gauge_text" "$gauge_width")
+    
     {
         for pkg in "${PKGS[@]}"; do
             ((count++))
@@ -89,6 +89,17 @@ enable_and_start_sddm() {
 
 # Main flow
 main() {
+    local silent=false
+
+    # Check for --silent flag
+    for arg in "$@"; do
+        case "$arg" in
+            --silent)
+                silent=true
+                ;;
+        esac
+    done
+
     # Must be run as root
     if [[ "$(id -u)" -ne 0 ]]; then
         echo -e "\e[31mThis script must be run as root. Use sudo.\e[0m"
@@ -97,38 +108,37 @@ main() {
 
     ensure_whiptail
 
-# Intro – keep or comment out if you want a completely silent run
-intro_text="KDE 6 (Wayland session) will be installed with audio support (PipeWire)
+    # Only show intro if not in silent mode
+    if [[ "$silent" == false ]]; then
+        intro_text="KDE 6 (Wayland session) will be installed with audio support (PipeWire)
 and a minimal set of utilities.
 
 Press OK to continue."
-centered_intro=$(center_text "$intro_text")
-whiptail --title "KDE Installation" --msgbox "$centered_intro" 12 $(tput cols) || true
+        centered_intro=$(center_text "$intro_text")
+        whiptail --title "KDE Installation" --msgbox "$centered_intro" 12 $(tput cols) || true
+    fi
 
     install_minimal_kde
-
     enable_and_start_sddm
 
-# Final menu with centered choices and dynamic width
-choice=$(whiptail --title "Installation Complete" \
-    --menu "$(center_text "Select what to do next:")" \
-    15 $(tput cols) 2 \
-    "1" "$(center_text "Reboot now")" \
-    "2" "$(center_text "Switch to graphical target now")" \
-    3>&1 1>&2 2>&3 || true)
+    # Only show final menu if not in silent mode
+    if [[ "$silent" == false ]]; then
+        choice=$(whiptail --title "Installation Complete" \
+            --menu "$(center_text "Select what to do next:")" \
+            15 $(tput cols) 2 \
+            "1" "$(center_text "Reboot now")" \
+            "2" "$(center_text "Switch to graphical target now")" \
+            3>&1 1>&2 2>&3 || true)
 
-case "$choice" in
-    1)
-        echo -e "\e[32mRebooting now...\e[0m"
-        systemctl reboot
-        ;;
-    2)
-        echo -e "\e[32mSwitching to graphical.target...\e[0m"
-        systemctl isolate graphical.target
-        ;;
-esac
-
-# Run when the file is executed directly
-if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-    main "$@"
-fi
+        case "$choice" in
+            1)
+                echo -e "\e[32mRebooting now...\e[0m"
+                systemctl reboot
+                ;;
+            2)
+                echo -e "\e[32mSwitching to graphical.target...\e[0m"
+                systemctl isolate graphical.target
+                ;;
+        esac
+    fi
+}
