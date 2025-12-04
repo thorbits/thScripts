@@ -60,21 +60,18 @@ declare -a PKGS=(
 
 install_minimal_kde() {
     local total=${#PKGS[@]} count=0
-    local gauge_width=$(tput cols)
-    local gauge_text="Downloading and installing components..."
     {
         for pkg in "${PKGS[@]}"; do
             ((count++))
             percent=$(( count * 100 / total ))
             stdbuf -oL echo "$percent"
-            stdbuf -oL echo "XXX"
-            stdbuf -oL echo "$(center_text "Downloading and installing: $pkg" "$gauge_width")"
-            stdbuf -oL echo "XXX"
-            apt-get install -y -qq "$pkg" || { echo -e "\e[31mFailed to install $pkg\e[0m"; exit 1; }
+            stdbuf -oL echo "$(center_text "Installing $pkg" 78)"
+            apt-get install -y -qq "$pkg" \
+                || { echo -e "\e[31mFailed to install $pkg\e[0m"; exit 1; }
             sleep 0.2
         done
         echo "100"
-    } | whiptail --title "KDE Installation" --gauge "$(center_text "$gauge_text" "$gauge_width")" 8 "$gauge_width" 0 || true
+    } | whiptail --title "KDE Installation" --gauge "" 8 78 0 || true
 }
 
 enable_and_start_sddm() {
@@ -93,16 +90,14 @@ final_menu() {
         --menu "$(center_text "Select what to do next:")" \
         "$menu_height" "$menu_width" "$menu_item_height" \
         "1" "Reboot now" \
-        "2" "Switch to graphical target now" \
+        "2" "Start a KDE session now" \
         3>&1 1>&2 2>&3 || true)
 
     case "$choice" in
         1)
-            echo -e "\e[32mRebooting now...\e[0m"
             systemctl reboot
             ;;
         2)
-            echo -e "\e[32mSwitching to graphical.target...\e[0m"
             systemctl isolate graphical.target
             ;;
     esac
