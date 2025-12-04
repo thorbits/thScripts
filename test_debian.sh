@@ -52,7 +52,7 @@ center_text() {
 declare -a PKGS=(
     plasma-wayland-protocols
     kwin-wayland
-    kpipewire
+    pipewire
     sddm
     plasma-workspace
     plasma-nm
