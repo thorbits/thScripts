@@ -58,20 +58,22 @@ declare -a PKGS=(
     konsole
 )
 
+
+# Now downloading and installing:
 install_minimal_kde() {
     local total=${#PKGS[@]} count=0
     {
         for pkg in "${PKGS[@]}"; do
             ((count++))
             percent=$(( count * 100 / total ))
-            stdbuf -oL echo "$percent"
-            stdbuf -oL echo "$(center_text "Installing $pkg" 78)"
+            echo "$percent"
+            echo "### Installing $pkg ###"
             apt-get install -y -qq "$pkg" \
                 || { echo -e "\e[31mFailed to install $pkg\e[0m"; exit 1; }
             sleep 0.2
         done
         echo "100"
-    } | whiptail --title "KDE Installation" --gauge "" 8 78 0 || true
+    } | whiptail --title "KDE Installation" --gauge "Installing packages..." 8 78 0 || true
 }
 
 enable_and_start_sddm() {
