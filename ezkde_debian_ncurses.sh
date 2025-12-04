@@ -65,7 +65,7 @@ install_minimal_kde() {
         for pkg in "${PKGS[@]}"; do
             ((count++))
             local percent=$(( count * 100 / total ))
-            echo "Now downloading and installing: $pkg"
+            printf "Now downloading and installing: %s\n" "$pkg"
             if (( percent % 5 == 0 )) || (( count == 1 )) || (( count == total )); then
                 echo "$percent"
             fi
