@@ -65,10 +65,10 @@ install_minimal_kde() {
         for pkg in "${PKGS[@]}"; do
             ((i++))
             printf "%d\nXXX\n%s (%d/%d)\nXXX\n" $((i*100/total)) "$pkg" $i $total
-            apt-get install -y "$pkg" &>/dev/null
+            apt-get install -y -qq "$pkg" &>/dev/null
         done
         echo 100
-    } | whiptail --gauge "Installing minimal KDE…" 8 70 0
+    } | whiptail --gauge "Now downloading and installing…" 8 70 0
 }
 
 enable_and_start_sddm() {
