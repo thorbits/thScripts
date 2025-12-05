@@ -60,13 +60,16 @@ declare -a PKGS=(
 
 # Now downloading and installing:
 install_minimal_kde() {
-    local n=${#PKGS[@]} i=0
-    for p in "${PKGS[@]}"; do
-        ((i++))
-        printf "%d\n" $(( i*100/n ))          # percentage
-        apt-get install -y "$p" &>/dev/null  # quiet
-    done
-} | whiptail --gauge "Now downloading and installing…" 8 40 0
+    local total=${#PKGS[@]} i=0
+    {
+        for pkg in "${PKGS[@]}"; do
+            ((i++))
+            printf "%d\nXXX\n%s (%d/%d)\nXXX\n" $((i*100/total)) "$pkg" $i $total
+            apt-get install -y "$pkg" &>/dev/null
+        done
+        echo 100
+    } | whiptail --gauge "Installing minimal KDE…" 8 70 0
+}
 
 enable_and_start_sddm() {
     systemctl enable sddm >/dev/null 2>&1 || { echo -e "\e[31mFailed to enable SDDM\e[0m"; exit 1; }
