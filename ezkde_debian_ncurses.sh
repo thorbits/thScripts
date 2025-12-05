@@ -61,21 +61,20 @@ declare -a PKGS=(
 # Now downloading and installing:
 install_minimal_kde() {
     local total=${#PKGS[@]} count=0
-
-    whiptail --title "eZkde for Debian" --gauge "Progress:" 8 78 0 < <(
+    {
         for pkg in "${PKGS[@]}"; do
             ((count++))
             percent=$(( count * 100 / total ))
-            # Format: percentage, then text between XXX markers
-            printf "%d\nXXX\n%s (%d/%d)\nXXX\n" "$percent" "$pkg" "$count" "$total"
-
-            if ! apt-get install -y -qq "$pkg" >/dev/null 2>&1; then
-                printf "\033[31mFailed to install %s\033[0m\n" "$pkg" >&2
-                exit 1
-            fi
+            stdbuf -oL echo "$percent"  # Force unbuffered percentage
+            stdbuf -oL echo "XXX"       # Start of gauge text block
+            stdbuf -oL echo "Installing $pkg..."
+            stdbuf -oL echo "XXX"       # End of gauge text block
+            apt-get install -y -qq "$pkg" \
+                || { echo -e "\e[31mFailed to install $pkg\e[0m"; exit 1; }
             sleep 0.2
         done
-    ) || true
+        echo "100"
+    } | whiptail --title "eZkde for Debian" --gauge "Preparing..." 8 78 0 || true
 }
 
 enable_and_start_sddm() {
