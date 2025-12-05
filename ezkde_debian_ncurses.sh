@@ -65,13 +65,15 @@ install_minimal_kde() {
         for pkg in "${PKGS[@]}"; do
             ((count++))
             percent=$(( count * 100 / total ))
-            stdbuf -oL echo "$percent"
-            stdbuf -oL echo "$(center_text "Installing $pkg" 78)"
-            apt-get install -y -qq "$pkg" \
-                || { echo -e "\e[31mFailed to install $pkg\e[0m"; exit 1; }
+            printf "%d\n" "$percent"
+            printf "XXX\nNow downloading and installing: %s...\nXXX\n" "$pkg"
+
+            if ! apt-get install -y -qq "$pkg" >/dev/null 2>&1; then
+                printf "\033[31mFailed to install %s\033[0m\n" "$pkg" >&2
+                exit 1
+            fi
             sleep 0.2
         done
-        echo "100"
     } | whiptail --title "eZkde for Debian" --gauge "" 8 78 0 || true
 }
 
