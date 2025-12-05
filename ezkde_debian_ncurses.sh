@@ -16,20 +16,20 @@
 set -euo pipefail
 IFS=$'\n\t'
 
+# -------------------------------------------------------------------------
 # Helper functions
+# -------------------------------------------------------------------------
 ensure_whiptail() {
-    if ! command -v whiptail >/dev/null 2>&1; then
+    command -v whiptail >/dev/null 2>&1 || {
         apt-get update -qq
         apt-get install -y -qq whiptail
-    fi
+    }
 }
 
 center_text() {
     local raw="${1}"
-    local width="${2:-78}"  # Default to 78 columns (80 - 2 for whiptail borders)
-    local line padded
-    local result=""
-
+    local width="${2:-78}"
+    local line padded result=""
     while IFS= read -r line; do
         if (( ${#line} < width )); then
             local pad=$(( (width - ${#line}) / 2 ))
@@ -39,11 +39,12 @@ center_text() {
         fi
         result+="${padded}"$'\n'
     done <<< "$raw"
-
     printf "%s" "${result%$'\n'}"
 }
 
+# -------------------------------------------------------------------------
 # Package list
+# -------------------------------------------------------------------------
 declare -a PKGS=(
     plasma-wayland-protocols
     kwin-wayland
@@ -58,7 +59,9 @@ declare -a PKGS=(
     konsole
 )
 
-# Now downloading and installing:
+# -------------------------------------------------------------------------
+# Installation gauge
+# -------------------------------------------------------------------------
 install_minimal_kde() {
     local total=${#PKGS[@]} i=0
     {
@@ -71,54 +74,56 @@ install_minimal_kde() {
     } | whiptail --gauge "Now downloading and installing…" 8 70 0
 }
 
+# -------------------------------------------------------------------------
+# Enable and start SDDM
+# -------------------------------------------------------------------------
 enable_and_start_sddm() {
-    systemctl enable sddm >/dev/null 2>&1 || { echo -e "\e[31mFailed to enable SDDM\e[0m"; exit 1; }
-    systemctl set-default graphical.target >/dev/null 2>&1
+    systemctl enable sddm.service
+    systemctl start sddm.service
 }
 
+# -------------------------------------------------------------------------
+# Final menu - will be shown if script not silent
+# -------------------------------------------------------------------------
 final_menu() {
-    local menu_width=78
-    local menu_height=$(( $(tput lines) - 5 ))  # Leave 5 lines for margins
-    local menu_item_height=2
-
+    local choice
     choice=$(whiptail --title "eZkde for Debian" \
-        --menu "$(center_text "KDE installation complete!
-\nSelect what to do next:")" \
-        "$menu_height" "$menu_width" "$menu_item_height" \
+        --menu "$(center_text "KDE installation complete!\n\nSelect what to do next:")" \
+        15 60 4 \
         "1" "Reboot now" \
-        "2" "Start a KDE session now" \
-        3>&1 1>&2 2>&3 || true)
+        "2" "Start KDE session now" \
+        3>&1 1>&2 2>&3)
 
     case "$choice" in
         1)
             sleep 0.5
-            whiptail --title "eZkde for Debian" --msgbox "$(center_text "The system will reboot now...")" 8 78
+            whiptail --title "eZkde for Debian" \
+                --msgbox "$(center_text "The system will reboot now...")" 8 78
             systemctl reboot
             ;;
         2)
             sleep 0.5
-            whiptail --title "eZkde for Debian" --msgbox "$(center_text "Starting KDE session...")" 8 78
+            whiptail --title "eZkde for Debian" \
+                --msgbox "$(center_text "Starting KDE session...")" 8 78
             systemctl isolate graphical.target
             ;;
     esac
 }
 
+# -------------------------------------------------------------------------
+# Main – parses --silent, shows menu only if not silent, runs installer 
+# -------------------------------------------------------------------------
 main() {
     local silent=false
 
-    # Parse command line arguments for silent mode
+    # Parse command‑line arguments for silent mode
     while [[ $# -gt 0 ]]; do
         case "$1" in
-            --silent|-s)
-                silent=true
-                shift
-                ;;
-            *)
-                shift
-                ;;
+            --silent|-s) silent=true; shift ;;
+            *) shift ;;
         esac
     done
-    
+
     # Must be run as root
     if [[ "$(id -u)" -ne 0 ]]; then
         echo -e "\e[31mThis script must be run as root. Use sudo.\e[0m"
@@ -137,18 +142,17 @@ Press OK to continue."
         whiptail --title "eZkde for Debian" --msgbox "$centered_intro" 12 78 || true
     fi
 
-    # Execute installation and configuration
+    # Run the installer, enable SDDM, then (if interactive) show menu
     install_minimal_kde
-
     enable_and_start_sddm
-
-    # Show completion menu unless in silent mode
     if [[ "$silent" == false ]]; then
         final_menu
     fi
 }
 
-# Run when executed directly
+# -------------------------------------------------------------------------
+# Entry point
+# -------------------------------------------------------------------------
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     main "$@"
 fi
