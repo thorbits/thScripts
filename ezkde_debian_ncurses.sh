@@ -62,15 +62,18 @@ declare -a PKGS=(
 install_minimal_kde() {
     local total=${#PKGS[@]} count=0
 
-    whiptail --title "KDE Installation" --gauge "" 8 78 0 < <(
+    {
         for pkg in "${PKGS[@]}"; do
             ((count++))
             percent=$(( count * 100 / total ))
+            # First line: percentage (required)
+            # Second part: updates the gauge text with package name
             printf "%d\nXXX\n%s (%d/%d)\nXXX\n" "$percent" "$pkg" "$count" "$total"
             apt-get install -y -qq "$pkg" >/dev/null 2>&1
-            sleep 0.2
+            sleep 0.1
         done
-    ) || true
+        printf "100\n"
+    } | whiptail --title "KDE Installation" --gauge "" 8 78 0
 }
 
 enable_and_start_sddm() {
