@@ -43,7 +43,7 @@ install_kde_wayland() {
 
         {
             echo "XXX\n$PERCENT\nInstalling $pkg ($COUNT of $TOTAL)...\nXXX"
-            apt-get install -y -qq "$pkg" || {
+            apt-get install -y -qq "$pkg" &>/dev/null || {
                 echo "XXX\n100\n\e[31mError installing $pkg. Installation failed.\e[0m\nXXX"
                 sleep 2
                 exit 1
