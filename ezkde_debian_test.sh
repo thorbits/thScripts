@@ -39,14 +39,14 @@ install_kde_wayland() {
         COUNT=$((COUNT + 1))
         PERCENT=$((10 + (80 * COUNT / TOTAL)))
 
-        {
-            echo "XXX\n$PERCENT\n\nDownloading and installing $pkg ($COUNT of $TOTAL)...\n\nXXX"
-            apt-get install -y -qq "$pkg" || {
-                echo "XXX\n100\n\e[31mError installing $pkg. Installation failed.\e[0m\nXXX"
-                sleep 2
-                exit 1
-            }
-        } | whiptail --title "eZkde for Debian" --gauge "Downloading and installing $pkg ($COUNT of $TOTAL)..." 6 60 "$PERCENT"
+{
+    echo "$PERCENT"
+    apt-get install -y -qq "$pkg" || {
+        echo "XXX\n100\n\e[31mError installing $pkg. Installation failed.\e[0m\nXXX"
+        sleep 2
+        exit 1
+    }
+} | whiptail --title "eZkde for Debian" --gauge "Downloading and installing $pkg ($COUNT of $TOTAL)..." 6 60 "$PERCENT"
     done
 
     # Enable SDDM to start on boot
