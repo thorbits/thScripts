@@ -15,7 +15,7 @@ if ! command -v whiptail &> /dev/null; then
 fi
 
 # Welcome screen
-if ! whiptail --title "eZkde for Debian" --yesno "This script will install a minimal KDE Plasma (Wayland) desktop environment.\n\nDo you want to continue?" 16 60; then
+if ! whiptail --title "eZkde for Debian" --yesno "\n\nThis script will install a minimal KDE Plasma (Wayland) desktop environment.\n\nDo you want to continue?" 16 60; then
     echo -e "\e[33mInstallation cancelled by user.\e[0m"
     exit 0
 fi
@@ -46,7 +46,7 @@ install_kde_wayland() {
                 sleep 2
                 exit 1
             }
-        } | whiptail --title "eZkde for Debian" --gauge "Installing $pkg ($COUNT of $TOTAL)..." 6 60 "$PERCENT"
+        } | whiptail --title "eZkde for Debian" --gauge "Downloading and installing $pkg ($COUNT of $TOTAL)..." 6 60 "$PERCENT"
     done
 
     # Enable SDDM to start on boot
