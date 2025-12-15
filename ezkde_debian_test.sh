@@ -60,8 +60,8 @@ systemctl start sddm.service >/dev/null 2>&1
 
 # Completion screen
 if whiptail --title "eZkde for Debian" --yesno "KDE Plasma (Wayland) has been successfully installed.\n\nWould you like to reboot now or start a new KDE session?" 10 60 --yes-button "Reboot" --no-button "Start KDE"; then
-    reboot
+    systemctl reboot
 else
-    startplasma-wayland >/dev/null 2>&1 &
-    exit 0
+    systemctl isolate graphical.target
 fi
+exit 0
