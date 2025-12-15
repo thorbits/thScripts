@@ -10,7 +10,6 @@ fi
 apt-get update -qq
 if ! command -v whiptail &> /dev/null; then
     apt-get install -y -qq whiptail || {
-        echo -e "\e[31mFailed to install whiptail. Please install it manually.\e[0m"
         exit 1
     }
 fi
