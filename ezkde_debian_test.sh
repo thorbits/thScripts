@@ -41,7 +41,7 @@ install_kde_wayland() {
         PERCENT=$((10 + (80 * COUNT / TOTAL)))
 
         {
-            echo "XXX\n$PERCENT\n\nInstalling $pkg ($COUNT of $TOTAL)...\n\nXXX"
+            echo "XXX\n$PERCENT\n\nDownloading and installing $pkg ($COUNT of $TOTAL)...\n\nXXX"
             apt-get install -y -qq "$pkg" &>/dev/null || {
                 echo "XXX\n100\n\e[31mError installing $pkg. Installation failed.\e[0m\nXXX"
                 sleep 0.5
@@ -55,8 +55,7 @@ install_kde_wayland() {
 install_kde_wayland
 
 # Enable and start SDDM silently
-systemctl enable sddm.service >/dev/null 2>&1
-systemctl start sddm.service >/dev/null 2>&1
+systemctl enable sddm.service &>/dev/null1
 
 # Completion screen
 if whiptail --title "eZkde for Debian" --yesno "KDE Plasma (Wayland) has been successfully installed.\n\nWould you like to reboot now or start a new KDE session?" 10 60 --yes-button "Reboot" --no-button "Start KDE"; then
