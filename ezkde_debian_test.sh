@@ -27,7 +27,6 @@ install_kde_wayland() {
         plasma-wayland-protocols
         kwin-wayland
         pipewire
-        wireplumber
         sddm
         dolphin
         konsole
@@ -41,7 +40,7 @@ install_kde_wayland() {
         PERCENT=$((10 + (80 * COUNT / TOTAL)))
 
         {
-            echo "XXX\n$PERCENT\nInstalling $pkg ($COUNT of $TOTAL)...\nXXX"
+            echo "XXX\n$PERCENT\n\nDownloading and installing $pkg ($COUNT of $TOTAL)...\n\nXXX"
             apt-get install -y -qq "$pkg" || {
                 echo "XXX\n100\n\e[31mError installing $pkg. Installation failed.\e[0m\nXXX"
                 sleep 2
