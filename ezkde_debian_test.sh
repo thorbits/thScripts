@@ -50,6 +50,7 @@ install_kde_wayland() {
             }
         } | whiptail --title "eZkde for Debian" --gauge "Installing $pkg ($COUNT of $TOTAL)..." 6 60 "$PERCENT"
     done
+}
 
 # Run the installation
 install_kde_wayland
