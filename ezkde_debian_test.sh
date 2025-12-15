@@ -21,13 +21,14 @@ if ! whiptail --title "eZkde for Debian" --yesno "This script will install a min
     exit 0
 fi
 
-# Function to install packages with progress
+# Main Function for installation
 install_kde_wayland() {
     # List of packages for minimal KDE Wayland
     PACKAGES=(
         plasma-wayland-protocols
         kwin-wayland
         pipewire
+        wireplumber
         sddm
         dolphin
         konsole
@@ -41,26 +42,28 @@ install_kde_wayland() {
         PERCENT=$((10 + (80 * COUNT / TOTAL)))
 
         {
-            echo "XXX\n$PERCENT\n\nDownloading and installing $pkg ($COUNT of $TOTAL)...\n\nXXX"
-            apt-get install -y -qq "$pkg" &>/dev/null || {
+            echo "XXX\n$PERCENT\nInstalling $pkg ($COUNT of $TOTAL)...\nXXX"
+            apt-get install -y -qq "$pkg" || {
                 echo "XXX\n100\n\e[31mError installing $pkg. Installation failed.\e[0m\nXXX"
-                sleep 0.5
+                sleep 2
                 exit 1
             }
         } | whiptail --title "eZkde for Debian" --gauge "Installing $pkg ($COUNT of $TOTAL)..." 6 60 "$PERCENT"
     done
+
+    # Enable SDDM to start on boot
+    systemctl enable sddm.service >/dev/null 2>&1
+    
+    # Completion screen
+    if whiptail --title "eZkde for Debian" --yesno "KDE Plasma (Wayland) has been successfully installed.\n\nWould you like to reboot now or start a new KDE session?" 10 60 --yes-button "Reboot" --no-button "Start KDE"; then
+        systemctl reboot
+    else
+        # Start SDDM and switch to graphical session immediately
+        systemctl start sddm.service >/dev/null 2>&1
+        systemctl isolate graphical.target
+    fi
 }
 
 # Run the installation
 install_kde_wayland
-
-# Enable and start SDDM silently
-systemctl enable sddm.service &>/dev/null1
-
-# Completion screen
-if whiptail --title "eZkde for Debian" --yesno "KDE Plasma (Wayland) has been successfully installed.\n\nWould you like to reboot now or start a new KDE session?" 10 60 --yes-button "Reboot" --no-button "Start KDE"; then
-    systemctl reboot
-else
-    systemctl isolate graphical.target
-fi
 exit 0
