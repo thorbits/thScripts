@@ -16,9 +16,7 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-# -------------------------------------------------------------------------
 # Helper functions
-# -------------------------------------------------------------------------
 ensure_whiptail() {
     command -v whiptail >/dev/null 2>&1 || {
         apt-get update -qq
@@ -27,74 +25,28 @@ ensure_whiptail() {
 }
 
 center_text() {
-    local raw="${1}"
-    local width="${2:-78}"
-    local line padded result=""
-    while IFS= read -r line; do
-        if (( ${#line} < width )); then
-            local pad=$(( (width - ${#line}) / 2 ))
-            padded="$(printf "%*s%s" "$pad" "" "$line")"
-        else
-            padded="$line"
-        fi
-        result+="${padded}"$'\n'
-    done <<< "$raw"
-    printf "%s" "${result%$'\n'}"
+    local text="$1"
+    local width=78
+    local length=${#text}
+    local padding=$(( (width - length) / 2 ))
+    printf "%${padding}s%s" "" "$text"
 }
 
-# -------------------------------------------------------------------------
-# Package list
-# -------------------------------------------------------------------------
-
-
-# -------------------------------------------------------------------------
-# Installation gauge
-# -------------------------------------------------------------------------
 install_minimal_kde() {
-    declare -a PKGS=(
-    plasma-wayland-protocols
-    kwin-wayland
-    pipewire
-    sddm
-    plasma-workspace
-    plasma-nm
-    plasma-discover
-    kinfocenter
-    systemsettings
-    dolphin
-    konsole
-    )
-    local total=${#PKGS[@]} i=0
-    {
-        for pkg in "${PKGS[@]}"; do
-            ((i++))
-            printf "%d\nXXX\n%s (%d/%d)\nXXX\n" $((i*100/total)) "$pkg" $i $total
-            apt-get install -y -qq "$pkg" &>/dev/null
-        done
-        echo 100
-    } | whiptail --gauge "Now downloading and installing…" 8 70 0
+    apt-get update
+    apt-get install -y kde-plasma-desktop pipewire wireplumber sddm
 }
 
-# -------------------------------------------------------------------------
-# Enable and start SDDM
-# -------------------------------------------------------------------------
 enable_and_start_sddm() {
-    systemctl enable sddm.service
-    systemctl start sddm.service
+    systemctl enable sddm
+    systemctl start sddm
 }
 
-# -------------------------------------------------------------------------
-# Final menu - will be shown if script not silent
-# -------------------------------------------------------------------------
 final_menu() {
-    local choice
-    choice=$(whiptail --title "eZkde for Debian" \
-        --menu "$(center_text "KDE installation complete!\n\nSelect what to do next:")" \
-        15 60 4 \
-        "1" "Reboot now" \
-        "2" "Start KDE session now" \
+    choice=$(whiptail --title "eZkde for Debian" --menu "Choose an option" 15 60 4 \
+        "1" "Reboot system" \
+        "2" "Start KDE session" \
         3>&1 1>&2 2>&3)
-
     case "$choice" in
         1)
             sleep 0.5
@@ -111,13 +63,10 @@ final_menu() {
     esac
 }
 
-# -------------------------------------------------------------------------
-# Main – parses --silent, shows menu only if not silent, runs installer 
-# -------------------------------------------------------------------------
+# Main function
 main() {
     local silent=false
-
-    # Parse command‑line arguments for silent mode
+    # Parse command-line arguments for silent mode [1]
     while [[ $# -gt 0 ]]; do
         case "$1" in
             --silent|-s) silent=true; shift ;;
@@ -151,9 +100,7 @@ Press OK to continue."
     fi
 }
 
-# -------------------------------------------------------------------------
 # Entry point
-# -------------------------------------------------------------------------
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     main "$@"
 fi
