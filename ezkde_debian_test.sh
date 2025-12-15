@@ -1,56 +1,83 @@
 #!/bin/bash
 
-# Check for root privileges
-if [ "$(id -u)" != "0" ]; then
-    whiptail --title "Error" --msgbox "This script must be run as root" 10 60
+# Must be run as root
+if [[ "$(id -u)" -ne 0 ]]; then
+    echo -e "\e[31mThis script must be run as root. Use sudo.\e[0m"
     exit 1
 fi
 
-# Check for whiptail dependency - auto-install if missing
-if ! command -v whiptail >/dev/null 2>&1; then
-    export DEBIAN_FRONTEND=noninteractive
-    apt-get update -qq
-    apt-get install -y -qq whiptail
+# Check if whiptail is installed (silent check)
+if ! command -v whiptail &> /dev/null; then
+    apt-get update && apt-get install -y whiptail || {
+        echo -e "\e[31mFailed to install whiptail. Please install it manually.\e[0m"
+        exit 1
+    }
 fi
 
 # Welcome screen
-if ! whiptail --title "KDE Installation" --yesno "This script will install a minimal KDE Plasma Wayland setup. Continue?" 10 60; then
+if ! whiptail --title "Minimal KDE Wayland Installer" --yesno "This script will install a minimal KDE Plasma (Wayland) desktop environment.\n\nPackages to be installed:\n- plasma-wayland-protocols\n- kwin-wayland\n- pipewire\n- wireplumber\n- sddm\n- dolphin\n- konsole\n\nDo you want to continue?" 16 60; then
+    echo -e "\e[33mInstallation cancelled by user.\e[0m"
     exit 0
 fi
 
-# Get total packages to install (including your specified packages)
-total_packages=$(apt-get install --simulate plasma-wayland-protocols kwin-wayland pipewire sddm dolphin konsole 2>/dev/null | grep 'Inst' | wc -l)
-[ "$total_packages" -eq 0 ] && total_packages=1  # Avoid division by zero
+# Function to install packages with progress
+install_kde_wayland() {
+    # List of packages for minimal KDE Wayland
+    PACKAGES=(
+        plasma-wayland-protocols
+        kwin-wayland
+        pipewire
+        wireplumber
+        sddm
+        dolphin
+        konsole
+    )
 
-# Start installation with progress gauge
-current=0
-apt-get install -y plasma-wayland-protocols kwin-wayland pipewire sddm dolphin konsole 2>&1 | while read -r line; do
-    if [[ $line == *"Setting up"* ]]; then
-        current=$((current + 1))
-        percent=$((current * 100 / total_packages))
-        echo "$percent"
+    # Update package lists
+    {
+        echo "XXX\n0\nUpdating package lists...\nXXX"
+        apt-get update -qq
+        echo "XXX\n10\nPackage lists updated.\nXXX"
+    } | whiptail --title "Installing KDE Wayland" --gauge "Please wait while packages are being prepared..." 6 60 0
+
+    # Install each package with progress
+    TOTAL=${#PACKAGES[@]}
+    COUNT=0
+    for pkg in "${PACKAGES[@]}"; do
+        COUNT=$((COUNT + 1))
+        PERCENT=$((10 + (80 * COUNT / TOTAL)))
+
+        {
+            echo "XXX\n$PERCENT\nInstalling $pkg ($COUNT of $TOTAL)...\nXXX"
+            apt-get install -y -qq "$pkg" || {
+                echo "XXX\n100\n\e[31mError installing $pkg. Installation failed.\e[0m\nXXX"
+                sleep 2
+                exit 1
+            }
+        } | whiptail --title "Installing KDE Wayland" --gauge "Installing $pkg ($COUNT of $TOTAL)..." 6 60 "$PERCENT"
+    done
+
+    # Enable SDDM
+    {
+        echo "XXX\n90\nEnabling SDDM display manager...\nXXX"
+        systemctl enable sddm
+        echo "XXX\n100\nSDDM enabled.\nXXX"
+    } | whiptail --title "Installing KDE Wayland" --gauge "Enabling SDDM..." 6 60 90
+}
+
+# Run the installation
+install_kde_wayland
+
+# Completion screen
+if whiptail --title "Installation Complete" --yesno "KDE Plasma (Wayland) has been successfully installed.\n\nWould you like to reboot now or start a new KDE session?" 10 60 --yes-button "Reboot" --no-button "Start KDE"; then
+    echo -e "\e[32mSystem will reboot now.\e[0m"
+    reboot
+else
+    echo -e "\e[32mStarting KDE Wayland session...\e[0m"
+    if [ -f /usr/bin/startplasma-wayland ]; then
+        exec startplasma-wayland
+    else
+        echo -e "\e[33mCould not find startplasma-wayland. Please log out and select KDE Plasma (Wayland) from SDDM.\e[0m"
+        whiptail --title "Session Start Failed" --msgbox "Could not find startplasma-wayland. Please log out and select KDE Plasma (Wayland) from your display manager." 8 60
     fi
-done | whiptail --gauge "Installing KDE packages" 10 70 0
-
-# Check installation success
-if [ $? -ne 0 ]; then
-    whiptail --title "Error" --msgbox "KDE installation failed. Check logs with 'journalctl -xe'" 10 60
-    exit 1
 fi
-
-# Completion screen with options (only Reboot and Start Session)
-choice=$(whiptail --title "Installation Complete" --menu "Choose an action:" 15 60 2 \
-    "Reboot" "Restart system to apply changes" \
-    "Start Session" "Start KDE session immediately" \
-    3>&1 1>&2 2>&3)
-
-case "$choice" in
-    "Reboot")
-        reboot
-        ;;
-    "Start Session")
-        systemctl start sddm
-        ;;
-esac
-
-exit 0
