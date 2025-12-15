@@ -28,7 +28,6 @@ install_kde_wayland() {
         plasma-wayland-protocols
         kwin-wayland
         pipewire
-        wireplumber
         sddm
         dolphin
         konsole
