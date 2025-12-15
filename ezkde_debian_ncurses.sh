@@ -84,8 +84,7 @@ main() {
 
     # Show introduction dialog unless in silent mode
     if [[ "$silent" == false ]]; then
-        intro_text="KDE 6 (Wayland session) will be installed with audio support (PipeWire) and a minimal set of utilities.
-        Press OK to continue."
+        intro_text="This script will install a minimal KDE Plasma Wayland setup. Press OK to continue."
         local centered_intro=$(center_text "$intro_text")
         whiptail --title "eZkde for Debian" --msgbox "$centered_intro" 12 78 || true
     fi
