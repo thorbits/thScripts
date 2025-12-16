@@ -23,41 +23,26 @@ fi
 # Main Function for installation
 install_kde_wayland() {
     # List of packages for minimal KDE Wayland
-    PACKAGES=(
-        plasma-wayland-protocols
-        kwin-wayland
-        pipewire
-        sddm
-        dolphin
-        konsole
-    )
-    
+    PACKAGES=(plasma-wayland-protocols kwin-wayland pipewire sddm dolphin konsole)
     TOTAL=${#PACKAGES[@]}
     COUNT=0
     
-    # Start whiptail gauge ONCE with static title
+    # START WHIPTAIL ONCE (CORRECT REDIRECTION)
     exec 3>&1
-    whiptail --title "eZkde for Debian" --gauge "Starting installation..." 10 78 0 3>&1 1>&2 2>&3 &
-    whiptail_pid=$!
+    whiptail --title "eZkde for Debian" --gauge "..." 10 78 0 3>&1 1>&2 2>&3 &
+    PID=$!
     
+    # UPDATE EXISTING DIALOG (NO NEW WHIPTAIL COMMANDS)
     for pkg in "${PACKAGES[@]}"; do
         COUNT=$((COUNT + 1))
         PERCENT=$((10 + (80 * COUNT / TOTAL)))
-        
-        # Send ONLY percentage + dynamic message text (NOT a new whiptail command)
-        echo "$PERCENT\nDownloading and installing $pkg ($COUNT of $TOTAL)..." >&3
-        
-        # Install quietly with error handling
-        if ! apt-get install -y -qq "$pkg"; then
-            echo "ERROR: Failed to install $pkg" >&2
-            kill $whiptail_pid 2>/dev/null
-            exit 1
-        fi
+        echo "$PERCENT\nProcessing $pkg ($COUNT/$TOTAL)" >&3
+        sleep 1
     done
     
-    # Close gauge cleanly with 100% only
+    # CLOSE CLEANLY
     echo "100" >&3
-    wait $whiptail_pid 2>/dev/null
+    wait $PID
     exec 3>&-
     
     # Enable SDDM and show completion dialog
