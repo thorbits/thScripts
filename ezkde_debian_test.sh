@@ -46,7 +46,7 @@ install_kde_wayland() {
         sleep 0.5
         exit 1
     }
-} | whiptail --title "eZkde for Debian" --gauge "Downloading and installing $pkg ($COUNT of $TOTAL)..." 16 78 "$PERCENT"
+} | whiptail --title "eZkde for Debian" --gauge "Downloading and installing $pkg ($COUNT of $TOTAL)..." 10 78 "$PERCENT"
     done
 
     # Enable SDDM to start on boot
