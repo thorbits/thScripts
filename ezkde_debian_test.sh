@@ -15,7 +15,7 @@ if ! command -v whiptail &> /dev/null; then
 fi
 
 # Welcome screen
-if ! whiptail --title "eZkde for Debian" --yesno "\nKDE 6.5.x (Wayland only) will be installed with audio support (Pipewire) and a minimum of utilities.\n\nDo you want to continue?" 16 60; then
+if ! whiptail --title "eZkde for Debian" --yesno "\nKDE 6.5.x (Wayland only) will be installed with audio support (Pipewire) and a minimum of utilities.\n\nDo you want to continue?" 16 78; then
     echo -e "\e[33mInstallation cancelled by user.\e[0m"
     exit 0
 fi
@@ -46,14 +46,14 @@ install_kde_wayland() {
         sleep 0.5
         exit 1
     }
-} | whiptail --title "eZkde for Debian" --gauge "Downloading and installing $pkg ($COUNT of $TOTAL)..." 6 60 "$PERCENT"
+} | whiptail --title "eZkde for Debian" --gauge "Downloading and installing $pkg ($COUNT of $TOTAL)..." 16 78 "$PERCENT"
     done
 
     # Enable SDDM to start on boot
     systemctl enable sddm.service >/dev/null 2>&1
     
     # Completion screen
-    if whiptail --title "eZkde for Debian" --yesno "KDE (Wayland) has been successfully installed.\n\nWould you like to reboot now or start a new KDE session?" 10 60 --yes-button "Reboot" --no-button "Start KDE"; then
+    if whiptail --title "eZkde for Debian" --yesno "KDE (Wayland) has been successfully installed.\n\nWould you like to reboot now or start a new KDE session?" 16 78 --yes-button "Reboot" --no-button "Start KDE"; then
         systemctl reboot
     else
         # Start SDDM and switch to graphical session immediately
