@@ -31,37 +31,50 @@ install_kde_wayland() {
         dolphin
         konsole
     )
-
-    # Install each package with progress
+    
     TOTAL=${#PACKAGES[@]}
     COUNT=0
+    
+    # Start whiptail gauge ONCE with static title
+    exec 3>&1
+    whiptail --title "eZkde for Debian" --gauge "Starting installation..." 10 78 0 3>&1 1>&2 2>&3 &
+    whiptail_pid=$!
+    
     for pkg in "${PACKAGES[@]}"; do
         COUNT=$((COUNT + 1))
         PERCENT=$((10 + (80 * COUNT / TOTAL)))
-
-{
-    echo "$PERCENT"
-    apt-get install -y -qq "$pkg" || {
-        echo "XXX\n100\n\e[31mError installing $pkg. Installation failed.\e[0m\nXXX"
-        sleep 0.5
-        exit 1
-    }
-} | whiptail --title "eZkde for Debian" --gauge "Downloading and installing $pkg ($COUNT of $TOTAL)..." 10 78 "$PERCENT"
+        
+        # Send ONLY percentage + dynamic message text (NOT a new whiptail command)
+        echo "$PERCENT\nDownloading and installing $pkg ($COUNT of $TOTAL)..." >&3
+        
+        # Install quietly with error handling
+        if ! apt-get install -y -qq "$pkg"; then
+            echo "ERROR: Failed to install $pkg" >&2
+            kill $whiptail_pid 2>/dev/null
+            exit 1
+        fi
     done
-
-    # Enable SDDM to start on boot
+    
+    # Close gauge cleanly with 100% only
+    echo "100" >&3
+    wait $whiptail_pid 2>/dev/null
+    exec 3>&-
+    
+    # Enable SDDM and show completion dialog
     systemctl enable sddm.service >/dev/null 2>&1
     
-    # Completion screen
-    if whiptail --title "eZkde for Debian" --yesno "KDE (Wayland) has been successfully installed.\n\nWould you like to reboot now or start a new KDE session?" 16 78 --yes-button "Reboot" --no-button "Start KDE"; then
+    if whiptail --title "eZkde for Debian" --yesno \
+        "KDE (Wayland) has been successfully installed.\n\n\
+Would you like to reboot now or start a new KDE session?" \
+        16 78 \
+        --yes-button "Reboot" \
+        --no-button "Start KDE"; then
         systemctl reboot
     else
-        # Start SDDM and switch to graphical session immediately
         systemctl start sddm.service >/dev/null 2>&1
         systemctl isolate graphical.target
     fi
 }
-
 # Run the installation
 install_kde_wayland
 exit 0
