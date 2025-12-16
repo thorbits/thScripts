@@ -23,27 +23,31 @@ fi
 # Main Function for installation
 install_kde_wayland() {
     # List of packages for minimal KDE Wayland
-    PACKAGES=(plasma-wayland-protocols kwin-wayland pipewire sddm dolphin konsole)
+    PACKAGES=(
+        plasma-wayland-protocols
+        kwin-wayland
+        pipewire
+        sddm
+        dolphin
+        konsole
+    )
+
+    # Install each package with progress
     TOTAL=${#PACKAGES[@]}
     COUNT=0
-    
-    # START WHIPTAIL ONCE (CORRECT REDIRECTION)
-    exec 3>&1
-    whiptail --title "eZkde for Debian" --gauge "..." 10 78 0 3>&1 1>&2 2>&3 &
-    PID=$!
-    
-    # UPDATE EXISTING DIALOG (NO NEW WHIPTAIL COMMANDS)
     for pkg in "${PACKAGES[@]}"; do
         COUNT=$((COUNT + 1))
-        PERCENT=$((10 + (80 * COUNT / TOTAL)))
-        echo "$PERCENT\nProcessing $pkg ($COUNT/$TOTAL)" >&3
-        sleep 1
+        PERCENT=$((100 * COUNT / TOTAL))
+
+{
+    echo "$PERCENT"
+    apt-get install -y -qq "$pkg" || {
+        echo "XXX\n100\n\e[31mError installing $pkg. Installation failed.\e[0m\nXXX"
+        sleep 0.5
+        exit 1
+    }
+} | stdbuf -oL whiptail --title "eZkde for Debian" --gauge "Downloading and installing $pkg ($COUNT of $TOTAL)..." 10 78 0
     done
-    
-    # CLOSE CLEANLY
-    echo "100" >&3
-    wait $PID
-    exec 3>&-
     
     # Enable SDDM and show completion dialog
     systemctl enable sddm.service >/dev/null 2>&1
