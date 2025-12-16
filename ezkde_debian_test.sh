@@ -43,7 +43,7 @@ install_kde_wayland() {
     echo "$PERCENT"
     apt-get install -y -qq "$pkg" || {
         echo "XXX\n100\n\e[31mError installing $pkg. Installation failed.\e[0m\nXXX"
-        sleep 2
+        sleep 0.5
         exit 1
     }
 } | whiptail --title "eZkde for Debian" --gauge "Downloading and installing $pkg ($COUNT of $TOTAL)..." 6 60 "$PERCENT"
