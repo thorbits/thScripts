@@ -15,7 +15,7 @@ if ! command -v whiptail &> /dev/null; then
 fi
 
 # Welcome screen
-if ! whiptail --title "eZkde for Debian" --yesno "\nThis script will install a minimal KDE (Wayland) desktop environment.\n\nDo you want to continue?" 16 60; then
+if ! whiptail --title "eZkde for Debian" --yesno "\nKDE 6.5.x (Wayland only) will be installed with audio support (Pipewire) and a minimum of utilities.\n\nDo you want to continue?" 16 60; then
     echo -e "\e[33mInstallation cancelled by user.\e[0m"
     exit 0
 fi
