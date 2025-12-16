@@ -4,18 +4,18 @@
 #	\_   _/
 #	  |_|horbits 
 #
-#	eZkde for Debian – automated installation script
+#	eZkde for Debian
+#	Automated KDE installation script
 # ------------------------------------------------------------
-# Installs KDE 6 (Wayland) together with PipeWire audio support,
-# a minimal set of utilities and configures the system for a
-# quick first‑boot experience.
+# Installs latest KDE 6.5.x (Wayland only) with audio support
+# (PipeWire) and a minimum of utilities.
 # ------------------------------------------------------------
 
 clear
 
 printf "\n\nWelcome %s, to eZkde for Debian.\n\n" "$USER"
 
-printf "KDE 6 (Wayland session) will be installed with audio support (Pipewire) and minimum utilities.\n\n"
+printf "KDE 6.5.x (Wayland only) will be installed with audio support (Pipewire) and a minimum of utilities.\n\n"
 printf "Press Enter to continue or Ctrl+C to cancel.\n"
 
 read -rp '' && printf "Downloading and installing components, this may take a while...\n\n"
