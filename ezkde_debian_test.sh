@@ -43,10 +43,10 @@ install_kde_wayland() {
     echo "$PERCENT"
     apt-get install -y -qq "$pkg" || {
         echo "XXX\n100\n\e[31mError installing $pkg. Installation failed.\e[0m\nXXX"
-        sleep 0.5
+        sleep 2
         exit 1
     }
-) | whiptail --title "eZkde for Debian" --gauge "Downloading and installing $pkg ($COUNT of $TOTAL)..." 10 78 0
+) | whiptail --title "eZkde for Debian" --gauge "Downloading and installing $pkg ($COUNT of $TOTAL)..." 12 78 0
     done
     
     # Enable SDDM and show completion dialog
