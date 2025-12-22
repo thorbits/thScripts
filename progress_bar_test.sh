@@ -41,12 +41,12 @@ progress-bar() {
 install-packages() {
     local packages=("$@")
 
-    echo "Installing batch of ${#packages[@]} packages"
+    echo "Processing ${#packages[@]} KDE packages"
 
     local pkg
     for pkg in "${packages[@]}"; do
-        echo "-> Installing $pkg"
-        sudo pacman -S --noconfirm "$pkg" >/dev/null 2>&1
+        echo "-> Now donwloading and installing: $pkg"
+        apt-get install -y "$pkg" >/dev/null 2>&1
     done
     sleep .1
 }
@@ -55,7 +55,7 @@ trap deinit-term exit
 trap init-term winch
 init-term
 
-echo 'Preparing package installation'
+echo 'Preparing packages installation...'
 local packages=(plasma-wayland-protocols kwin-wayland pipewire sddm dolphin konsole)
 local len=${#packages[@]}
 echo "Found $len packages to install"
