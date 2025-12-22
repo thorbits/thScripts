@@ -58,11 +58,11 @@ progress-bar() {
 install-packages() {
     local packages=("$@")
 
-    printf "Installing set of %d KDE (meta-)packages\n\n" "${#packages[@]}"
+    # printf "Installing set of %d KDE (meta-)packages\n\n" "${#packages[@]}"
 
     local pkg
     for pkg in "${packages[@]}"; do
-        echo -e "-> Now downloading and installing: ${#pkg[@]} \n\n"
+        echo -e "-> Now downloading and installing: $pkg \n\n"
         apt-get install -y "$pkg" >/dev/null 2>&1
     done
     sleep .1
