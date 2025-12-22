@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Must be run as root
 if [[ "$(id -u)" -ne 0 ]]; then
