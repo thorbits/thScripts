@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+# Must be run as root
+if [[ "$(id -u)" -ne 0 ]]; then
+    echo -e "\e[31mThis script must be run as root. Use sudo.\e[0m"
+    exit 1
+fi
+
 BATCHSIZE=1
 BAR_CHAR='|'
 EMPTY_CHAR=' '
@@ -49,6 +55,22 @@ install-packages() {
         apt-get install -y "$pkg" >/dev/null 2>&1
     done
     sleep .1
+}
+
+init-term() {
+	printf '\n' # ensure we have space for the scrollbar
+	  printf '\e7' # save the cursor location
+	    printf '\e[%d;%dr' 0 "$((LINES - 1))" # set the scrollable region (margin)
+	  printf '\e8' # restore the cursor location
+	printf '\e[1A' # move cursor up
+}
+
+deinit-term() {
+	printf '\e7' # save the cursor location
+	  printf '\e[%d;%dr' 0 "$LINES" # reset the scrollable region (margin)
+	  printf '\e[%d;%dH' "$LINES" 0 # move cursor to the bottom line
+	  printf '\e[0K' # clear the line
+	printf '\e8' # reset the cursor location
 }
 
 trap deinit-term exit
