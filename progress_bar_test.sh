@@ -2,11 +2,11 @@
 
 # Must be run as root
 if [[ "$(id -u)" -ne 0 ]]; then
-    echo -e "\e[31mThis script must be run as root. Use sudo.\e[0m"
+    printf "\e[31mThis script must be run as root. Use sudo.\e[0m\n"
     exit 1
 fi
 
-# Welcome message / silent update
+# Intro
 clear
 printf "\n\nWelcome %s, to eZkde for Debian.\n\n" "$USER"
 printf "KDE 6.5.x (Wayland only) will be installed with audio support (Pipewire) and a minimum of utilities.\n\n"
@@ -22,7 +22,7 @@ BAR_CHAR='|'
 EMPTY_CHAR=' '
 
 fatal() {
-    echo '[FATAL]' "$@" >&2
+    printf '[FATAL] %s\n' "$*" >&2
     exit 1
 }
 
@@ -32,6 +32,7 @@ progress-bar() {
 
     local perc_done=$((current * 100 / len))
 
+    # Modified to show only percentage
     local suffix=" ($perc_done%)"
 
     local length=$((COLUMNS - ${#suffix} - 2))
@@ -58,34 +59,33 @@ progress-bar() {
 install-packages() {
     local packages=("$@")
 
-    echo "Processing ${#packages[@]} KDE packages"
+    printf "Installing set of %d KDE (meta-)packages\n" "${#packages[@]}"
 
     local pkg
     for pkg in "${packages[@]}"; do
-        echo "-> Now donwloading and installing: $pkg"
+        printf "-> Now downloading and installing: %s\n" "$pkg"
         apt-get install -y "$pkg" >/dev/null 2>&1
     done
     sleep .1
 }
 
 init-term() {
-	printf '\n' # ensure we have space for the scrollbar
-	  printf '\e7' # save the cursor location
-	    printf '\e[%d;%dr' 0 "$((LINES - 1))" # set the scrollable region (margin)
-	  printf '\e8' # restore the cursor location
-	printf '\e[1A' # move cursor up
+    printf '\n' # ensure we have space for the scrollbar
+      printf '\e7' # save the cursor location
+        printf '\e[%d;%dr' 0 "$((LINES - 1))" # set the scrollable region (margin)
+      printf '\e8' # restore the cursor location
+    printf '\e[1A' # move cursor up
 }
 
 deinit-term() {
-	printf '\e7' # save the cursor location
-	  printf '\e[%d;%dr' 0 "$LINES" # reset the scrollable region (margin)
-	  printf '\e[%d;%dH' "$LINES" 0 # move cursor to the bottom line
-	  printf '\e[0K' # clear the line
-	printf '\e8' # reset the cursor location
+    printf '\e7' # save the cursor location
+      printf '\e[%d;%dr' 0 "$LINES" # reset the scrollable region (margin)
+      printf '\e[%d;%dH' "$LINES" 0 # move cursor to the bottom line
+      printf '\e[0K' # clear the line
+    printf '\e8' # reset the cursor location
 }
 
 main() {
-    # Parse command-line arguments if needed
     local OPTARG OPTIND opt
     while getopts 'b:c:e:' opt; do
         case "$opt" in
@@ -97,17 +97,17 @@ main() {
     done
 
     shopt -s globstar nullglob checkwinsize
-    # Ensure LINES and COLUMNS are set
+    # this line is to ensure LINES and COLUMNS are set
     (:)
 
     trap deinit-term exit
     trap init-term winch
     init-term
 
-    echo 'Preparing package installation'
-    local packages=(plasma-wayland-protocols kwin-wayland pipewire sddm dolphin konsole)
+    printf 'Preparing packages installation...\n'
+    local packages=(plasma-workspace pipewire sddm dolphin konsole)
     local len=${#packages[@]}
-    echo "Found $len packages to install"
+    printf "Found %d packages to install\n" "$len"
 
     local i
     for ((i = 0; i < len; i += BATCHSIZE)); do
