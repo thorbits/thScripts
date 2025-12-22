@@ -65,7 +65,7 @@ install-packages() {
         echo -e "-> Now downloading and installing: $pkg\n"
         apt-get install -y "$pkg" >/dev/null 2>&1
     done
-    sleep .1
+    # sleep .1
 }
 
 init-term() {
