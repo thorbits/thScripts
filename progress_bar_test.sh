@@ -62,7 +62,7 @@ install-packages() {
 
     local pkg
     for pkg in "${packages[@]}"; do
-        echo -e "-> Now downloading and installing: $pkg \n\n"
+        echo -e "-> Now downloading and installing: $pkg\n"
         apt-get install -y "$pkg" >/dev/null 2>&1
     done
     sleep .1
@@ -103,10 +103,10 @@ main() {
     trap init-term winch
     init-term
 
-    echo -e 'Preparing package installation\n\n'
+    echo -e 'Preparing package installation...\n'
     local packages=(plasma-workspace pipewire sddm dolphin konsole)
     local len=${#packages[@]}
-    echo -e "Found $len packages to install\n\n"
+    echo -e "Found $len (meta-)packages to install\n"
 
     local i
     for ((i = 0; i < len; i += BATCHSIZE)); do
