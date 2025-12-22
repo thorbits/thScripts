@@ -84,20 +84,39 @@ deinit-term() {
 	printf '\e8' # reset the cursor location
 }
 
-trap deinit-term exit
-trap init-term winch
-init-term
+main() {
+    # Parse command-line arguments if needed
+    local OPTARG OPTIND opt
+    while getopts 'b:c:e:' opt; do
+        case "$opt" in
+            b) BATCHSIZE=$OPTARG;;
+            c) BAR_CHAR=$OPTARG;;
+            e) EMPTY_CHAR=$OPTARG;;
+            *) fatal 'bad option';;
+        esac
+    done
 
-echo 'Preparing packages installation...'
-local packages=(plasma-wayland-protocols kwin-wayland pipewire sddm dolphin konsole)
-local len=${#packages[@]}
-echo "Found $len packages to install"
+    shopt -s globstar nullglob checkwinsize
+    # Ensure LINES and COLUMNS are set
+    (:)
 
-local i
-for ((i = 0; i < len; i += BATCHSIZE)); do
-    progress-bar "$((i+1))" "$len"
-    install-packages "${packages[@]:i:BATCHSIZE}"
-done
-progress-bar "$len" "$len"
+    trap deinit-term exit
+    trap init-term winch
+    init-term
 
-deinit-term
+    echo 'Preparing package installation'
+    local packages=(plasma-wayland-protocols kwin-wayland pipewire sddm dolphin konsole)
+    local len=${#packages[@]}
+    echo "Found $len packages to install"
+
+    local i
+    for ((i = 0; i < len; i += BATCHSIZE)); do
+        progress-bar "$((i+1))" "$len"
+        install-packages "${packages[@]:i:BATCHSIZE}"
+    done
+    progress-bar "$len" "$len"
+
+    deinit-term
+}
+
+main "$@"
