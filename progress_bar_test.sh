@@ -32,7 +32,7 @@ progress-bar() {
 
     local perc_done=$((current * 100 / len))
 
-    local suffix=" $current/$len ($perc_done%)"
+    local suffix=" ($perc_done%)"
 
     local length=$((COLUMNS - ${#suffix} - 2))
     local num_bars=$((perc_done * length / 100))
