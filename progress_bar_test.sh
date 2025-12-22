@@ -103,10 +103,10 @@ main() {
     trap init-term winch
     init-term
 
-    printf 'Preparing packages installation...\n'
+    echo -e 'Preparing package installation\n\n'
     local packages=(plasma-workspace pipewire sddm dolphin konsole)
     local len=${#packages[@]}
-    printf "Found %d packages to install\n" "$len"
+    echo -e "Found $len packages to install\n\n"
 
     local i
     for ((i = 0; i < len; i += BATCHSIZE)); do
