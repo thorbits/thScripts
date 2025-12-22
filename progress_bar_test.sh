@@ -58,13 +58,21 @@ progress-bar() {
 install-packages() {
     local packages=("$@")
 
-    # printf "Installing set of %d KDE (meta-)packages\n\n" "${#packages[@]}"
+    # printf "Installing batch of %d packages\n" "${#packages[@]}"
 
     local pkg
     for pkg in "${packages[@]}"; do
-        echo -e "-> Now downloading and installing: $pkg\n"
+        # First package - print with newline
+        if [[ "$pkg" == "${packages[0]}" ]]; then
+            echo -e "-> Now downloading and installing: $pkg"
+        else
+            # Subsequent packages - overwrite previous line
+            echo -ne "-> Now downloading and installing: $pkg\r"
+        fi
         apt-get install -y "$pkg" >/dev/null 2>&1
     done
+    # Final newline after all packages
+    echo
     # sleep .1
 }
 
