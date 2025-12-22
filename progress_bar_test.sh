@@ -6,6 +6,17 @@ if [[ "$(id -u)" -ne 0 ]]; then
     exit 1
 fi
 
+# Welcome message / silent update
+clear
+printf "\n\nWelcome %s, to eZkde for Debian.\n\n" "$USER"
+printf "KDE 6.5.x (Wayland only) will be installed with audio support (Pipewire) and a minimum of utilities.\n\n"
+printf "Press Enter to continue or Ctrl+C to cancel.\n"
+read -rp '' && apt-get update -qq || {
+    printf "\nConnection error! Exiting.\n\n"
+    exit 1
+}
+
+# Progress bar
 BATCHSIZE=1
 BAR_CHAR='|'
 EMPTY_CHAR=' '
