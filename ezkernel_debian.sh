@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 #	_______
 #   \_   _/
@@ -80,5 +80,6 @@ make menuconfig && (
     printf "\n\nCompilation or installation error. Exiting.\n\n"
     exit 1
 )
+
 
 
