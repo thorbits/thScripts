@@ -22,7 +22,7 @@ BAR_CHAR='|'
 EMPTY_CHAR=' '
 
 fatal() {
-    echo '[FATAL]' "$@" >&2
+    printf '[FATAL] %s\n' "$*" >&2
     exit 1
 }
 
@@ -32,7 +32,8 @@ progress-bar() {
 
     local perc_done=$((current * 100 / len))
 
-    local suffix=" $current/$len ($perc_done%)"
+    # Modified to show only percentage
+    local suffix=" $perc_done%"
 
     local length=$((COLUMNS - ${#suffix} - 2))
     local num_bars=$((perc_done * length / 100))
@@ -58,32 +59,20 @@ progress-bar() {
 install-packages() {
     local packages=("$@")
     local total_installed=0
-    local total_available=0
 
-    # First pass: Count total available packages (including dependencies)
+    printf "Installing batch of %d packages\n" "${#packages[@]}"
+
+    local pkg
     for pkg in "${packages[@]}"; do
-        local count=$(apt-cache depends "$pkg" | grep -c '^ ' || echo "1")
-        total_available=$((total_available + count))
+        printf "-> Installing %s\n" "$pkg"
+        # Get the actual number of packages installed by this command
+        local installed_count=$(apt-get install -y "$pkg" 2>&1 | grep -c "Setting up" || echo "1")
+        total_installed=$((total_installed + installed_count))
+        apt-get install -y "$pkg" >/dev/null 2>&1
     done
 
-    # Second pass: Install packages and track progress
-    local installed_count=0
-    for pkg in "${packages[@]}"; do
-        echo "-> Installing $pkg"
-
-        # Check if package is already installed
-        if dpkg -l "$pkg" &>/dev/null; then
-            echo "  Already installed"
-            installed_count=$((installed_count + 1))
-            progress-bar "$installed_count" "$total_available"
-            continue
-        fi
-
-        # Install package and count new packages
-        local new_packages=$(apt-get install -y "$pkg" 2>&1 | grep -c "Setting up" || echo "1")
-        installed_count=$((installed_count + new_packages))
-        progress-bar "$installed_count" "$total_available"
-    done
+    # Return the total number of packages installed
+    echo "$total_installed"
 }
 
 init-term() {
@@ -121,12 +110,21 @@ main() {
     trap init-term winch
     init-term
 
-    echo 'Preparing package installation'
+    printf 'Preparing package installation...\n'
     local packages=(plasma-wayland-protocols kwin-wayland pipewire sddm dolphin konsole)
-    local len=${#packages[@]}
-    echo "Found $len packages to install"
+    printf "Found %d packages to install\n" "${#packages[@]}"
 
-    install-packages "${packages[@]}"
+    # First pass to count actual packages
+    local total_installed=$(install-packages "${packages[@]}")
+
+    # Second pass with progress bar
+    local i
+    for ((i = 0; i < total_installed; i += BATCHSIZE)); do
+        progress-bar "$((i+1))" "$total_installed"
+        # Here you would need to implement the actual installation with progress tracking
+        # This is a simplified version - a real implementation would need more complex tracking
+    done
+    progress-bar "$total_installed" "$total_installed"
 
     deinit-term
 }
