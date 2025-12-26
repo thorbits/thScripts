@@ -50,9 +50,9 @@ progress-bar() {
     s+=$suffix
 
     printf '\e7' # save the cursor location
-      printf '\e[%d;%dH' "$LINES" 0 # move cursor to the bottom line
-      printf '\e[0K' # clear the line
-      printf '%s' "$s" # print the progress bar
+    printf '\e[%d;%dH' "$LINES" 0 # move cursor to the bottom line
+    printf '\e[0K' # clear the line
+    printf '%s' "$s" # print the progress bar
     printf '\e8' # restore the cursor location
 }
 
@@ -77,17 +77,17 @@ install-packages() {
 
 init-term() {
     printf '\n' # ensure we have space for the scrollbar
-      printf '\e7' # save the cursor location
-        printf '\e[%d;%dr' 0 "$((LINES - 1))" # set the scrollable region (margin)
-      printf '\e8' # restore the cursor location
+    printf '\e7' # save the cursor location
+    printf '\e[%d;%dr' 0 "$((LINES - 1))" # set the scrollable region (margin)
+    printf '\e8' # restore the cursor location
     printf '\e[1A' # move cursor up
 }
 
 deinit-term() {
     printf '\e7' # save the cursor location
-      printf '\e[%d;%dr' 0 "$LINES" # reset the scrollable region (margin)
-      printf '\e[%d;%dH' "$LINES" 0 # move cursor to the bottom line
-      printf '\e[0K' # clear the line
+    printf '\e[%d;%dr' 0 "$LINES" # reset the scrollable region (margin)
+    printf '\e[%d;%dH' "$LINES" 0 # move cursor to the bottom line
+    printf '\e[0K' # clear the line
     printf '\e8' # reset the cursor location
 }
 
