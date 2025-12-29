@@ -77,7 +77,7 @@ install-packages() {
         printf '\r-> Now downloading and installing: %-50s' "$pkg"
         apt-get install -y -qq "$pkg" >/dev/null
     done
-    printf '\n'   # single newline after the *last* package
+    # printf '\n'   # single newline after the *last* package
 }
 
 main() {
