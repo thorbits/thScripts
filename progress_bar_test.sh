@@ -141,7 +141,7 @@ main() {
     # Enable SDDM and show completion dialog
     systemctl enable sddm.service >/dev/null 2>&1
 
-    printf '\n\e[32mInstallation complete!\e[0m\n'
+    printf '\n\e[32meZkde for Debian installation complete!\e[0m\n\n'
     read -rp $'Reboot (r) or start KDE now (k) ? [r/k] ' choice
     case "${choice,,}" in
         k)  systemctl start sddm.service >/dev/null 2>&1
