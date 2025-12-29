@@ -17,18 +17,12 @@ if [[ "$(id -u)" -ne 0 ]]; then
     exit 1
 fi
 
+# Intro
 clear
-
 printf "\n\nWelcome %s, to eZkde for Debian.\n\n" "$USER"
-
 printf "KDE 6.5.x (Wayland only) will be installed with audio support (Pipewire) and a minimum of utilities.\n\n"
 printf "Press Enter to continue or Ctrl+C to cancel.\n"
-
-read -rp '' && printf "Downloading and installing components, this may take a while...\n\n"
-
-# Update package lists – quiet mode
-apt-get update -qq ||
-{
+read -rp '' && printf "Downloading and installing components, this may take a while...\n\n" && apt-get update -qq || {
     printf "\nConnection error! Exiting.\n\n"
     exit 1
 }
