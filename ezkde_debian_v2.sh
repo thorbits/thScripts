@@ -90,10 +90,7 @@ install-packages() {
     local pkg
     for pkg in "$@"; do
         printf '\r -> Now downloading and installing: %-50s' "$pkg"
-        apt-get install -y -qq \
-            -o Dpkg::Options::="--force-confdef" \
-            -o Dpkg::Options::="--force-confold" \
-            "$pkg" >/dev/null
+        apt-get install -y "$pkg" >/dev/null
     done
 }
 
@@ -117,6 +114,17 @@ main() {
     init-term
 
     printf ' Preparing packages installation...\n\n'
+
+    # pick up whatever locale is already in use
+    current_locale=${LC_ALL:-${LANG:-C.UTF-8}}
+    current_locale=${current_locale%%.*}.UTF-8   # force .UTF-8 suffix
+
+    # pre-seed debconf with the detected locale
+    echo "locales locales/default_environment_locale select $current_locale"      | debconf-set-selections
+    echo "locales locales/locales_to_be_generated multiselect $current_locale UTF-8" | debconf-set-selections
+
+    # make the whole install non-interactive
+    export DEBIAN_FRONTEND=noninteractive
 
     # calculate the total new packages
     local pkg_names=(plasma-workspace pipewire sddm dolphin konsole)
