@@ -42,7 +42,7 @@ progress-bar() {
     # ---- avoid division by zero ----
     if (( len == 0 )); then
         printf '\r\e[KAll packages are already installed.\n\n'
-        return
+        exit 1
     fi
 
     # Calculate percentage and string length
