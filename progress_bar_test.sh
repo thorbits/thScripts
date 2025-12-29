@@ -74,10 +74,15 @@ deinit-term() {
 install-packages() {
     local pkg
     for pkg in "$@"; do
-        printf '\r-> Now downloading and installing: %-50s' "$pkg"
+        # first package gets a newline, the rest overwrite the same line
+        if [[ $pkg == $1 ]]; then
+            echo -e "-> Now downloading and installing: $pkg"
+        else
+            echo -ne "-> Now downloading and installing: $pkg\r"
+        fi
         apt-get install -y "$pkg" >/dev/null
     done
-    printf '\n'
+    echo   # final newline after the last package
 }
 
 main() {
@@ -99,7 +104,7 @@ main() {
     trap 'init-term; progress-bar "$current" "$total"' WINCH
     init-term
 
-    printf 'Preparing package installation...\n'
+    printf 'Preparing packages installation...\n\n'
 
     # calculate the total new packages
     local pkg_names=(plasma-workspace pipewire sddm dolphin konsole)
