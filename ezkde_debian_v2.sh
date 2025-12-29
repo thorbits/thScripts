@@ -90,7 +90,10 @@ install-packages() {
     local pkg
     for pkg in "$@"; do
         printf '\r -> Now downloading and installing: %-50s' "$pkg"
-        apt-get install -y "$pkg" >/dev/null
+        apt-get install -y -qq \
+            -o Dpkg::Options::="--force-confdef" \
+            -o Dpkg::Options::="--force-confold" \
+            "$pkg" >/dev/null
     done
 }
 
