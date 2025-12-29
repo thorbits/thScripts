@@ -75,7 +75,7 @@ install-packages() {
     local pkg
     for pkg in "$@"; do
         printf '\r-> Now downloading and installing: %-50s' "$pkg"
-        apt-get install -y -qq "$pkg" >/dev/null
+        apt-get install -y "$pkg" >/dev/null
     done
 }
 
