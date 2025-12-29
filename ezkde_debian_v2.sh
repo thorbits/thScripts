@@ -13,17 +13,17 @@
 
 # Must be run as root
 if [[ "$(id -u)" -ne 0 ]]; then
-    printf "\e[31mThis script must be run as root. Use sudo.\e[0m\n"
+    printf "\e[31m This script must be run as root. Use sudo.\e[0m\n"
     exit 1
 fi
 
 # Intro
 clear
-printf "\n\nWelcome %s, to eZkde for Debian.\n\n" "$USER"
-printf "KDE 6.5.x (Wayland only) will be installed with audio support (Pipewire) and a minimum of utilities.\n\n"
-printf "Press Enter to continue or Ctrl+C to cancel.\n"
+printf "\n\n Welcome %s, to eZkde for Debian.\n\n" "$USER"
+printf " KDE 6.5.x (Wayland only) will be installed with audio support (Pipewire) and a minimum of utilities.\n\n"
+printf " Press Enter to continue or Ctrl+C to cancel.\n"
 read -rp '' && apt-get update -qq || {
-    printf "\nConnection error! Exiting.\n\n"
+    printf "\n Connection error! Exiting.\n\n"
     exit 1
 }
 
@@ -41,7 +41,7 @@ progress-bar() {
     local current=$1 len=$2
     # ---- avoid division by zero ----
     if (( len == 0 )); then
-        printf '\r\e[KAll packages are already installed.\n\n'
+        printf '\r\e[K All packages are already installed.\n\n'
         exit 1
     fi
 
@@ -89,7 +89,7 @@ deinit-term() {
 install-packages() {
     local pkg
     for pkg in "$@"; do
-        printf '\r-> Now downloading and installing: %-50s' "$pkg"
+        printf '\r -> Now downloading and installing: %-50s' "$pkg"
         apt-get install -y "$pkg" >/dev/null
     done
 }
@@ -113,14 +113,14 @@ main() {
     trap 'init-term; progress-bar "$current" "$total"' WINCH
     init-term
 
-    printf 'Preparing packages installation...\n\n'
+    printf ' Preparing packages installation...\n\n'
 
     # calculate the total new packages
     local pkg_names=(plasma-workspace pipewire sddm dolphin konsole)
     local total
     total=$(echo "n" | apt-get install "${pkg_names[@]}" 2>&1 \
             | grep "newly installed" | awk '{print $3}')
-    [[ $total =~ ^[0-9]+$ ]] || fatal "Cannot obtain package count (run as root?)"
+    [[ $total =~ ^[0-9]+$ ]] || fatal " "
 
     # build the *full* list that apt will really install
     mapfile -t packages < <(
@@ -141,7 +141,7 @@ main() {
     # Enable SDDM and show completion dialog
     systemctl enable sddm.service >/dev/null 2>&1
 
-    printf '\n\e[32meZkde for Debian installation complete!\e[0m\n\n'
+    printf '\n\n eZkde for Debian installation complete!\n\n'
     read -rp $'Reboot (r) or start KDE now (k) ? [r/k] ' choice
     case "${choice,,}" in
         k)  systemctl start sddm.service >/dev/null 2>&1
