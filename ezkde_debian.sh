@@ -11,6 +11,12 @@
 # (PipeWire) and a minimum of utilities.
 # ------------------------------------------------------------
 
+# Must be run as root
+if [[ "$(id -u)" -ne 0 ]]; then
+    echo -e "\e[31mThis script must be run as root. Use sudo.\e[0m"
+    exit 1
+fi
+
 clear
 
 printf "\n\nWelcome %s, to eZkde for Debian.\n\n" "$USER"
