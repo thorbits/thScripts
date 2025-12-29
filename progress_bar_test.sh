@@ -72,34 +72,12 @@ deinit-term() {
 }
 
 install-packages() {
-    local packages=("$@")
     local pkg
-    local count=0
-    local output
-
-    for pkg in "${packages[@]}"; do
-        # First package - print with newline
-        if [[ "$pkg" == "${packages[0]}" ]]; then
-            echo -e "-> Now downloading and installing: $pkg"
-        else
-            # Subsequent packages - overwrite previous line
-            echo -ne "-> Now downloading and installing: $pkg\r"
-        fi
-
-        # Capture output to count packages
-        output=$(apt-get install -y "$pkg" 2>&1)
-        
-        # Count how many packages were actually set up
-        local total_installed
-        total_installed=$(echo "$output" | grep -c "newly installed" || echo "0")
-        
-        # Add to the local batch counter
-        count=$((count + total_installed))
+    for pkg in "$@"; do
+        printf '\r-> Now downloading and installing: %-50s' "$pkg"
+        apt-get install -y "$pkg" >/dev/null
     done
-    echo
-    
-    # Return the total count of packages installed
-    echo "$count"
+    printf '\n'
 }
 
 main() {
@@ -118,28 +96,35 @@ main() {
     (:)
 
     trap deinit-term exit
-    trap init-term winch
+    trap 'init-term; progress-bar "$current" "$total"' WINCH
     init-term
 
     printf 'Preparing package installation...\n'
-    local packages=(plasma-workspace pipewire sddm dolphin konsole)
-    
-    # calculate the total new packages
-    local len
-    len=$(echo "n" | apt-get install "${packages[@]}" 2>&1 | grep "newly installed" | awk '{print $3}')
-    
-    # installation loop
-    local current_progress=0 i batch_count
-    for ((i = 0; i < ${#packages[@]}; i += BATCHSIZE)); do
-        batch_count=$(install_packages "${packages[@]:i:BATCHSIZE}")
-        current_progress=$((current_progress + batch_count))
-        progress-bar "$current_progress" "$len"
-    done
-    
-    # Ensure 100% completion is shown
-    progress-bar "$len" "$len"
 
+    # calculate the total new packages
+    local pkg_names=(plasma-workspace pipewire sddm dolphin konsole)
+    local total
+    total=$(echo "n" | apt-get install "${pkg_names[@]}" 2>&1 \
+            | grep "newly installed" | awk '{print $3}')
+    [[ $total =~ ^[0-9]+$ ]] || fatal "Cannot obtain package count (run as root?)"
+
+    # build the *full* list that apt will really install
+    mapfile -t packages < <(
+        apt-get install --dry-run -o Debug::NoLocking=1 -qq "${pkg_names[@]}" 2>&1 |
+        awk '/^Inst / {print $2}'
+    )
+
+    # installation loop
+    local current=0
+    for ((i = 0; i < ${#packages[@]}; i += BATCHSIZE)); do
+        install-packages "${packages[@]:i:BATCHSIZE}"
+        current=$((current + BATCHSIZE))
+        progress-bar "$current" "$total"
+    done
+
+    progress-bar "$total" "$total"
     deinit-term
 }
 
-main "$@"
+# run only when executed, not when sourced
+[[ ${BASH_SOURCE[0]} == "$0" ]] && main "$@"
