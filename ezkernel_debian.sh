@@ -8,6 +8,12 @@
 #   Interactive Linux kernel compilation and installation script
 # ------------------------------------------------------------
 
+# Must be run as root
+if [[ "$(id -u)" -ne 0 ]]; then
+    printf "\e[31mThis script must be run as root. Use sudo.\e[0m\n"
+    exit 1
+fi
+
 clear
 
 printf "\n\nWelcome %s, to eZkernel for Debian.\n\n" "$USER"
@@ -80,6 +86,7 @@ make menuconfig && (
     printf "\n\nCompilation or installation error. Exiting.\n\n"
     exit 1
 )
+
 
 
 
