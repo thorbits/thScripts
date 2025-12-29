@@ -29,13 +29,13 @@ eZkde is a shell script designed to automate the installation of a minimal KDE 6
 1.  **Get the script -**
     This command download `ezkde_debian.sh` , save it to /usr/local/bin/ and make it executable.
     ```bash
-    curl -fsSL https://raw.githubusercontent.com/thorbits/thScripts/refs/heads/main/ezkde_debian.sh -o /usr/local/bin/ezkde_debian.sh && chmod +x /usr/local/bin/ezkde_debian.sh
+    curl -fsSL https://raw.githubusercontent.com/thorbits/thScripts/refs/heads/main/ezkde_debian_v2.sh -o /usr/local/bin/ezkde_debian_v2.sh && chmod +x /usr/local/bin/ezkde_debian_v2.sh
     ```
 
 2.  **Run the Script -**
     Execute the script with root privileges
     ```bash
-    sudo ezkde_debian.sh
+    sudo ezkde_debian_v2.sh
     ```
 
 3.  **Follow On-Screen Prompts -**
