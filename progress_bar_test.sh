@@ -22,13 +22,13 @@ BAR_CHAR='|'
 EMPTY_CHAR=' '
 
 fatal() {
-	echo '[FATAL]' "$@" >&2
-	exit 1
+    printf '[FATAL] %s\n' "$*" >&2
+    exit 1
 }
 
 progress-bar() {
-	local current=$1
-	local len=$2
+    local current=$1
+    local len=$2
 
     # Calculate percentage and string length
     local perc_done=$((current * 100 / len))
@@ -37,38 +37,38 @@ progress-bar() {
     local num_bars=$((perc_done * length / 100))
 
     # Construct the bar string
-	local i
-	local s='['
-	for ((i = 0; i < num_bars; i++)); do
-		s+=$BAR_CHAR
-	done
-	for ((i = num_bars; i < length; i++)); do
-		s+=$EMPTY_CHAR
-	done
-	s+=']'
-	s+=$suffix
+    local i
+    local s='['
+    for ((i = 0; i < num_bars; i++)); do
+        s+=$BAR_CHAR
+    done
+    for ((i = num_bars; i < length; i++)); do
+        s+=$EMPTY_CHAR
+    done
+    s+=']'
+    s+=$suffix
 
-	printf '\e7' # save the cursor location
-	printf '\e[%d;%dH' "$LINES" 0 # move cursor to the bottom line
-	printf '\e[0K' # clear the line
-	printf '%s' "$s" # print the progress bar
-	printf '\e8' # restore the cursor location
+    printf '\e7' # save the cursor location
+    printf '\e[%d;%dH' "$LINES" 0 # move cursor to the bottom line
+    printf '\e[0K' # clear the line
+    printf '%s' "$s" # print the progress bar
+    printf '\e8' # restore the cursor location
 }
 
 init-term() {
-	printf '\n' # ensure we have space for the scrollbar
-	printf '\e7' # save the cursor location
-	printf '\e[%d;%dr' 0 "$((LINES - 1))" # set the scrollable region (margin)
-	printf '\e8' # restore the cursor location
-	printf '\e[1A' # move cursor up
+    printf '\n' # ensure we have space for the scrollbar
+    printf '\e7' # save the cursor location
+    printf '\e[%d;%dr' 0 "$((LINES - 1))" # set the scrollable region (margin)
+    printf '\e8' # restore the cursor location
+    printf '\e[1A' # move cursor up
 }
 
 deinit-term() {
-	printf '\e7' # save the cursor location
-	printf '\e[%d;%dr' 0 "$LINES" # reset the scrollable region (margin)
-	printf '\e[%d;%dH' "$LINES" 0 # move cursor to the bottom line
-	printf '\e[0K' # clear the line
-	printf '\e8' # reset the cursor location
+    printf '\e7' # save the cursor location
+    printf '\e[%d;%dr' 0 "$LINES" # reset the scrollable region (margin)
+    printf '\e[%d;%dH' "$LINES" 0 # move cursor to the bottom line
+    printf '\e[0K' # clear the line
+    printf '\e8' # reset the cursor location
 }
 
 install-packages() {
@@ -91,7 +91,7 @@ install-packages() {
         
         # Count how many packages were actually set up
         local total_installed
-        total_installed=$(echo "$output" | grep -c "Setting up" || echo "0")
+        total_installed=$(echo "$output" | grep -c "newly installed" || echo "0")
         
         # Add to the local batch counter
         count=$((count + total_installed))
@@ -124,28 +124,20 @@ main() {
     printf 'Preparing package installation...\n'
     local packages=(plasma-workspace pipewire sddm dolphin konsole)
     
-    # 1. Estimate the real total packages (dependencies)
+    # calculate the total new packages
     local len
     len=$(echo "n" | apt-get install "${packages[@]}" 2>&1 | grep "newly installed" | awk '{print $3}')
-
-    # 2. Loop with progress tracking
-    local current_progress=0
-    local i
-    local batch_count
-
+    
+    # installation loop
+    local current_progress=0 i batch_count
     for ((i = 0; i < ${#packages[@]}; i += BATCHSIZE)); do
-        # Capture the count from install-packages function
-        batch_count=$(install-packages "${packages[@]:i:BATCHSIZE}")
-        
-        # Update the progress
+        batch_count=$(install_packages "${packages[@]:i:BATCHSIZE}")
         current_progress=$((current_progress + batch_count))
-        
-        # Update the visual progress bar
         progress-bar "$current_progress" "$len"
     done
     
     # Ensure 100% completion is shown
-    progress-bar "$current_progress" "$len"
+    progress-bar "$len" "$len"
 
     deinit-term
 }
