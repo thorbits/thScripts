@@ -126,13 +126,7 @@ main() {
     
     # 1. Estimate the real total packages (dependencies)
     local len
-    len=$(apt-get install -y --simulate "${packages[@]}" 2>&1 | grep -c "Setting up")
-    
-    # Fallback to meta-package count if estimation fails
-    if [[ "$len" -eq 0 ]]; then
-        len=${#packages[@]}
-    fi
-    printf "Estimated %d packages to install\n" "$len"
+    len=$(echo "n" | apt-get install "${packages[@]}" 2>&1 | grep "newly installed" | awk '{print $3}')
 
     # 2. Loop with progress tracking
     local current_progress=0
