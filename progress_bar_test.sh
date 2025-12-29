@@ -77,7 +77,6 @@ install-packages() {
         printf '\r-> Now downloading and installing: %-50s' "$pkg"
         apt-get install -y -qq "$pkg" >/dev/null
     done
-    # printf '\n'   # single newline after the *last* package
 }
 
 main() {
@@ -118,6 +117,7 @@ main() {
     local current=0
     for ((i = 0; i < ${#packages[@]}; i += BATCHSIZE)); do
         install-packages "${packages[@]:i:BATCHSIZE}"
+        printf '\n'   # single newline after the *last* package
         current=$((current + BATCHSIZE))
         progress-bar "$current" "$total"
     done
