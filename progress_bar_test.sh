@@ -38,8 +38,12 @@ fatal() {
 }
 
 progress-bar() {
-    local current=$1
-    local len=$2
+    local current=$1 len=$2
+    # ---- avoid division by zero ----
+    if (( len == 0 )); then
+        printf '\r[%-*s] (0%%)' $((COLUMNS - 8)) ''   # empty bar
+        return
+    fi
 
     # Calculate percentage and string length
     local perc_done=$((current * 100 / len))
