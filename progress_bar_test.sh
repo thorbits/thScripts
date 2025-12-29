@@ -137,6 +137,19 @@ main() {
     done
 
     progress-bar "$total" "$total"
+
+    # Enable SDDM and show completion dialog
+    systemctl enable sddm.service >/dev/null 2>&1
+
+    printf '\n\e[32mInstallation complete!\e[0m\n'
+    read -rp $'Reboot (r) or start KDE now (k) ? [r/k] ' choice
+    case "${choice,,}" in
+        k)  systemctl start sddm.service >/dev/null 2>&1
+            systemctl isolate graphical.target
+            ;;
+        r)  reboot ;;
+    esac
+
     deinit-term
 }
 
