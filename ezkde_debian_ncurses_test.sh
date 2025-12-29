@@ -1,4 +1,15 @@
 #!/usr/bin/env bash
+#
+#	_______
+#	\_   _/
+#	  |_|horbits 
+#
+#	eZkde for Debian
+#	Automated KDE installation script
+# ------------------------------------------------------------
+# Installs latest KDE 6.5.x (Wayland only) with audio support
+# (PipeWire) and a minimum of utilities.
+# ------------------------------------------------------------
 
 # Must be run as root
 if [[ "$(id -u)" -ne 0 ]]; then
