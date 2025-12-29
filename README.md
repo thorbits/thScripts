@@ -20,7 +20,7 @@ eZkde is a shell script designed to automate the installation of a minimal KDE 6
 
 ## Prerequisites
 
-*   A Debian-based Linux distribution (e.g. Debian, Ubuntu, Mint).
+*   A Debian-based Linux distribution (e.g. Debian, Ubuntu..).
 *   Administrative privileges (sudo or root access) are required to install packages and modify system configurations.
 *   A stable internet connection for downloading packages and dependencies.
 
@@ -84,9 +84,9 @@ ezkernel is a semi-automated shell script designed for Debian-based systems to s
 
 ## Prerequisites
 
-*   A Debian-based Linux distribution (e.g. Debian, Ubuntu, Mint)
-*   Administrative privileges (sudo or root access)
-*   A stable internet connection
+*   A Debian-based Linux distribution (e.g. Debian, Ubuntu..)
+*   Administrative privileges (sudo or root access) are required to install packages and modify system configurations.
+*   A stable internet connection for downloading sources and dependencies.
 *   Approximately 20GB of free disk space
 
 ## Installation and Usage
