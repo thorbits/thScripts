@@ -41,7 +41,7 @@ progress-bar() {
     local current=$1 len=$2
     # ---- avoid division by zero ----
     if (( len == 0 )); then
-        printf '\r[%-*s] (0%%)' $((COLUMNS - 8)) ''   # empty bar
+        printf '\r\e[KAll packages are already installed.\n'
         return
     fi
 
