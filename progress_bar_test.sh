@@ -78,7 +78,7 @@ install-packages() {
         if [[ $pkg == $1 ]]; then
             echo -e "-> Now downloading and installing: $pkg"
         else
-            echo -ne "-> Now downloading and installing: $pkg\r"
+            echo -ne "-> Now downloading and installing: $pkg"
         fi
         apt-get install -y "$pkg" >/dev/null
     done
