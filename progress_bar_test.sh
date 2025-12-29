@@ -74,15 +74,10 @@ deinit-term() {
 install-packages() {
     local pkg
     for pkg in "$@"; do
-        # first package gets a newline, the rest overwrite the same line
-        if [[ $pkg == $1 ]]; then
-            echo -e "-> Now downloading and installing: $pkg"
-        else
-            echo -ne "-> Now downloading and installing: $pkg"
-        fi
-        apt-get install -y "$pkg" >/dev/null
+        printf '\r-> Now downloading and installing: %-50s' "$pkg"
+        apt-get install -y -qq "$pkg" >/dev/null
     done
-    echo   # final newline after the last package
+    printf '\n'   # single newline after the *last* package
 }
 
 main() {
