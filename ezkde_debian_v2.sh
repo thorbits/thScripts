@@ -48,7 +48,7 @@ progress-bar() {
     # Calculate percentage and string length
     local perc_done=$((current * 100 / len))
     local suffix=" ($perc_done%)"
-    local length=$((COLUMNS - ${#suffix} - 2))
+    local length=$((COLUMNS - ${#suffix} - 4))
     local num_bars=$((perc_done * length / 100))
 
     # Construct the bar string
