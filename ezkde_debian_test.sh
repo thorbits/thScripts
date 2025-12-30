@@ -168,7 +168,10 @@ main() {
     trap 'init-term; progress-bar "$current" "$total"' WINCH
     init-term
 
-    printf ' Preparing KDE packages for %s...\n\n' "$DISTRO"
+    case "$DISTRO" in
+        Arch) printf ' \nPreparing KDE packages for %s...\n\n' "$DISTRO" ;;
+        *)    printf ' Preparing KDE packages for %s...\n\n' "$DISTRO" ;;
+    esac
 
     # Build exact list of packages that will be installed
     IFS=' ' read -r -a pkg_names <<< "${KDE_GROUP[$DISTRO]}"
@@ -181,7 +184,7 @@ main() {
                 awk '/^Inst / {print $2}'
             )
             total=${#packages[@]}
-            # Pre-seed locale to avoid hanging on ‘locales’
+            # Pre-seed to inherit the user’s current locale 
             current_locale=${LC_ALL:-${LANG:-C.UTF-8}}
             current_locale=${current_locale%%.*}.UTF-8
             echo "locales locales/default_environment_locale select $current_locale" | debconf-set-selections
