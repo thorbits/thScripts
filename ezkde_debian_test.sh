@@ -21,7 +21,7 @@ set -euo pipefail
 
 # Default tunables
 BATCHSIZE=${BATCHSIZE:-1}
-BAR_CHAR=${BAR_CHAR:-'▪'}
+BAR_CHAR=${BAR_CHAR:-'|'}
 EMPTY_CHAR=${EMPTY_CHAR:-' '}
 
 fatal() {
@@ -163,8 +163,7 @@ main() {
     trap 'init-term; progress-bar "$current" "$total"' WINCH
     init-term
 
-    printf ' Detected distro: %s\n\n' "$DISTRO"
-    printf ' Preparing packages installation...\n\n'
+    printf ' Preparing KDE packages for %s...\n\n' "$DISTRO"
 
     # Build exact list of packages that will be installed
     IFS=' ' read -r -a pkg_names <<< "${KDE_GROUP[$DISTRO]}"
