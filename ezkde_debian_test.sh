@@ -215,7 +215,7 @@ main() {
     progress-bar "$total" "$total"
 
     # Enable display manager
-    "${SRV_ENABLE[@]}"
+    eval "${SRV_ENABLE[@]}"
     printf '\n eZkde for %s installation complete!\n\n' "$DISTRO"
     read -rp $' Reboot (r) or start KDE now (k)? [r/k] ' choice
     case "${choice,,}" in
