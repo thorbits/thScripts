@@ -1,0 +1,224 @@
+#!/usr/bin/env bash
+#
+#	_______
+#	\_   _/
+#	  |_|horbits 
+#
+#	eZkde for Arch / Debian / Fedora / OpenSuse
+#	Automated KDE installation script
+# ------------------------------------------------------------
+# Installs latest KDE 6.5.x (Wayland only) with audio support
+# (PipeWire) and a minimum of utilities.
+# ------------------------------------------------------------
+
+# Must be run as root
+if [[ "$(id -u)" -ne 0 ]]; then
+    printf "\e[31m This script must be run as root. Use sudo.\e[0m\n"
+    exit 1
+fi
+
+# Intro
+clear
+printf "\n\n Welcome %s, to eZkde for Debian.\n\n" "$USER"
+printf " KDE 6.5.x (Wayland only) will be installed with audio support (Pipewire) and a minimum of utilities.\n\n"
+printf " Press Enter to continue or Ctrl+C to cancel.\n"
+read -rp '' && apt-get update -qq || {
+    printf "\n Connection error! Exiting.\n\n"
+    exit 1
+}
+
+set -euo pipefail
+
+# Map each distro to its native KDE/plasma group name
+declare -A KDE_GROUP
+KDE_GROUP[debian]="plasma-workspace pipewire sddm dolphin konsole"
+KDE_GROUP[arch]="plasma-meta pipewire sddm dolphin konsole"
+KDE_GROUP[fedora]="@kde-desktop pipewire sddm dolphin konsole"
+KDE_GROUP[suse]="patterns-kde-kde sddm dolphin konsole"
+
+# Default tunables
+BATCHSIZE=${BATCHSIZE:-10}
+BAR_CHAR=${BAR_CHAR:-'▪'}
+EMPTY_CHAR=${EMPTY_CHAR:-' '}
+
+if   command -v apt-get  &>/dev/null; then
+    DISTRO=debian
+    PM=(apt-get install -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold")
+    PRE_BREW=(export DEBIAN_FRONTEND=noninteractive)
+    LIST_CMD=(apt-get install --dry-run -qq)
+    SRV_ENABLE=(systemctl enable sddm.service)
+    SRV_START=(systemctl start sddm.service)
+    SRV_TARGET=(systemctl isolate graphical.target)
+
+elif command -v pacman  &>/dev/null; then
+    DISTRO=arch
+    PM=(pacman -S --needed --noconfirm)
+    LIST_CMD=(pacman -Sp)          # list only, no download
+    SRV_ENABLE=(systemctl enable sddm)
+    SRV_START=(systemctl start sddm)
+    SRV_TARGET=(systemctl isolate graphical.target)
+
+elif command -v dnf     &>/dev/null; then
+    DISTRO=fedora
+    PM=(dnf install -y --setopt=install_weak_deps=False)
+    LIST_CMD=(dnf install --assumeno --quiet)
+    SRV_ENABLE=(systemctl enable sddm)
+    SRV_START=(systemctl start sddm)
+    SRV_TARGET=(systemctl isolate graphical.target)
+
+elif command -v zypper &>/dev/null; then
+    DISTRO=suse
+    PM=(zypper install -y)
+    LIST_CMD=(zypper install -y --dry-run)
+    SRV_ENABLE=(systemctl enable sddm)
+    SRV_START=(systemctl start sddm)
+    SRV_TARGET=(systemctl isolate graphical.target)
+
+else
+    fatal "No supported package manager found (apt-get, pacman, dnf, zypper)."
+fi
+
+fatal() {
+    printf '[FATAL] %s\n' "$*" >&2
+    exit 1
+}
+
+progress-bar() {
+    local current=$1 len=$2
+    # ---- avoid division by zero ----
+    if (( len == 0 )); then
+        printf '\r\e[K All packages are already installed.\n\n'
+        exit 1
+    fi
+
+    # Calculate percentage and string length
+    local perc_done=$((current * 100 / len))
+    local suffix=" ($perc_done%)"
+    local length=$((COLUMNS - ${#suffix} - 2))
+    local num_bars=$((perc_done * length / 100))
+
+    # Construct the bar string
+    local i
+    local s='['
+    for ((i = 0; i < num_bars; i++)); do
+        s+=$BAR_CHAR
+    done
+    for ((i = num_bars; i < length; i++)); do
+        s+=$EMPTY_CHAR
+    done
+    s+=']'
+    s+=$suffix
+
+    printf '\e7' # save the cursor location
+    printf '\e[%d;%dH' "$LINES" 0 # move cursor to the bottom line
+    printf '\e[0K' # clear the line
+    printf '%s' "$s" # print the progress bar
+    printf '\e8' # restore the cursor location
+}
+
+init-term() {
+    printf '\n' # ensure we have space for the scrollbar
+    printf '\e7' # save the cursor location
+    printf '\e[%d;%dr' 0 "$((LINES - 1))" # set the scrollable region (margin)
+    printf '\e8' # restore the cursor location
+    printf '\e[1A' # move cursor up
+}
+
+deinit-term() {
+    printf '\e7' # save the cursor location
+    printf '\e[%d;%dr' 0 "$LINES" # reset the scrollable region (margin)
+    printf '\e[%d;%dH' "$LINES" 0 # move cursor to the bottom line
+    printf '\e[0K' # clear the line
+    printf '\e8' # reset the cursor location
+}
+
+install-packages() {
+    local pkg
+    for pkg in "$@"; do
+        printf '\r -> Installing: %-50s' "$pkg"
+        "${PM[@]}" "$pkg" >/dev/null
+    done
+}
+
+main() {
+    local OPTARG OPTIND opt
+    while getopts 'b:c:e:' opt; do
+        case "$opt" in
+            b) BATCHSIZE=$OPTARG;;
+            c) BAR_CHAR=$OPTARG;;
+            e) EMPTY_CHAR=$OPTARG;;
+            *) fatal 'bad option';;
+        esac
+    done
+
+    shopt -s globstar nullglob checkwinsize
+    # this line is to ensure LINES and COLUMNS are set
+    (:)
+
+    trap deinit-term exit
+    trap 'init-term; progress-bar "$current" "$total"' WINCH
+    init-term
+
+    printf ' Detected distro: %s\n\n' "$DISTRO"
+    printf ' Preparing packages installation...\n\n'
+
+    # Build exact list of packages that will be installed
+    IFS=' ' read -r -a pkg_names <<< "${KDE_GROUP[$DISTRO]}"
+    local packages=() total
+
+    case "$DISTRO" in
+        debian)
+            mapfile -t packages < <(
+                "${LIST_CMD[@]}" "${pkg_names[@]}" 2>&1 |
+                awk '/^Inst / {print $2}'
+            )
+            total=${#packages[@]}
+            # Pre-seed locale to avoid hanging on ‘locales’
+            current_locale=${LC_ALL:-${LANG:-C.UTF-8}}
+            current_locale=${current_locale%%.*}.UTF-8
+            echo "locales locales/default_environment_locale select $current_locale" | debconf-set-selections
+            echo "locales locales/locales_to_be_generated multiselect $current_locale UTF-8" | debconf-set-selections
+            export DEBIAN_FRONTEND=noninteractive
+            ;;
+        arch)
+            mapfile -t packages < <(
+                pacman -Sp --print-format '%n' "${pkg_names[@]}" 2>/dev/null |
+                grep -v '^warning' || true
+            )
+            total=${#packages[@]}
+            ;;
+        fedora|suse)
+            # dnf/zypper dry-run still lists everything
+            mapfile -t packages < <(
+                "${LIST_CMD[@]}" "${pkg_names[@]}" 2>&1 |
+                awk '/Installing.*:/ {print $2}' | sed 's/:$//' | sort -u
+            )
+            total=${#packages[@]}
+            ;;
+    esac
+
+    (( total )) || { printf 'Nothing to do – KDE is already installed.\n'; exit 0; }
+
+    # Batch installation loop
+    local current=0
+    for ((i = 0; i < total; i += BATCHSIZE)); do
+        install-packages "${packages[@]:i:BATCHSIZE}"
+        current=$((current + BATCHSIZE))
+        progress-bar "$current" "$total"
+    done
+    progress-bar "$total" "$total"
+
+    # Enable display manager
+    "${SRV_ENABLE[@]}"
+    printf '\n\n eZkde installation complete!\n\n'
+    read -rp $'Reboot (r) or start KDE now (k)? [r/k] ' choice
+    case "${choice,,}" in
+        k) "${SRV_START[@]}"; "${SRV_TARGET[@]}" ;;
+        r) reboot ;;
+    esac
+
+    deinit-term
+}
+
+# Run only when executed, not sourced
+[[ ${BASH_SOURCE[0]} == "$0" ]] && main "$@"
