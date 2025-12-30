@@ -140,31 +140,19 @@ deinit-term() {
     printf '\e8' # reset the cursor location
 }
 
-#install_packages() {
-#    local pkg
-#    if [[ $DISTRO == arch ]]; then
-#        printf '1\n2\n2\ny\n' | pacman -S --needed ${KDE_GROUP[Arch]} >/dev/null
-#        return
-#    fi
-#    for pkg in "$@"; do
-#        printf '\r -> Now downloading and installing: %-50s' "$pkg"
-#        "${PM[@]}" "$pkg" >/dev/null
-#    done
-#}
-
 install_packages() {
-    case "$DISTRO" in
-        Arch)
-            printf '1\n2\n2\ny\n' | pacman -S --needed ${KDE_GROUP[Arch]} >/dev/null
-            return
-            ;;
-        *)
-            for pkg in "$@"; do
-                printf '\r -> Now downloading and installing: %-50s' "$pkg"
-                "${PM[@]}" "$pkg" >/dev/null
-            done
-            ;;
-    esac
+    local pkg
+    if [[ $DISTRO == arch ]]; then
+        printf '1\n2\n2\ny\n' | pacman -S --needed ${KDE_GROUP[Arch]} >/dev/null
+        for pkg in "$@"; do
+            printf '\r -> Now downloading and installing: %-50s' "$pkg"
+        done
+    else
+        for pkg in "$@"; do
+            printf '\r -> Now downloading and installing: %-50s' "$pkg"
+            "${PM[@]}" "$pkg" >/dev/null
+        done
+    fi
 }
 
 main() {
