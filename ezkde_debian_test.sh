@@ -138,8 +138,8 @@ deinit-term() {
 
 install_packages() {
     local pkg
-    if [[ $DISTRO == Arch ]]; then
-        printf '1\n2\n2\ny\n' | pacman -S --needed "$@"
+    if [[ $DISTRO == arch ]]; then
+        printf '1\n2\n2\ny\n' | pacman -S --needed ${KDE_GROUP[Arch]} >/dev/null
         return
     fi
     # everyone else keeps the old per-package loop
