@@ -211,7 +211,7 @@ main() {
 
     # Enable display manager
     systemctl enable sddm.service >/dev/null 2>&1
-    printf '\n eZkde for %s installation complete!\n\n' "$DISTRO"
+    printf '\n\n eZkde for %s installation complete!\n\n' "$DISTRO"
     read -rp $' Reboot (r) or start KDE now (k)? [r/k] ' choice
     case "${choice,,}" in
         k) eval "${SRV_START[@]}"; eval "${SRV_TARGET[@]}" ;;
