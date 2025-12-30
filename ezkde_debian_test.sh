@@ -138,7 +138,7 @@ deinit-term() {
 
 install_packages() {
     local pkg
-    if [[ $DISTRO == arch ]]; then
+    if [[ $DISTRO == Arch ]]; then
         printf '1\n2\n2\ny\n' | pacman -S --needed "$@"
         return
     fi
