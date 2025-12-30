@@ -210,7 +210,7 @@ main() {
     # Batch installation loop
     local current=0
     for ((i = 0; i < total; i += BATCHSIZE)); do
-        install-packages "${packages[@]:i:BATCHSIZE}"
+        install_packages "${packages[@]:i:BATCHSIZE}"
         current=$((current + BATCHSIZE))
         progress-bar "$current" "$total"
     done
