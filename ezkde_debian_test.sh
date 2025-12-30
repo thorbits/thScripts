@@ -145,11 +145,11 @@ install_packages() {
     if [[ $DISTRO == arch ]]; then
         printf '1\n2\n2\ny\n' | pacman -S --needed ${KDE_GROUP[Arch]} >/dev/null
         for pkg in "$@"; do
-            printf '\r -> Now downloading and installing: %-*s' "$((COLUMNS - 30))" "$pkg"
+            printf '\r -> Now downloading and installing: %-*s' "$COLUMNS" "$pkg"
         done
     else
         for pkg in "$@"; do
-            printf '\r -> Now downloading and installing: %-*s' "$((COLUMNS - 30))" "$pkg"
+            printf '\r -> Now downloading and installing: %-*s' "$COLUMNS" "$pkg"
             "${PM[@]}" "$pkg" >/dev/null
         done
     fi
