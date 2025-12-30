@@ -136,8 +136,13 @@ deinit-term() {
     printf '\e8' # reset the cursor location
 }
 
-install-packages() {
+install_packages() {
     local pkg
+    if [[ $DISTRO == arch ]]; then
+        printf '1\n2\n2\ny\n' | pacman -S --needed "$@"
+        return
+    fi
+    # everyone else keeps the old per-package loop
     for pkg in "$@"; do
         printf '\r -> Now downloading and installing: %-50s' "$pkg"
         "${PM[@]}" "$pkg" >/dev/null
