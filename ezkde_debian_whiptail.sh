@@ -13,7 +13,7 @@
 
 # Must be run as root
 if [[ "$(id -u)" -ne 0 ]]; then
-    echo -e "\e[31mThis script must be run as root. Use sudo.\e[0m"
+    printf " This script must be run as root. Use sudo.\n"
     exit 1
 fi
 
