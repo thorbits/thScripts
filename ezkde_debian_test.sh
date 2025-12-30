@@ -13,37 +13,26 @@
 
 # Must be run as root
 if [[ "$(id -u)" -ne 0 ]]; then
-    printf "\e[31m This script must be run as root. Use sudo.\e[0m\n"
+    printf " This script must be run as root. Use sudo.\n"
     exit 1
 fi
 
-# Intro
-clear
-printf "\n\n Welcome %s, to eZkde for Debian.\n\n" "$USER"
-printf " KDE 6.5.x (Wayland only) will be installed with audio support (Pipewire) and a minimum of utilities.\n\n"
-printf " Press Enter to continue or Ctrl+C to cancel.\n"
-read -rp '' && apt-get update -qq || {
-    printf "\n Connection error! Exiting.\n\n"
-    exit 1
-}
-
 set -euo pipefail
 
-# Map each distro to its native KDE/plasma group name
-declare -A KDE_GROUP
-KDE_GROUP[debian]="plasma-workspace pipewire sddm dolphin konsole"
-KDE_GROUP[arch]="plasma-meta pipewire sddm dolphin konsole"
-KDE_GROUP[fedora]="@kde-desktop pipewire sddm dolphin konsole"
-KDE_GROUP[suse]="patterns-kde-kde sddm dolphin konsole"
-
 # Default tunables
-BATCHSIZE=${BATCHSIZE:-10}
+BATCHSIZE=${BATCHSIZE:1}
 BAR_CHAR=${BAR_CHAR:-'▪'}
 EMPTY_CHAR=${EMPTY_CHAR:-' '}
 
+fatal() {
+    printf '[FATAL] %s\n' "$*" >&2
+    exit 1
+}
+
 if   command -v apt-get  &>/dev/null; then
-    DISTRO=debian
+    DISTRO=Debian
     PM=(apt-get install -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold")
+    UPDATE=(apt-get update -qq)
     PRE_BREW=(export DEBIAN_FRONTEND=noninteractive)
     LIST_CMD=(apt-get install --dry-run -qq)
     SRV_ENABLE=(systemctl enable sddm.service)
@@ -51,24 +40,27 @@ if   command -v apt-get  &>/dev/null; then
     SRV_TARGET=(systemctl isolate graphical.target)
 
 elif command -v pacman  &>/dev/null; then
-    DISTRO=arch
+    DISTRO=Arch
     PM=(pacman -S --needed --noconfirm)
-    LIST_CMD=(pacman -Sp)          # list only, no download
+    UPDATE=(pacman -Sy)
+    LIST_CMD=(pacman -Sp)
     SRV_ENABLE=(systemctl enable sddm)
     SRV_START=(systemctl start sddm)
     SRV_TARGET=(systemctl isolate graphical.target)
 
 elif command -v dnf     &>/dev/null; then
-    DISTRO=fedora
+    DISTRO=Fedora
     PM=(dnf install -y --setopt=install_weak_deps=False)
+    UPDATE=(dnf makecache --quiet)
     LIST_CMD=(dnf install --assumeno --quiet)
     SRV_ENABLE=(systemctl enable sddm)
     SRV_START=(systemctl start sddm)
     SRV_TARGET=(systemctl isolate graphical.target)
 
 elif command -v zypper &>/dev/null; then
-    DISTRO=suse
+    DISTRO=OpenSuse
     PM=(zypper install -y)
+    UPDATE=(zypper --quiet ref)
     LIST_CMD=(zypper install -y --dry-run)
     SRV_ENABLE=(systemctl enable sddm)
     SRV_START=(systemctl start sddm)
@@ -78,23 +70,35 @@ else
     fatal "No supported package manager found (apt-get, pacman, dnf, zypper)."
 fi
 
-fatal() {
-    printf '[FATAL] %s\n' "$*" >&2
+# Map each distro to its native KDE/plasma group name
+declare -A KDE_GROUP
+KDE_GROUP[Debian]="plasma-workspace pipewire sddm dolphin konsole"
+KDE_GROUP[Arch]="plasma-meta pipewire sddm dolphin konsole"
+KDE_GROUP[Fedora]="@kde-desktop pipewire sddm dolphin konsole"
+KDE_GROUP[OpenSuse]="patterns-kde-kde sddm dolphin konsole"
+
+# intro (now $DISTRO and $UPDATE are set)
+clear
+printf '\n\n Welcome %s, to eZkde for %s.\n\n' "$USER" "$DISTRO"
+printf ' KDE 6.5.x (Wayland only) will be installed with audio support (Pipewire) and a minimum of utilities.\n\n'
+printf ' Press Enter to continue or Ctrl+C to cancel.\n'
+read -rp '' && "${UPDATE[@]}" || {
+    printf '\n Connection error! Exiting.\n\n'
     exit 1
 }
 
 progress-bar() {
     local current=$1 len=$2
-    # ---- avoid division by zero ----
+    # avoid division by zero
     if (( len == 0 )); then
-        printf '\r\e[K All packages are already installed.\n\n'
+        printf '\r\e[K All KDE packages are already installed.\n\n'
         exit 1
     fi
 
     # Calculate percentage and string length
     local perc_done=$((current * 100 / len))
     local suffix=" ($perc_done%)"
-    local length=$((COLUMNS - ${#suffix} - 2))
+    local length=$((COLUMNS - ${#suffix} - 4))
     local num_bars=$((perc_done * length / 100))
 
     # Construct the bar string
@@ -167,7 +171,7 @@ main() {
     local packages=() total
 
     case "$DISTRO" in
-        debian)
+        Debian)
             mapfile -t packages < <(
                 "${LIST_CMD[@]}" "${pkg_names[@]}" 2>&1 |
                 awk '/^Inst / {print $2}'
@@ -180,14 +184,14 @@ main() {
             echo "locales locales/locales_to_be_generated multiselect $current_locale UTF-8" | debconf-set-selections
             export DEBIAN_FRONTEND=noninteractive
             ;;
-        arch)
+        Arch)
             mapfile -t packages < <(
                 pacman -Sp --print-format '%n' "${pkg_names[@]}" 2>/dev/null |
                 grep -v '^warning' || true
             )
             total=${#packages[@]}
             ;;
-        fedora|suse)
+        Fedora|OpenSuse)
             # dnf/zypper dry-run still lists everything
             mapfile -t packages < <(
                 "${LIST_CMD[@]}" "${pkg_names[@]}" 2>&1 |
