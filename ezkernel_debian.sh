@@ -10,7 +10,7 @@
 
 # Must be run as root
 if [[ "$(id -u)" -ne 0 ]]; then
-    printf "\e[31mThis script must be run as root. Use sudo.\e[0m\n"
+    printf " This script must be run as root. Use sudo.\n"
     exit 1
 fi
 
@@ -86,6 +86,7 @@ make menuconfig && (
     printf "\n\nCompilation or installation error. Exiting.\n\n"
     exit 1
 )
+
 
 
 
