@@ -219,7 +219,7 @@ main() {
     printf '\n eZkde for %s installation complete!\n\n' "$DISTRO"
     read -rp $' Reboot (r) or start KDE now (k)? [r/k] ' choice
     case "${choice,,}" in
-        k) "${SRV_START[@]}"; "${SRV_TARGET[@]}" ;;
+        k) eval "${SRV_START[@]}"; eval "${SRV_TARGET[@]}" ;;
         r) reboot ;;
     esac
 
