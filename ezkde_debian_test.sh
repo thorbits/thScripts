@@ -154,19 +154,6 @@ install_packages() {
     esac
 }
 
-install_packages() {
-    local pkg
-    if [[ $DISTRO == arch ]]; then
-        printf '1\n2\n2\ny\n' | pacman -S --needed ${KDE_GROUP[Arch]} >/dev/null
-        return
-    fi
-
-    for pkg in "$@"; do
-        printf '\r -> Now downloading and installing: %-50s' "$pkg"
-        "${PM[@]}" "$pkg" >/dev/null
-    done
-}
-
 main() {
     local OPTARG OPTIND opt
     while getopts 'b:c:e:' opt; do
