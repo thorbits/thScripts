@@ -222,7 +222,7 @@ main() {
 
     # Enable display manager
     "${SRV_ENABLE[@]}"
-    printf '\r eZkde for %s installation complete!\n\n' "$DISTRO"
+    printf '\n eZkde for %s installation complete!\n\n' "$DISTRO"
     read -rp $' Reboot (r) or start KDE now (k)? [r/k] ' choice
     case "${choice,,}" in
         k) "${SRV_START[@]}"; "${SRV_TARGET[@]}" ;;
