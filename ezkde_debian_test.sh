@@ -33,16 +33,15 @@ if   command -v apt-get  &>/dev/null; then
     DISTRO=Debian
     PM=(apt-get install -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold")
     UPDATE=(apt-get update -qq)
-    PRE_BREW=(export DEBIAN_FRONTEND=noninteractive)
     LIST_CMD=(apt-get install --dry-run -qq)
-    SRV_START="systemctl start sddm.service  >/dev/null 2>&1"
+    SRV_START="systemctl start sddm.service >/dev/null 2>&1"
     SRV_TARGET="systemctl isolate graphical.target >/dev/null 2>&1"
 
 elif command -v pacman  &>/dev/null; then
     DISTRO=Arch
     PM=(pacman -S --needed --noconfirm)
     UPDATE="pacman -Sy >/dev/null 2>&1"
-    SRV_START="systemctl start sddm.service  >/dev/null 2>&1"
+    SRV_START="systemctl start sddm.service >/dev/null 2>&1"
     SRV_TARGET="systemctl isolate graphical.target >/dev/null 2>&1"
 
 elif command -v dnf     &>/dev/null; then
@@ -50,7 +49,7 @@ elif command -v dnf     &>/dev/null; then
     PM=(dnf install -y --setopt=install_weak_deps=False)
     UPDATE=(dnf makecache --quiet)
     LIST_CMD=(dnf install --assumeno --quiet)
-    SRV_START="systemctl start sddm.service  >/dev/null 2>&1"
+    SRV_START="systemctl start sddm.service >/dev/null 2>&1"
     SRV_TARGET="systemctl isolate graphical.target >/dev/null 2>&1"
 
 elif command -v zypper &>/dev/null; then
@@ -58,7 +57,7 @@ elif command -v zypper &>/dev/null; then
     PM=(zypper install -y)
     UPDATE=(zypper --quiet ref)
     LIST_CMD=(zypper install -y --dry-run)
-    SRV_START="systemctl start sddm.service  >/dev/null 2>&1"
+    SRV_START="systemctl start sddm.service >/dev/null 2>&1"
     SRV_TARGET="systemctl isolate graphical.target >/dev/null 2>&1"
 
 else
