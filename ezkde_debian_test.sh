@@ -139,7 +139,7 @@ deinit-term() {
 install-packages() {
     local pkg
     for pkg in "$@"; do
-        printf '\r -> Installing: %-50s' "$pkg"
+        printf '\r -> Now downloading and installing: %-50s' "$pkg"
         "${PM[@]}" "$pkg" >/dev/null
     done
 }
@@ -213,8 +213,8 @@ main() {
 
     # Enable display manager
     "${SRV_ENABLE[@]}"
-    printf '\n\n eZkde installation complete!\n\n'
-    read -rp $'Reboot (r) or start KDE now (k)? [r/k] ' choice
+    printf '\r eZkde for %s installation complete!\n\n' "$DISTRO"
+    read -rp $' Reboot (r) or start KDE now (k)? [r/k] ' choice
     case "${choice,,}" in
         k) "${SRV_START[@]}"; "${SRV_TARGET[@]}" ;;
         r) reboot ;;
