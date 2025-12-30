@@ -141,12 +141,26 @@ deinit-term() {
 }
 
 install_packages() {
+    case "$DISTRO" in
+        Arch)
+            printf '1\n2\n2\ny\n' | pacman -S --needed ${KDE_GROUP[Arch]} >/dev/null
+            ;;
+        *)
+            for pkg in "$@"; do
+                printf '\r -> Now downloading and installing: %-50s' "$pkg"
+                "${PM[@]}" "$pkg" >/dev/null
+            done
+            ;;
+    esac
+}
+
+install_packages() {
     local pkg
     if [[ $DISTRO == arch ]]; then
         printf '1\n2\n2\ny\n' | pacman -S --needed ${KDE_GROUP[Arch]} >/dev/null
         return
     fi
-    # everyone else keeps the old per-package loop
+
     for pkg in "$@"; do
         printf '\r -> Now downloading and installing: %-50s' "$pkg"
         "${PM[@]}" "$pkg" >/dev/null
