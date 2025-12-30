@@ -32,7 +32,7 @@ fatal() {
 if   command -v apt-get  &>/dev/null; then
     DISTRO=Debian
     PM=(apt-get install -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold")
-    UPDATE=(apt-get update -qq)
+    UPDATE="apt-get update -qq"
     LIST_CMD=(apt-get install --dry-run -qq)
     SRV_START="systemctl start sddm.service >/dev/null 2>&1"
     SRV_TARGET="systemctl isolate graphical.target >/dev/null 2>&1"
@@ -47,7 +47,7 @@ elif command -v pacman  &>/dev/null; then
 elif command -v dnf     &>/dev/null; then
     DISTRO=Fedora
     PM=(dnf install -y --setopt=install_weak_deps=False)
-    UPDATE=(dnf makecache --quiet)
+    UPDATE="dnf makecache >/dev/null 2>&1"
     LIST_CMD=(dnf install --assumeno --quiet)
     SRV_START="systemctl start sddm.service >/dev/null 2>&1"
     SRV_TARGET="systemctl isolate graphical.target >/dev/null 2>&1"
@@ -76,11 +76,7 @@ clear
 printf '\n\n Welcome %s, to eZkde for %s.\n\n' "$USER" "$DISTRO"
 printf ' KDE 6.5.x (Wayland only) will be installed with audio support (Pipewire) and a minimum of utilities.\n\n'
 printf ' Press Enter to continue or Ctrl+C to cancel.\n'
-read -rp ''
-case "$DISTRO" in
-    Arch) eval "$UPDATE" ;;   # handles >/dev/null 2>&1 inside the string
-    *)    "${UPDATE[@]}" ;;   # every other distro uses the array form
-esac || {
+read -rp '' && eval "$UPDATE" || {
     printf '\n Connection error! Exiting.\n\n'
     exit 1
 }
