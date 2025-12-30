@@ -42,7 +42,7 @@ if   command -v apt-get  &>/dev/null; then
 elif command -v pacman  &>/dev/null; then
     DISTRO=Arch
     PM=(pacman -S --needed --noconfirm)
-    UPDATE=(pacman -Sy --quiet)
+    UPDATE=(pacman -Sy 2>/dev/null)
     LIST_CMD=(pacman -Sp)
     SRV_ENABLE=(systemctl enable sddm)
     SRV_START=(systemctl start sddm)
