@@ -169,35 +169,32 @@ main() {
 
     case "$DISTRO" in
         Debian)
-            mapfile -t packages < <(
-                "${LIST_CMD[@]}" "${pkg_names[@]}" 2>&1 |
-                awk '/^Inst / {print $2}'
-            )
-            total=${#packages[@]}
             # Pre-seed to inherit the user’s current locale 
             current_locale=${LC_ALL:-${LANG:-C.UTF-8}}
             current_locale=${current_locale%%.*}.UTF-8
             echo "locales locales/default_environment_locale select $current_locale" | debconf-set-selections
             echo "locales locales/locales_to_be_generated multiselect $current_locale UTF-8" | debconf-set-selections
             export DEBIAN_FRONTEND=noninteractive
+            
+            mapfile -t packages < <(
+                "${LIST_CMD[@]}" "${pkg_names[@]}" 2>&1 |
+                awk '/^Inst / {print $2}'
+            )
             ;;
         Arch)
             mapfile -t packages < <(
                 pacman -Sp --print-format '%n' "${pkg_names[@]}" 2>/dev/null |
                 grep -v '^warning' || true
             )
-            total=${#packages[@]}
             ;;
         Fedora|OpenSuse)
-            # dnf/zypper dry-run still lists everything
             mapfile -t packages < <(
                 "${LIST_CMD[@]}" "${pkg_names[@]}" 2>&1 |
                 awk '/Installing.*:/ {print $2}' | sed 's/:$//' | sort -u
             )
-            total=${#packages[@]}
             ;;
     esac
-
+    total=${#packages[@]} # single global assignment
     (( total )) || { printf 'Nothing to do – KDE is already installed.\n'; exit 0; }
 
     # Batch installation loop
