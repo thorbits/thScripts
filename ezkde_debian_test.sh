@@ -149,7 +149,7 @@ install_packages() {
         done
     else
         for pkg in "$@"; do
-            printf '\r -> Now downloading and installing: %-50s' "$pkg"
+            printf '\r -> Now downloading and installing: %-*s' "$((COLUMNS - 1))" "$pkg"
             "${PM[@]}" "$pkg" >/dev/null
         done
     fi
