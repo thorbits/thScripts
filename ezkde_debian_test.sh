@@ -172,11 +172,8 @@ main() {
     trap 'init-term; progress-bar "$current" "$total"' WINCH
     init-term
 
-    case "$DISTRO" in
-        Arch) printf ' \nPreparing KDE packages for %s...\n\n' "$DISTRO" ;;
-        *)    printf ' Preparing KDE packages for %s...\n\n' "$DISTRO" ;;
-    esac
-
+    printf ' Preparing KDE packages for %s...\n\n' "$DISTRO"
+    
     # Build exact list of packages that will be installed
     IFS=' ' read -r -a pkg_names <<< "${KDE_GROUP[$DISTRO]}"
     local packages=() total
