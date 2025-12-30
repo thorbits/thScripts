@@ -39,9 +39,9 @@ fatal() {
 
 progress-bar() {
     local current=$1 len=$2
-    # ---- avoid division by zero ----
+    # avoid division by 0
     if (( len == 0 )); then
-        printf '\r\e[K All packages are already installed.\n\n'
+        printf '\r\e[K All KDE packages are already installed.\n\n'
         exit 1
     fi
 
