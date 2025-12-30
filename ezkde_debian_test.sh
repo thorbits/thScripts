@@ -35,36 +35,35 @@ if   command -v apt-get  &>/dev/null; then
     UPDATE=(apt-get update -qq)
     PRE_BREW=(export DEBIAN_FRONTEND=noninteractive)
     LIST_CMD=(apt-get install --dry-run -qq)
-    SRV_ENABLE=(systemctl enable sddm.service)
-    SRV_START=(systemctl start sddm.service)
-    SRV_TARGET=(systemctl isolate graphical.target)
+    SRV_ENABLE=(systemctl enable sddm.service >/dev/null 2>&1)
+    SRV_START=(systemctl start sddm.service  >/dev/null 2>&1)
+    SRV_TARGET=(systemctl isolate graphical.target >/dev/null 2>&1)
 
 elif command -v pacman  &>/dev/null; then
     DISTRO=Arch
     PM=(pacman -S --needed --noconfirm)
     UPDATE="pacman -Sy >/dev/null 2>&1"
-    # LIST_CMD=(pacman -Sp)
-    SRV_ENABLE=(systemctl enable sddm)
-    SRV_START=(systemctl start sddm)
-    SRV_TARGET=(systemctl isolate graphical.target)
+    SRV_ENABLE=(systemctl enable sddm.service >/dev/null 2>&1)
+    SRV_START=(systemctl start sddm.service  >/dev/null 2>&1)
+    SRV_TARGET=(systemctl isolate graphical.target >/dev/null 2>&1)
 
 elif command -v dnf     &>/dev/null; then
     DISTRO=Fedora
     PM=(dnf install -y --setopt=install_weak_deps=False)
     UPDATE=(dnf makecache --quiet)
     LIST_CMD=(dnf install --assumeno --quiet)
-    SRV_ENABLE=(systemctl enable sddm)
-    SRV_START=(systemctl start sddm)
-    SRV_TARGET=(systemctl isolate graphical.target)
+    SRV_ENABLE=(systemctl enable sddm.service >/dev/null 2>&1)
+    SRV_START=(systemctl start sddm.service  >/dev/null 2>&1)
+    SRV_TARGET=(systemctl isolate graphical.target >/dev/null 2>&1)
 
 elif command -v zypper &>/dev/null; then
     DISTRO=OpenSuse
     PM=(zypper install -y)
     UPDATE=(zypper --quiet ref)
     LIST_CMD=(zypper install -y --dry-run)
-    SRV_ENABLE=(systemctl enable sddm)
-    SRV_START=(systemctl start sddm)
-    SRV_TARGET=(systemctl isolate graphical.target)
+    SRV_ENABLE=(systemctl enable sddm.service >/dev/null 2>&1)
+    SRV_START=(systemctl start sddm.service  >/dev/null 2>&1)
+    SRV_TARGET=(systemctl isolate graphical.target >/dev/null 2>&1)
 
 else
     fatal "No supported package manager found (apt-get, pacman, dnf, zypper)."
@@ -142,12 +141,12 @@ deinit-term() {
 
 install_packages() {
     local pkg
-    if [[ $DISTRO == arch ]]; then
+    if [[ $DISTRO == Arch ]]; then
         printf '1\n2\n2\ny\n' | pacman -S --needed ${KDE_GROUP[Arch]} >/dev/null
         for pkg in "$@"; do
             printf '\r%-*s' "$COLUMNS" " -> Now downloading and installing: $pkg"
         done
-    else
+    elif [[ $DISTRO != Arch ]]; then
         for pkg in "$@"; do
             printf '\r%-*s' "$COLUMNS" " -> Now downloading and installing: $pkg"
             "${PM[@]}" "$pkg" >/dev/null
