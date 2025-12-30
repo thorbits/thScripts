@@ -20,7 +20,7 @@ fi
 set -euo pipefail
 
 # Default tunables
-BATCHSIZE=${BATCHSIZE:1}
+BATCHSIZE=${BATCHSIZE:-1}
 BAR_CHAR=${BAR_CHAR:-'▪'}
 EMPTY_CHAR=${EMPTY_CHAR:-' '}
 
