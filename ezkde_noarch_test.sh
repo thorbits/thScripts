@@ -153,7 +153,7 @@ main() {
             b) BATCHSIZE=$OPTARG;;
             c) BAR_CHAR=$OPTARG;;
             e) EMPTY_CHAR=$OPTARG;;
-            *) fatal 'bad option';;
+            *) fatal 'Usage: ezkde_noarch [-b batchsize] [-c bar_char] [-e empty_char]';;
         esac
     done
 
