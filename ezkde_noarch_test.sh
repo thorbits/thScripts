@@ -69,7 +69,7 @@ fi
 declare -A KDE_GROUP
 KDE_GROUP[Debian]="plasma-workspace pipewire sddm dolphin konsole"
 KDE_GROUP[Arch]="plasma-meta dolphin konsole"
-KDE_GROUP[Fedora]="plasma-workspace pipewire sddm dolphin konsole" # KDE_GROUP[Fedora]="@kde-desktop-environment"
+KDE_GROUP[Fedora]="plasma-desktop plasma-workspace plasma-workspace-wayland sddm dolphin konsole pipewire pipewire-pulseaudio pipewire-alsa plasma-browser-integration kscreen khotkeys kinfocenter kmenuedit ksystemstats kwalletmanager5 kwin kwin-wayland plasmashell"
 KDE_GROUP[OpenSuse]="patterns-kde-kde sddm dolphin konsole"
 
 # intro (now $DISTRO and $UPDATE are set)
@@ -132,16 +132,11 @@ deinit-term() {
 }
 
 install_packages() {
-    if [[ "$DISTRO" == "Fedora" ]]; then
-        printf '\r\e[2K -> Installing batch of %d packages...' "$#"
-        dnf install -y plasma-workspace pipewire sddm dolphin konsole >/dev/null
-    else
-        local pkg
-        for pkg in "$@"; do
-            printf '\r%-*s' "$COLUMNS" " -> Now downloading and installing: $pkg"
-            "${PM[@]}" "$pkg" >/dev/null
-        done
-    fi
+    local pkg
+    for pkg in "$@"; do
+        printf '\r%-*s' "$COLUMNS" " -> Now downloading and installing: $pkg"
+        "${PM[@]}" "$pkg" >/dev/null
+    done
 }
 
 main() {
@@ -182,21 +177,41 @@ main() {
                 "${LIST_CMD[@]}" "${pkg_names[@]}" 2>&1 |
                 awk '/^Inst / {print $2}'
             )
+            total=${#packages[@]}
             ;;
         Arch)
             mapfile -t packages < <(
                 pacman -Sp --print-format '%n' "${pkg_names[@]}" 2>/dev/null |
                 grep -v '^warning' || true
             )
+            total=${#packages[@]}
             ;;
-        Fedora|OpenSuse)
+        Fedora)
+            mapfile -t packages < <(
+                # Try to get all dependencies for each package
+                for pkg in "${pkg_names[@]}"; do
+                    # Use repoquery if available, otherwise fall back to dnf install --assumeno
+                    if command -v repoquery &>/dev/null; then
+                        dnf repoquery --alldeps --resolve "${pkg}" 2>/dev/null || echo "${pkg}"
+                    else
+                        # Fallback: parse dnf install --assumeno output
+                        dnf install --assumeno "${pkg}" 2>&1 | 
+                        awk '/^Installing/ || /^Upgrading/ || /^Reinstalling/ {print $2}' ||
+                        echo "${pkg}"
+                    fi
+                done | sort -u
+            )
+            total=${#packages[@]}
+            ;;
+        OpenSuse)
             mapfile -t packages < <(
                 "${LIST_CMD[@]}" "${pkg_names[@]}" 2>&1 |
-                awk '/Installing.*:/ {print $2}' | sed 's/:$//' | sort -u || true
+                awk '/Installing.*:/ {print $2}' | sed 's/:$//' | sort -u
             )
+            total=${#packages[@]}
             ;;
     esac
-    total=${#packages[@]} # single global assignment
+    
     (( total )) || { printf ' Nothing to do – KDE is already installed.\n'; exit 0; }
 
     # Batch installation loop
@@ -210,6 +225,12 @@ main() {
 
     # Enable display manager
     systemctl enable sddm.service >/dev/null 2>&1
+
+    # For Fedora, also enable pipewire audio
+    if [[ "$DISTRO" == "Fedora" ]]; then
+        systemctl --user --global enable pipewire pipewire-pulse >/dev/null 2>&1 || true
+    fi
+    
     printf '\n\n eZkde for %s installation complete!\n\n' "$DISTRO"
     read -rp $' Reboot (r) or start KDE now (k)? [r/k] ' choice
     case "${choice,,}" in
