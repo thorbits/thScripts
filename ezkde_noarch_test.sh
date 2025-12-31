@@ -136,7 +136,7 @@ install_packages() {
     if [[ "$DISTRO" == "Fedora" ]]; then
         for pkg in "$@"; do
             printf '\r%-*s' "$COLUMNS" " -> Now downloading and installing: $pkg"
-            dnf install -y "$pkg" >/dev/null 2>&1
+            dnf install -y "$@" >/dev/null 2>&1
         done
     else
         for pkg in "$@"; do
