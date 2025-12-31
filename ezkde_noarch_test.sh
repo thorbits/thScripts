@@ -48,7 +48,7 @@ elif command -v dnf     &>/dev/null; then
     DISTRO=Fedora
     PM=(dnf install -y --setopt=install_weak_deps=False)
     UPDATE="dnf makecache >/dev/null 2>&1"
-    LIST_CMD=(dnf install --assumeno --quiet)
+    LIST_CMD=(dnf install --assumeno)
     SRV_START="systemctl start sddm.service >/dev/null 2>&1"
     SRV_TARGET="systemctl isolate graphical.target >/dev/null 2>&1"
 
@@ -186,7 +186,7 @@ main() {
         Fedora|OpenSuse)
             mapfile -t packages < <(
                 "${LIST_CMD[@]}" "${pkg_names[@]}" 2>&1 |
-                awk '/Installing.*:/ {print $2}' | sed 's/:$//' | sort -u
+                awk '/Installing: [0-9]+ packages$/ {print $(NF-1)}'
             )
             ;;
     esac
