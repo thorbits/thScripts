@@ -190,7 +190,7 @@ main() {
             mapfile -t packages < <(
                 # Try to get all dependencies for each package
                 for pkg in "${pkg_names[@]}"; do
-                    dnf repoquery --allowerasing --resolve "${pkg}" 2>/dev/null || echo "${pkg}"<br>
+                    dnf repoquery --allowerasing --resolve "${pkg}" 2>/dev/null || echo "${pkg}"
                 done | sort -u
             )
             total=${#packages[@]}
