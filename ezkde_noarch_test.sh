@@ -187,7 +187,7 @@ main() {
         Fedora|OpenSuse)
             mapfile -t packages < <(
                 "${LIST_CMD[@]}" "${pkg_names[@]}" 2>&1 |
-                awk '/Installing: / {print $2}' | sed 's/:$//' | sort -u
+                awk '^Installing:/ {print $2}' | sed 's/:$//' | sort -u
             )
             ;;
     esac
