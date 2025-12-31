@@ -69,7 +69,7 @@ fi
 declare -A KDE_GROUP
 KDE_GROUP[Debian]="plasma-workspace pipewire sddm dolphin konsole"
 KDE_GROUP[Arch]="plasma-meta dolphin konsole"
-KDE_GROUP[Fedora]="plasma-desktop plasma-workspace plasma-workspace-wayland sddm dolphin konsole pipewire pipewire-pulseaudio pipewire-alsa plasma-browser-integration kscreen kinfocenter kmenuedit ksystemstats kwalletmanager5 kwin kwin-wayland plasmashell"
+KDE_GROUP[Fedora]="plasma-workspace pipewire sddm dolphin konsole" # "plasma-desktop plasma-workspace plasma-workspace-wayland sddm dolphin konsole pipewire pipewire-pulseaudio pipewire-alsa plasma-browser-integration kscreen kinfocenter kmenuedit ksystemstats kwalletmanager5 kwin kwin-wayland plasmashell"
 KDE_GROUP[OpenSuse]="patterns-kde-kde sddm dolphin konsole"
 
 # intro (now $DISTRO and $UPDATE are set)
