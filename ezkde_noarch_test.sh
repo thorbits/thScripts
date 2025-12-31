@@ -134,7 +134,7 @@ deinit-term() {
 install_packages() {
     if [[ "$DISTRO" == "Fedora" ]]; then
         printf '\r\e[2K -> Installing batch of %d packages...' "$#"
-        dnf install -y "$@" >/dev/null
+        dnf install -y plasma-workspace pipewire sddm dolphin konsole >/dev/null
     else
         local pkg
         for pkg in "$@"; do
