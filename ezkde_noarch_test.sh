@@ -133,10 +133,17 @@ deinit-term() {
 
 install_packages() {
     local pkg
+    if [[ "$DISTRO" == "Fedora" ]]; then
+    for pkg in "$@"; do
+    dnf install -y "$@" >/dev/null 2>&1
+    printf '\r%-*s' "$COLUMNS" " -> Now downloading and installing: $pkg"
+    fi
+    else
     for pkg in "$@"; do
         printf '\r%-*s' "$COLUMNS" " -> Now downloading and installing: $pkg"
         "${PM[@]}" "$pkg" >/dev/null
     done
+    fi
 }
 
 main() {
@@ -187,7 +194,7 @@ main() {
         Fedora|OpenSuse)
             mapfile -t packages < <(
                 "${LIST_CMD[@]}" "${pkg_names[@]}" 2>&1 |
-                awk 'Installing:/ {print $2}' | sed 's/:$//' | sort -u
+                awk '/Installing.*:/ {print $2}' | sed 's/:$//' | sort -u
             )
             ;;
     esac
