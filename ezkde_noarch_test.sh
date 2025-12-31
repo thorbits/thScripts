@@ -46,7 +46,8 @@ elif command -v pacman  &>/dev/null; then
 
 elif command -v dnf     &>/dev/null; then
     DISTRO=Fedora
-    PM=(dnf install -y --setopt=install_weak_deps=False)
+    # PM=(dnf install -y --setopt=install_weak_deps=False)
+    PM=(dnf install -y)
     UPDATE="dnf makecache >/dev/null 2>&1"
     LIST_CMD=(dnf install --assumeno)
     SRV_START="systemctl start sddm.service >/dev/null 2>&1"
@@ -55,7 +56,7 @@ elif command -v dnf     &>/dev/null; then
 elif command -v zypper &>/dev/null; then
     DISTRO=OpenSuse
     PM=(zypper install -y)
-    UPDATE=(zypper --quiet ref)
+    UPDATE="zypper --quiet ref"
     LIST_CMD=(zypper install -y --dry-run)
     SRV_START="systemctl start sddm.service >/dev/null 2>&1"
     SRV_TARGET="systemctl isolate graphical.target >/dev/null 2>&1"
@@ -77,7 +78,7 @@ printf '\n\n Welcome %s, to eZkde for %s.\n\n' "$USER" "$DISTRO"
 printf ' KDE 6.5.x (Wayland only) will be installed with audio support (Pipewire) and a minimum of utilities.\n\n'
 printf ' Press Enter to continue or Ctrl+C to cancel.\n'
 read -rp '' && eval "$UPDATE" || {
-    printf '\n Connection error! Exiting.\n\n'
+    printf '\n ERROR: no internet connection detected. Exiting.\n\n'
     exit 1
 }
 
@@ -191,7 +192,7 @@ main() {
             ;;
     esac
     total=${#packages[@]} # single global assignment
-    (( total )) || { printf 'Nothing to do – KDE is already installed.\n'; exit 0; }
+    (( total )) || { printf ' Nothing to do – KDE is already installed.\n'; exit 0; }
 
     # Batch installation loop
     local current=0
