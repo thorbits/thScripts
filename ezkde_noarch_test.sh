@@ -192,7 +192,7 @@ main() {
             ;;
     esac
     total=${#packages[@]} # single global assignment
-    [[ $total =~ ^[0-9]+$ ]] || { printf ' Nothing to do – KDE is already installed.\n'; exit 0; }
+    (( total )) || { printf ' Nothing to do – KDE is already installed.\n'; exit 0; }
 
     # Batch installation loop
     local current=0
