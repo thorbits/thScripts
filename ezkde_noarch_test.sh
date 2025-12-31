@@ -134,15 +134,15 @@ deinit-term() {
 install_packages() {
     local pkg
     if [[ "$DISTRO" == "Fedora" ]]; then
-    for pkg in "$@"; do
-    dnf install -y "$@" >/dev/null 2>&1
-    printf '\r%-*s' "$COLUMNS" " -> Now downloading and installing: $pkg"
-    fi
+        for pkg in "$@"; do
+            printf '\r%-*s' "$COLUMNS" " -> Now downloading and installing: $pkg"
+            dnf install -y "$pkg" >/dev/null 2>&1
+        done
     else
-    for pkg in "$@"; do
-        printf '\r%-*s' "$COLUMNS" " -> Now downloading and installing: $pkg"
-        "${PM[@]}" "$pkg" >/dev/null
-    done
+        for pkg in "$@"; do
+            printf '\r%-*s' "$COLUMNS" " -> Now downloading and installing: $pkg"
+            "${PM[@]}" "$pkg" >/dev/null
+        done
     fi
 }
 
