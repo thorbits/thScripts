@@ -135,7 +135,7 @@ install_packages() {
     local pkg
     for pkg in "$@"; do
         printf '\r%-*s' "$COLUMNS" " -> Now downloading and installing: $pkg"
-        "${PM[@]}" "$pkg" >/dev/null
+        "${PM[@]}" "$@" >/dev/null
     done
 }
 
