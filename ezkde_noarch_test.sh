@@ -134,7 +134,7 @@ deinit-term() {
 install_packages() {
     local pkg
     if [[ "$DISTRO" == "Fedora" ]]; then
-        # for pkg in "$@"; do
+        for pkg in "$@"; do
             printf '\r%-*s' "$COLUMNS" " -> Now downloading and installing: $pkg"
             dnf install -y @kde-desktop-environment >/dev/null
         done
