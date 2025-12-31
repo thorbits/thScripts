@@ -190,15 +190,7 @@ main() {
             mapfile -t packages < <(
                 # Try to get all dependencies for each package
                 for pkg in "${pkg_names[@]}"; do
-                    # Use repoquery if available, otherwise fall back to dnf install --assumeno
-                    if command -v repoquery &>/dev/null; then
-                        dnf repoquery --alldeps --resolve "${pkg}" 2>/dev/null || echo "${pkg}"
-                    else
-                        # Fallback: parse dnf install --assumeno output
-                        dnf install --assumeno "${pkg}" 2>&1 | 
-                        awk '/^Installing/ || /^Upgrading/ || /^Reinstalling/ {print $2}' ||
-                        echo "${pkg}"
-                    fi
+                    dnf repoquery --allowerasing --resolve "${pkg}" 2>/dev/null || echo "${pkg}"<br>
                 done | sort -u
             )
             total=${#packages[@]}
