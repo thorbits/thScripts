@@ -52,6 +52,7 @@ elif command -v dnf     &>/dev/null; then
     LIST_CMD=(dnf install --assumeno)
     SRV_START="systemctl start sddm.service >/dev/null 2>&1"
     SRV_TARGET="systemctl isolate graphical.target >/dev/null 2>&1"
+    BATCHSIZE=${BATCHSIZE:-10}  # Set BATCHSIZE to 10 specifically for Fedora
 
 elif command -v zypper &>/dev/null; then
     DISTRO=OpenSuse
