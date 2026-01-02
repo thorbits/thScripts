@@ -69,7 +69,7 @@ fi
 declare -A KDE_GROUP
 KDE_GROUP[Debian]="plasma-workspace pipewire sddm dolphin konsole"
 KDE_GROUP[Arch]="plasma-meta dolphin konsole"
-KDE_GROUP[Fedora]="plasma-desktop plasma-workspace plasma-workspace-wayland sddm dolphin konsole pipewire pipewire-pulseaudio pipewire-alsa plasma-browser-integration kscreen kinfocenter kmenuedit ksystemstats kwalletmanager5 kwin kwin-wayland plasmashell"
+KDE_GROUP[Fedora]="@kde-desktop-environment --exclude=*."
 KDE_GROUP[OpenSuse]="patterns-kde-kde sddm dolphin konsole"
 
 # intro (now $DISTRO and $UPDATE are set)
@@ -188,10 +188,7 @@ main() {
             ;;
         Fedora)
             mapfile -t packages < <(
-                # Try to get all dependencies for each package
-                for pkg in "${pkg_names[@]}"; do
-                    dnf repoquery --allowerasing --resolve "${pkg}" 2>/dev/null || echo "${pkg}"
-                done | sort -u
+                printf "n" | dnf install @kde-desktop-environment --exclude=*. 2>/dev/null | tail -2 | grep -o '[0-9]\+' | head -1)
             )
             total=${#packages[@]}
             ;;
