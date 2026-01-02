@@ -132,11 +132,16 @@ deinit-term() {
 }
 
 install_packages() {
-    local pkg
-    for pkg in "$@"; do
-        printf '\r%-*s' "$COLUMNS" " -> Now downloading and installing: $pkg"
-        "${PM[@]}" "$pkg" >/dev/null
-    done
+    if [[ "$DISTRO" == "Fedora" ]]; then
+        printf '\r\e[2K -> Installing batch of %d packages...' "$#"
+        printf "y" | dnf install -y @kde-desktop-environment --exclude=*. >/dev/null
+    else
+        local pkg
+        for pkg in "$@"; do
+            printf '\r%-*s' "$COLUMNS" " -> Now downloading and installing: $pkg"
+            "${PM[@]}" "$pkg" >/dev/null
+        done
+    fi
 }
 
 main() {
