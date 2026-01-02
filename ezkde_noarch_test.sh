@@ -69,7 +69,7 @@ fi
 declare -A KDE_GROUP
 KDE_GROUP[Debian]="plasma-workspace pipewire sddm dolphin konsole"
 KDE_GROUP[Arch]="plasma-meta dolphin konsole"
-KDE_GROUP[Fedora]="@kde-desktop-environment --exclude=*."
+KDE_GROUP[Fedora]="dolphin plasma-desktop plasma-workspace-wayland plasma-settings sddm-wayland-plasma kde-baseapps konsole kscreen sddm startplasma-wayland"
 KDE_GROUP[OpenSuse]="patterns-kde-kde sddm dolphin konsole"
 
 # intro (now $DISTRO and $UPDATE are set)
@@ -132,16 +132,16 @@ deinit-term() {
 }
 
 install_packages() {
-    if [[ "$DISTRO" == "Fedora" ]]; then
-        printf '\r\e[2K -> Installing batch of %d packages...' "$#"
-        printf "y" | dnf install -y @kde-desktop-environment --exclude=*. >/dev/null
-    else
+    #if [[ "$DISTRO" == "Fedora" ]]; then
+    #    printf '\r\e[2K -> Installing batch of %d packages...' "$#"
+    #    printf "y" | dnf install -y @kde-desktop-environment --exclude=*. >/dev/null
+    #else
         local pkg
         for pkg in "$@"; do
             printf '\r%-*s' "$COLUMNS" " -> Now downloading and installing: $pkg"
             "${PM[@]}" "$pkg" >/dev/null
         done
-    fi
+    #fi
 }
 
 main() {
@@ -193,7 +193,7 @@ main() {
             ;;
         Fedora)
             mapfile -t packages < <(
-                printf "n" | dnf install @kde-desktop-environment --exclude=*. 2>/dev/null | tail -2 | grep -o '[0-9]\+' | head -1
+                printf "$(dnf install --assumeno "${pkg_names[@]}" 2>/dev/null | tail -2 | grep -o '[0-9]\+' | head -1)
             )
             total=${#packages[@]}
             ;;
