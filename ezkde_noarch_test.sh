@@ -69,7 +69,7 @@ fi
 declare -A KDE_GROUP
 KDE_GROUP[Debian]="plasma-workspace pipewire sddm dolphin konsole"
 KDE_GROUP[Arch]="plasma-meta dolphin konsole"
-KDE_GROUP[Fedora]="dolphin plasma-desktop plasma-workspace-wayland plasma-settings sddm-wayland-plasma kde-baseapps konsole kscreen sddm startplasma-wayland"
+KDE_GROUP[Fedora]="dolphin plasma-desktop plasma-settings plasma-nm sddm-wayland-plasma kde-baseapps konsole kscreen sddm startplasma-wayland"
 KDE_GROUP[OpenSuse]="patterns-kde-kde sddm dolphin konsole"
 
 # intro (now $DISTRO and $UPDATE are set)
@@ -193,7 +193,7 @@ main() {
             ;;
         Fedora)
             mapfile -t packages < <(
-                printf "$(dnf install --assumeno "${pkg_names[@]}" 2>/dev/null | tail -2 | grep -o '[0-9]\+' | head -1)
+                printf "%s\n" "$(dnf install --assumeno "${pkg_names[@]}" 2>/dev/null | tail -2 | grep -o '[0-9]\+' | head -1)"
             )
             total=${#packages[@]}
             ;;
