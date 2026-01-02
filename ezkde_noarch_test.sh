@@ -188,7 +188,7 @@ main() {
             ;;
         Fedora)
             mapfile -t packages < <(
-                printf "n" | dnf install @kde-desktop-environment --exclude=*. 2>/dev/null | tail -2 | grep -o '[0-9]\+' | head -1)
+                printf "n" | dnf install @kde-desktop-environment --exclude=*. 2>/dev/null | tail -2 | grep -o '[0-9]\+' | head -1
             )
             total=${#packages[@]}
             ;;
