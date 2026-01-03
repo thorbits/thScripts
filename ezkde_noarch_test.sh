@@ -85,10 +85,10 @@ read -rp '' && eval "$UPDATE" || {
 progress-bar() {
     local current=$1 len=$2
     # avoid division by zero
-    if (( len == 0 )); then
-        printf '\r\e[K All KDE packages are already installed.\n\n'
-        exit 1
-    fi
+    #if (( len == 0 )); then
+    #    printf '\r\e[K All KDE packages are already installed.\n\n'
+    #    exit 1
+    #fi
 
     # Calculate percentage and string length
     local perc_done=$((current * 100 / len))
@@ -193,7 +193,7 @@ main() {
             ;;
         Fedora)
             mapfile -t packages < <(
-                # printf "%s\n" "$(dnf install --assumeno "${pkg_names[@]}" 2>/dev/null | tail -2 | grep -o '[0-9]\+' | head -1)"
+                #printf "%s\n" "$(dnf install --assumeno "${pkg_names[@]}" 2>/dev/null | tail -2 | grep -o '[0-9]\+' | head -1)"
                 dnf install --assumeno "${pkg_names[@]}" 2>&1 |
                 awk '/^Inst /{print $2}'
             )
@@ -208,13 +208,7 @@ main() {
             ;;
     esac
     
-    # (( total )) || { printf ' Nothing to do – KDE is already installed.\n'; exit 0; }
-    if (( total )); then
-    progress-bar 0 "$total"
-    else
-    printf ' Nothing to do – KDE is already installed.\n'
-    exit 0
-    fi
+    (( total )) || { printf ' Nothing to do – KDE is already installed.\n'; exit 0; }
 
     # Batch installation loop
     local current=0
