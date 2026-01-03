@@ -208,7 +208,7 @@ main() {
             ;;
     esac
     
-    (( total )) || { printf ' Nothing to do – KDE is already installed.\n'; exit 0; }
+    (( total )) || { printf ' Nothing to do – KDE is already installed.\n\n'; exit 0; }
 
     # Batch installation loop
     local current=0
