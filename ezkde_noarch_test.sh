@@ -41,6 +41,7 @@ elif command -v pacman  &>/dev/null; then
     DISTRO=Arch
     PM=(pacman -S --needed --noconfirm)
     UPDATE="pacman -Sy >/dev/null 2>&1"
+    LIST_CMD=(pacman -Sp --print-format '%n')
     SRV_START="systemctl start sddm.service >/dev/null 2>&1"
     SRV_TARGET="systemctl isolate graphical.target >/dev/null 2>&1"
 
