@@ -187,7 +187,7 @@ main() {
             ;;
         Arch)
             mapfile -t packages < <(
-                pacman -Sp --print-format '%n' "${pkg_names[@]}" 2>/dev/null |
+                "${LIST_CMD[@]}" "${pkg_names[@]}" 2>/dev/null |
                 grep -v '^warning' || true
             )
             total=${#packages[@]}
