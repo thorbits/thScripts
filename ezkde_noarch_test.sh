@@ -187,7 +187,7 @@ main() {
             ;;
         Arch)
             mapfile -t packages < <(
-                "${LIST_CMD[@]}" "${pkg_names[@]}" 2>/dev/null |
+                "${LIST_CMD[@]}" "${pkg_names[@]}" 2>&1 |
                 grep -v '^warning' || true
             )
             total=${#packages[@]}
