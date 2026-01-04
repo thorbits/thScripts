@@ -195,7 +195,7 @@ main() {
             mapfile -t packages < <(
                 #printf "%s\n" "$(dnf install --assumeno "${pkg_names[@]}" 2>/dev/null | tail -2 | grep -o '[0-9]\+' | head -1)"
                 dnf install --assumeno "${pkg_names[@]}" 2>&1 |
-                awk 'NF>=5 && $1 != "Package" {printf $1}' | head -n -3
+                awk 'NF>=5 && $1 != "Package" {printf $1}' | head -n -3 | wc -l
             )
             total=${#packages[@]}
             ;;
