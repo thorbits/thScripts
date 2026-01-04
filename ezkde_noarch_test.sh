@@ -71,8 +71,8 @@ declare -A KDE_GROUP
 KDE_GROUP[Debian]="plasma-workspace pipewire sddm dolphin konsole"
 KDE_GROUP[Arch]="plasma-meta dolphin konsole"
 KDE_GROUP[Fedora]="dolphin plasma-desktop plasma-settings plasma-nm sddm-wayland-plasma kde-baseapps konsole kscreen sddm startplasma-wayland"
-#KDE_GROUP[OpenSuse]="patterns-kde-kde sddm dolphin konsole"
-KDE_GROUP[OpenSuse]="patterns-kde-kde"
+#KDE_GROUP[OpenSuse]="patterns-kde-kde"
+KDE_GROUP[OpenSuse]="plasma6-desktop discover dolphin"
 
 # intro (now $DISTRO and $UPDATE are set)
 clear
@@ -206,7 +206,8 @@ main() {
                 "${LIST_CMD[@]}" "${pkg_names[@]}" 2>&1 |
                 #awk '/Installing.*:/ {print $2}' | sed 's/:$//' | sort -u
                 #awk '/^Installing/ {print $2}' | sort -u
-                grep -oE '^Installing[[:space:]]+[^[:space:]]+' | cut -d' ' -f2
+                awk '/^Installing/ {print $0}'
+                #grep -oE '^Installing[[:space:]]+[^[:space:]]+' | cut -d' ' -f2
             )
             total=${#packages[@]}
             ;;
