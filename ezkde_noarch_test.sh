@@ -60,7 +60,7 @@ elif command -v zypper &>/dev/null; then
     UPDATE="zypper --quiet ref"
     LIST_CMD=(zypper install -y --dry-run)
     SRV_START="systemctl start sddm >/dev/null 2>&1"
-    SRV_TARGET="systemctl isolate graphical.target >/dev/null 2>&1"
+    SRV_TARGET=" "
 
 else
     fatal "No supported package manager found (apt-get, pacman, dnf, zypper)."
@@ -71,7 +71,7 @@ declare -A KDE_GROUP
 KDE_GROUP[Debian]="plasma-workspace pipewire sddm dolphin konsole"
 KDE_GROUP[Arch]="plasma-meta dolphin konsole"
 KDE_GROUP[Fedora]="dolphin plasma-desktop plasma-settings plasma-nm sddm-wayland-plasma kde-baseapps konsole kscreen sddm startplasma-wayland"
-KDE_GROUP[OpenSuse]="plasma6-desktop discover6 dolphin"
+KDE_GROUP[OpenSuse]="patterns-kde-kde_plasma plasma6-desktop discover6 dolphin sddm-config-wayland"
 
 # intro (now $DISTRO and $UPDATE are set)
 clear
