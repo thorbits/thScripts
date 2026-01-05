@@ -152,7 +152,7 @@ esac
 }
 
 end_install() {
-printf '\n\n eZkde for %s installation is complete!\n\n' "$DISTRO"
+printf ' eZkde for %s installation is complete!\n\n' "$DISTRO"
 read -rp $' Reboot (r) or start KDE now (k)? [r/k] ' choice
 case "${choice,,}" in
     k) eval "${SRV_START[@]}" && eval "${SRV_TARGET[@]}" ;;
@@ -226,7 +226,7 @@ main() {
     esac
     
     (( total )) || {
-    printf ' Nothing to do – All packages downloaded and installed.'
+    printf ' Nothing to do – All packages downloaded and installed.\n'
     enable_sddm
     end_install
     }
