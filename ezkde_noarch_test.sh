@@ -59,7 +59,7 @@ elif command -v zypper &>/dev/null; then
     PM=(zypper install -y)
     UPDATE="zypper --quiet ref"
     LIST_CMD=(zypper install -y --dry-run)
-    SRV_START="systemctl start sddm.service >/dev/null 2>&1"
+    SRV_START="systemctl start sddm >/dev/null 2>&1"
     SRV_TARGET="systemctl isolate graphical.target >/dev/null 2>&1"
 
 else
@@ -140,6 +140,26 @@ install_packages() {
         done
 }
 
+enable_sddm() {
+case "$DISTRO" in
+    Debian|Arch|Fedora)
+        systemctl enable sddm.service >/dev/null 2>&1
+        ;;
+    OpenSuse)
+        echo "sddm" >> /etc/inittab
+        ;;
+esac
+}
+
+end_install() {
+printf '\n\n eZkde for %s installation is complete!\n\n' "$DISTRO"
+read -rp $' Reboot (r) or start KDE now (k)? [r/k] ' choice
+case "${choice,,}" in
+    k) eval "${SRV_START[@]}" && eval "${SRV_TARGET[@]}" ;;
+    r) reboot ;;
+esac
+}
+
 main() {
     local OPTARG OPTIND opt
     while getopts 'b:c:e:' opt; do
@@ -158,6 +178,8 @@ main() {
     trap deinit-term exit
     trap 'init-term; progress-bar "$current" "$total"' WINCH
     init-term
+
+
 
     printf ' Preparing KDE packages for %s...\n\n' "$DISTRO"
     
@@ -203,7 +225,11 @@ main() {
             ;;
     esac
     
-    (( total )) || printf ' Nothing to do – KDE is already installed.\n\n' | goto end_install
+    (( total )) || {
+    printf ' Nothing to do – All packages downloaded and installed.\n\n'
+    enable_sddm
+    end_install
+    }
 
     # Batch installation loop
     local current=0
@@ -214,18 +240,8 @@ main() {
     done
     progress-bar "$total" "$total"
 
-    # Enable display manager
-    systemctl enable sddm.service >/dev/null 2>&1 | goto end_install
-    
-    end_install:
-    # End message
-    printf '\n\n eZkde for %s installation complete!\n\n' "$DISTRO"
-    read -rp $' Reboot (r) or start KDE now (k)? [r/k] ' choice
-    case "${choice,,}" in
-        k) eval "${SRV_START[@]}"; eval "${SRV_TARGET[@]}" ;;
-        r) reboot ;;
-    esac
-
+    enable_sddm
+    end_install
     deinit-term
 }
 
