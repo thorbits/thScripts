@@ -220,7 +220,7 @@ main() {
     esac
     
     (( total )) || {
-    printf ' Nothing to do – All packages already downloaded and installed.\n\n'
+    printf ' Nothing to do – All packages are up to date.\n\n'
     enable_sddm
     end_install
     }
