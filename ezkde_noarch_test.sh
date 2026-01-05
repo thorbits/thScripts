@@ -133,16 +133,11 @@ deinit-term() {
 }
 
 install_packages() {
-    #if [[ "$DISTRO" == "Fedora" ]]; then
-    #    printf '\r\e[2K -> Installing batch of %d packages...' "$#"
-    #    printf "y" | dnf install -y @kde-desktop-environment --exclude=*. >/dev/null
-    #else
         local pkg
         for pkg in "$@"; do
             printf '\r%-*s' "$COLUMNS" " -> Now downloading and installing: $pkg"
             "${PM[@]}" "$pkg" >/dev/null
         done
-    #fi
 }
 
 main() {
@@ -194,17 +189,15 @@ main() {
             ;;
         Fedora)
             mapfile -t packages < <(
-                #printf "%s\n" "$(dnf install --assumeno "${pkg_names[@]}" 2>/dev/null | tail -2 | grep -o '[0-9]\+' | head -1)"
                 "${LIST_CMD[@]}" "${pkg_names[@]}" 2>&1 |
-                awk 'NF>=5 && $1 != "Package" {printf $1}' | head -n -3 | wc -l
+                awk 'NF>=5 && $1 != "Package" {printf $1}' | head -n -3
             )
             total=${#packages[@]}
             ;;
         OpenSuse)
             mapfile -t packages < <(
                 "${LIST_CMD[@]}" "${pkg_names[@]}" 2>&1 |
-                awk '/new/ {for(i=1;i<=NF;i++) if ($i ~ /^[a-zA-Z0-9.-]+$/) print $i}' |
-                head -n -5
+                awk '/new/ {for(i=1;i<=NF;i++) if ($i ~ /^[a-zA-Z0-9.-]+$/) print $i}' | head -n -5                
             )
             total=${#packages[@]}
             ;;
@@ -224,11 +217,7 @@ main() {
     # Enable display manager
     systemctl enable sddm.service >/dev/null 2>&1
 
-    # For Fedora, also enable pipewire audio
-    if [[ "$DISTRO" == "Fedora" ]]; then
-        systemctl --user --global enable pipewire pipewire-pulse >/dev/null 2>&1 || true
-    fi
-    
+    # End message
     printf '\n\n eZkde for %s installation complete!\n\n' "$DISTRO"
     read -rp $' Reboot (r) or start KDE now (k)? [r/k] ' choice
     case "${choice,,}" in
