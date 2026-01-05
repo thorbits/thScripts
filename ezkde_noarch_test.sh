@@ -85,12 +85,6 @@ read -rp '' && eval "$UPDATE" || {
 
 progress-bar() {
     local current=$1 len=$2
-    # avoid division by zero
-    #if (( len == 0 )); then
-    #    printf '\r\e[K All KDE packages are already installed.\n\n'
-    #    exit 1
-    #fi
-
     # Calculate percentage and string length
     local perc_done=$((current * 100 / len))
     local suffix=" ($perc_done%)"
@@ -226,7 +220,7 @@ main() {
     esac
     
     (( total )) || {
-    printf ' Nothing to do – All packages downloaded and installed.\n\n'
+    printf ' Nothing to do – All packages downloaded and installed.\n'
     enable_sddm
     end_install
     }
