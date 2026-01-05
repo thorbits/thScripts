@@ -205,7 +205,7 @@ main() {
             #mapfile -t packages > /tmp/mapfile_temp < <( 
             mapfile -t packages < <(
                 "${LIST_CMD[@]}" "${pkg_names[@]}" 2>&1 |
-                awk '/installed:/,/new/ {for(i=1;i<=NF;i++) if ($i ~ /^[a-zA-Z0-9.-]+$/) print $i}' |
+                awk '/new/ {for(i=1;i<=NF;i++) if ($i ~ /^[a-zA-Z0-9.-]+$/) print $i}' |
                 head -n -5
                 #awk '/installed:/ {print $3; exit}'
                 #awk '{print $3}' | sort -u | wc -l
