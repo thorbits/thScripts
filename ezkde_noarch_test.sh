@@ -204,7 +204,9 @@ main() {
         OpenSuse)
             mapfile -t packages < <(
                 "${LIST_CMD[@]}" "${pkg_names[@]}" 2>&1 |
-                awk '/installed:/ {print $3; exit}'
+                awk '/installed:/,/new/ {for(i=1;i<=NF;i++) if ($i ~ /^[a-zA-Z0-9.-]+$/) print $i}' |
+                head -n -5
+                #awk '/installed:/ {print $3; exit}'
                 #awk '{print $3}' | sort -u | wc -l
                 #awk '/Installing.*:/ {print $2}' | sed 's/:$//' | sort -u
                 #awk '/^Installing/ {print $2}' | sort -u
