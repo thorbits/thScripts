@@ -150,7 +150,7 @@ printf ' eZkde for %s installation is complete!\n\n' "$DISTRO"
 read -rp $' Reboot (r) or start KDE now (k)? [r/k] ' choice
 case "${choice,,}" in
     k) eval "${SRV_START[@]}" && eval "${SRV_TARGET[@]}" ;;
-    r) echo; (for ((i=5;i>0;i--)); do printf "\r Rebooting in %d...\033[0K" $i; sleep 1; done) && exit 0; reboot ;;
+    r) echo; (for ((i=5;i>0;i--)); do printf "\r Rebooting in %d...\033[0K" $i; sleep 1; done) && reboot ;;
 esac
 }
 
