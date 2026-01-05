@@ -204,11 +204,12 @@ main() {
         OpenSuse)
             mapfile -t packages < <(
                 "${LIST_CMD[@]}" "${pkg_names[@]}" 2>&1 |
-                grep -oE '[0-9]+' | tail -n 1
+                awk '/installed:/ {print $3; exit}'
                 #awk '{print $3}' | sort -u | wc -l
                 #awk '/Installing.*:/ {print $2}' | sed 's/:$//' | sort -u
                 #awk '/^Installing/ {print $2}' | sort -u
                 #grep -oE '^Installing[[:space:]]+[^[:space:]]+' | cut -d' ' -f2
+                #grep -oE '[0-9]+' | tail -n 1
             )
             total=${#packages[@]}
             ;;
