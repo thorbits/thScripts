@@ -203,7 +203,7 @@ main() {
             ;;
     esac
     
-    (( total )) || { printf ' Nothing to do – KDE is already installed.\n\n'; exit 0; }
+    (( total )) || { printf ' Nothing to do – KDE is already installed.\n\n'; exit 0; } | goto end_install
 
     # Batch installation loop
     local current=0
@@ -215,8 +215,9 @@ main() {
     progress-bar "$total" "$total"
 
     # Enable display manager
-    systemctl enable sddm.service >/dev/null 2>&1
-
+    systemctl enable sddm.service >/dev/null 2>&1 | goto end_install
+    
+    end_install:
     # End message
     printf '\n\n eZkde for %s installation complete!\n\n' "$DISTRO"
     read -rp $' Reboot (r) or start KDE now (k)? [r/k] ' choice
