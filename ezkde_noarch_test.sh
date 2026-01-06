@@ -34,16 +34,12 @@ if   command -v apt-get  &>/dev/null; then
     PM=(apt-get install -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold")
     UPDATE="apt-get update -qq"
     LIST_CMD=(apt-get install --dry-run -qq)
-    SRV_START="systemctl start sddm >/dev/null 2>&1"
-    SRV_TARGET="systemctl isolate graphical.target >/dev/null 2>&1"
 
 elif command -v pacman  &>/dev/null; then
     DISTRO=Arch
     PM=(pacman -S --needed --noconfirm)
     UPDATE="pacman -Sy >/dev/null 2>&1"
     LIST_CMD=(pacman -Sp --print-format '%n')
-    SRV_START="systemctl start sddm >/dev/null 2>&1"
-    SRV_TARGET="systemctl isolate graphical.target >/dev/null 2>&1"
 
 elif command -v dnf     &>/dev/null; then
     DISTRO=Fedora
@@ -51,20 +47,20 @@ elif command -v dnf     &>/dev/null; then
     PM=(dnf install -y)
     UPDATE="dnf makecache >/dev/null 2>&1"
     LIST_CMD=(dnf install --assumeno)
-    SRV_START="systemctl start sddm >/dev/null 2>&1"
-    SRV_TARGET="systemctl isolate graphical.target >/dev/null 2>&1"
 
 elif command -v zypper &>/dev/null; then
     DISTRO=OpenSuse
     PM=(zypper install -y)
     UPDATE="zypper --quiet ref"
     LIST_CMD=(zypper install -y --dry-run)
-    SRV_START="systemctl start sddm >/dev/null 2>&1"
-    SRV_TARGET="systemctl isolate graphical.target >/dev/null 2>&1"
 
 else
     fatal "No supported package manager found (apt-get, pacman, dnf, zypper)."
 fi
+
+SRV_BOOT="systemctl enable sddm >/dev/null 2>&1"
+SRV_START="systemctl start sddm >/dev/null 2>&1"
+SRV_TARGET="systemctl isolate graphical.target >/dev/null 2>&1"
 
 # Map each distro to its native KDE/plasma group name
 declare -A KDE_GROUP
@@ -78,10 +74,7 @@ clear
 printf '\n\n Welcome %s, to eZkde for %s.\n\n' "$USER" "$DISTRO"
 printf ' KDE 6.5.x (Wayland only) will be installed with audio support (Pipewire) and a minimum of utilities.\n\n'
 printf ' Press Enter to continue or Ctrl+C to cancel.\n'
-read -rp '' && eval "$UPDATE" || {
-    printf '\n ERROR: no internet connection detected. Exiting.\n\n'
-    exit 1
-}
+read -rp '' && eval "$UPDATE" || fatal " ERROR: no internet connection detected. Exiting."
 
 progress-bar() {
     local current=$1 len=$2
@@ -132,17 +125,6 @@ install_packages() {
             printf '\r%-*s' "$COLUMNS" " -> Now downloading and installing: $pkg"
             "${PM[@]}" "$pkg" >/dev/null
         done
-}
-
-enable_sddm() {
-case "$DISTRO" in
-    Debian|Arch|Fedora|OpenSuse)
-        systemctl enable sddm.service >/dev/null 2>&1
-        ;;
-    #OpenSuse)
-    #    echo "sddm" >> /etc/inittab
-    #    ;;
-esac
 }
 
 end_install() {
@@ -233,7 +215,7 @@ main() {
     done
     progress-bar "$total" "$total"
 
-    enable_sddm
+    eval "${SRV_BOOT}"
     end_install
     deinit-term
 }
