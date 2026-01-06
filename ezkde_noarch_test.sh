@@ -70,95 +70,93 @@ echo
 case "$DISTRO" in
         Arch)
             cat << 'ART'
-                    -`
-                  .o+`
-                 `ooo/
-                `+oooo:
-               `+oooooo:
-               -+oooooo+:
-             `/:-:++oooo+:
-            `/++++/+++++++:
-           `/++++++++++++++:
-          `/+++ooooooooooooo/`
-         ./ooosssso++osssssso+`
-        .oossssso-````/ossssss+`
-       -osssssso.      :ssssssso.
-      :osssssss/        osssso+++.
-     /ossssssss/        +ssssooo/-
-   `/ossssso+/:-        -:/+osssso+-
-  `+sso+:-`                 `.-/+oso:
- `++:.                           `-/+/
- .`                                 `/
+                        -`
+                      .o+`
+                     `ooo/
+                    `+oooo:
+                   `+oooooo:
+                   -+oooooo+:
+                 `/:-:++oooo+:
+                `/++++/+++++++:
+               `/++++++++++++++:
+              `/+++ooooooooooooo/`
+             ./ooosssso++osssssso+`
+            .oossssso-````/ossssss+`
+           -osssssso.      :ssssssso.
+          :osssssss/        osssso+++.
+         /ossssssss/        +ssssooo/-
+       `/ossssso+/:-        -:/+osssso+-
+      `+sso+:-`                 `.-/+oso:
+     `++:.                           `-/+/
+     .`                                 `/
 ART
         ;;
         Debian)
             cat << 'ART'
-       _,met$$$$$gg.
-    ,g$$$$$$$$$$$$$$$P.
-  ,g$$P"        "\""Y$$.".
- ,$$P'              `$$$.
-',$$P       ,ggs.     `$$b:
-`d$$'     ,$P"'   .    $$$
- $$P      d$'     ,    $$P
- $$:      $$.   -    ,d$$'
- $$;      Y$b._   _,d$P'
- Y$$.    `.`"Y$$$$P"'
- `$$b      "-.__ 
-  `Y$$
-   `Y$$.
-     `$$b.
-       `Y$$b.
-          `"Y$b.
-              `"\""
+               _,met$$$$$gg.
+            ,g$$$$$$$$$$$$$$$P.
+          ,g$$P"        "\""Y$$.".
+         ,$$$P'              `$$$:
+        'd$$P       ,ggs.     `$$b:
+        `d$$'     ,$P"'   .    $$$
+         $$P      d$'     ,    $$P
+         $$:      $$.   -    ,d$$'
+         $$;      Y$b._   _,d$P'
+         Y$$.    `.`"Y$$$$P"'
+         `$$b      "-.__ 
+          `Y$$
+           `Y$$.
+             `$$b.
+               `Y$$b.
+                  `"Y$b.
+                      `"\""
 ART
         ;;
         Fedora)
             cat << 'ART'
-             .',;::::;,'.
-         .';:cccccccccccc:;,.
-      .;cccccccccccccccccccccc;.
-    .:cccccccccccccccccccccccccc:.
-  .;ccccccccccccc;.:dddl:.;ccccccc;.
- .:ccccccccccccc;OWMKOOXMWd;ccccccc:.
-.:ccccccccccccc;KMMc;cc;xMMc;ccccccc:.
-,cccccccccccccc;MMM.;cc;;WW:;cccccccc,
-:cccccccccccccc;MMM.;cccccccccccccccc:
-:ccccccc;oxOOOo;MMM0OOk.;cccccccccccc:
-cccccc;0MMKxdd:;MMMkddc.;cccccccccccc;
-ccccc;XM0';cccc;MMM.;cccccccccccccccc'
-ccccc;MMo;ccccc;MMW.;ccccccccccccccc;
-ccccc;0MNc.ccc.xMMd;ccccccccccccccc;
-cccccc;dNMWXXXWM0:;cccccccccccccc:,
-cccccccc;.:odl:.;cccccccccccccc:,.
-:cccccccccccccccccccccccccccc:'.
-.:cccccccccccccccccccccc:;,..
-  '::cccccccccccccc::;,.
+                 .',;::::;,'.
+             .';:cccccccccccc:;,.
+          .;cccccccccccccccccccccc;.
+        .:cccccccccccccccccccccccccc:.
+      .;ccccccccccccc;.:dddl:.;ccccccc;.
+     .:ccccccccccccc;OWMKOOXMWd;ccccccc:.
+    .:ccccccccccccc;KMMc;cc;xMMc;ccccccc:.
+    ,cccccccccccccc;MMM.;cc;;WW:;cccccccc,
+    :cccccccccccccc;MMM.;cccccccccccccccc:
+    :ccccccc;oxOOOo;MMM0OOk.;cccccccccccc:
+    cccccc;0MMKxdd:;MMMkddc.;cccccccccccc;
+    ccccc;XM0';cccc;MMM.;cccccccccccccccc'
+    ccccc;MMo;ccccc;MMW.;ccccccccccccccc;
+    ccccc;0MNc.ccc.xMMd;ccccccccccccccc;
+    cccccc;dNMWXXXWM0:;cccccccccccccc:,
+    cccccccc;.:odl:.;cccccccccccccc:,.
+    :cccccccccccccccccccccccccccc:'.
+    .:cccccccccccccccccccccc:;,..
+      '::cccccccccccccc::;,.
 ART
         ;;
         OpenSuse)
             cat << 'ART'
-           ,...,                                 
-     .,:lloooooc;.
-   ,ool'     oo,;oo:
- .lo'        oo.   oo:
-.oo.         oo.    oo:
-:ol          oo.    'oo
-:oo         .oo.    .oo.
-.oooooooooooooo.    .oo.
- ;oo.               .oo.
-  'oo,              .oo.
-    "ooc,',,,,,,,,,,:ooc,,,,,,,,,,,
-       ':cooooooooooooooooooooooooool;.
-                    .oo.             .oo;
-                    .oo.               .oo.
-                    .oo.    'oooooooooo:ooo.
-                    .oo.    'oo.         col
-                    .oo'    'oo          col
-                     coo    'oo          oo'
-                      coc   'oo        .lo,
-                       `oo, 'oo      .:oo
-                         'ooooc,, ,:lol
-                            `''"clc"'      
+               ,...,                                 
+         .,:lloooooc;.
+       ,ool'     oo,;oo:
+     .lo'        oo.   oo:
+    .oo.         oo.    oo:
+    :ol          oo.    'oo
+    :oo         .oo.    .oo.
+    .oooooooooooooo.    .oo.
+     ;oo.               .oo.
+        "ooc,',,,,,,,,,,:ooc,,,,,,,,,,,
+           ':cooooooooooooooooooooooooool;.
+                        .oo.             .oo;
+                        .oo.    'oooooooooo:ooo.
+                        .oo.    'oo.         col
+                        .oo'    'oo          col
+                         coo    'oo          oo'
+                          coc   'oo        .lo,
+                           `oo, 'oo      .:oo
+                             'ooooc,, ,:lol
+                                `''"clc"'      
 ART
         ;;
 esac
