@@ -34,7 +34,7 @@ if   command -v apt-get  &>/dev/null; then
     PM=(apt-get install -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold")
     UPDATE="apt-get update -qq"
     LIST_CMD=(apt-get install --dry-run -qq)
-    SRV_START="systemctl start sddm.service >/dev/null 2>&1"
+    SRV_START="systemctl start sddm >/dev/null 2>&1"
     SRV_TARGET="systemctl isolate graphical.target >/dev/null 2>&1"
 
 elif command -v pacman  &>/dev/null; then
@@ -42,7 +42,7 @@ elif command -v pacman  &>/dev/null; then
     PM=(pacman -S --needed --noconfirm)
     UPDATE="pacman -Sy >/dev/null 2>&1"
     LIST_CMD=(pacman -Sp --print-format '%n')
-    SRV_START="systemctl start sddm.service >/dev/null 2>&1"
+    SRV_START="systemctl start sddm >/dev/null 2>&1"
     SRV_TARGET="systemctl isolate graphical.target >/dev/null 2>&1"
 
 elif command -v dnf     &>/dev/null; then
@@ -51,7 +51,7 @@ elif command -v dnf     &>/dev/null; then
     PM=(dnf install -y)
     UPDATE="dnf makecache >/dev/null 2>&1"
     LIST_CMD=(dnf install --assumeno)
-    SRV_START="systemctl start sddm.service >/dev/null 2>&1"
+    SRV_START="systemctl start sddm >/dev/null 2>&1"
     SRV_TARGET="systemctl isolate graphical.target >/dev/null 2>&1"
 
 elif command -v zypper &>/dev/null; then
@@ -60,7 +60,7 @@ elif command -v zypper &>/dev/null; then
     UPDATE="zypper --quiet ref"
     LIST_CMD=(zypper install -y --dry-run)
     SRV_START="systemctl start sddm >/dev/null 2>&1"
-    SRV_TARGET=" "
+    SRV_TARGET="systemctl isolate graphical.target >/dev/null 2>&1"
 
 else
     fatal "No supported package manager found (apt-get, pacman, dnf, zypper)."
@@ -149,7 +149,8 @@ end_install() {
 printf ' eZkde for %s installation is complete!\n\n' "$DISTRO"
 read -rp $' Reboot (r) or start KDE now (k)? [r/k] ' choice
 case "${choice,,}" in
-    k) eval "${SRV_START[@]}" && eval "${SRV_TARGET[@]}" ;;
+    #k) eval "${SRV_START[@]}" && eval "${SRV_TARGET[@]}" ;;
+    k) eval "${SRV_START}" ;;
     r) echo; (for ((i=5;i>0;i--)); do printf "\r Rebooting in %d...\033[0K" $i; sleep 1; done) && reboot ;;
 esac
 }
@@ -172,8 +173,6 @@ main() {
     trap deinit-term exit
     trap 'init-term; progress-bar "$current" "$total"' WINCH
     init-term
-
-
 
     printf ' Preparing KDE packages for %s...\n\n' "$DISTRO"
     
