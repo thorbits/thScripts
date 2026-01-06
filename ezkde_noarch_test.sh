@@ -261,6 +261,13 @@ main() {
     local packages=() total
 
     case "$DISTRO" in
+        Arch)
+            mapfile -t packages < <(
+                "${LIST_CMD[@]}" "${pkg_names[@]}" 2>&1 |
+                grep -v '^warning' || true
+            )
+            total=${#packages[@]}
+            ;;
         Debian)
             # inherit the user’s current locale 
             current_locale=${LC_ALL:-${LANG:-C.UTF-8}}
@@ -272,13 +279,6 @@ main() {
             mapfile -t packages < <(
                 "${LIST_CMD[@]}" "${pkg_names[@]}" 2>&1 |
                 awk '/^Inst / {print $2}'
-            )
-            total=${#packages[@]}
-            ;;
-        Arch)
-            mapfile -t packages < <(
-                "${LIST_CMD[@]}" "${pkg_names[@]}" 2>&1 |
-                grep -v '^warning' || true
             )
             total=${#packages[@]}
             ;;
