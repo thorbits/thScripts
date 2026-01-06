@@ -201,8 +201,11 @@ main() {
     esac
     
     (( total )) || {
-    printf ' Nothing to do – All packages are up to date.\n\n'; eval "${SRV_BOOT}"
+    printf ' Nothing to do – All packages are up to date.\n\n'
+    eval "${SRV_BOOT}"
     end_install
+    deinit-term
+    return 0
     }
 
     # Batch installation loop
