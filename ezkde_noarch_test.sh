@@ -166,7 +166,7 @@ printf ' # Welcome %s, to eZkde for %s. #\n' "$USER" "$DISTRO"
 printf ' #---------------------------------------------------#\n'
 printf ' # The latest version of KDE 6.5.x (Wayland session) #\n # will be installed with audio support (Pipewire)   #\n # and a minimum of utilities.                       #\n'
 printf ' #---------------------------------------------------#\n\n'
-printf ' # Press Enter to continue or Ctrl+C to cancel. #\n'
+printf ' Press Enter to continue or Ctrl+C to cancel.\n'
 read -rp '' && eval "$UPDATE" || fatal " ERROR: no internet connection detected. Exiting."
 
 progress-bar() {
