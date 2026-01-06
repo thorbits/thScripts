@@ -134,7 +134,7 @@ enable_sddm() {
 }
 
 end_install() {
-printf ' eZkde for %s installation is complete!\n\n' "$DISTRO"
+printf '\n eZkde for %s installation successful.\n\n' "$DISTRO"
 read -rp $' Reboot (r) or start KDE now (k)? [r/k] ' choice
 case "${choice,,}" in
     #k) eval "${SRV_START[@]}" && eval "${SRV_TARGET[@]}" ;;
