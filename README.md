@@ -27,7 +27,8 @@ eZkde is a shell script designed to automate the installation of a minimal KDE 6
 ## Installation and Usage
 
 1.  **Get the script -**
-    This command download `ezkde_noarch.sh` , save it to /usr/local/bin/ ,make it executable then run the script (be sure to have administrative rights).
+    This command download `ezkde_noarch.sh` , save it to /usr/local/bin/ ,make it executable then run the script
+    (be sure to have administrative rights).
 
     Debian
     ```bash
@@ -48,13 +49,13 @@ eZkde is a shell script designed to automate the installation of a minimal KDE 6
     zypper --quiet ref && zypper install -y curl >/dev/null 2>&1 && curl -fsSL https://raw.githubusercontent.com/thorbits/thScripts/refs/heads/main/ezkde_noarch.sh -o /usr/local/bin/ezkde_noarch.sh && chmod +x /usr/local/bin/ezkde_noarch.sh && ezkde_noarch.sh
     ```
 
-2.  **Follow On-Screen Prompts -**
+3.  **Follow On-Screen Prompts -**
     The script will display progress information and prompts during execution.  These prompts may include:
     *   Confirmation to proceed with the installation.
     *   Automatic components download.
     *   Progress of components intallation.
 
-3.  **Reboot -**
+4.  **Reboot -**
     After the installation is complete, the script will prompt you to reboot your system. Choose "r" to reboot. The system will restart, and you should be greeted with the KDE 6 login screen (SDDM).
     You can also directly log in a KDE Wayland session right after the installation.
 
