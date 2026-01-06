@@ -59,8 +59,8 @@ else
 fi
 
 #SRV_BOOT="systemctl enable sddm >/dev/null 2>&1"
-SRV_START="systemctl start sddm >/dev/null 2>&1"
-SRV_TARGET="systemctl isolate graphical.target >/dev/null 2>&1"
+#SRV_START="systemctl start sddm"
+#SRV_TARGET="systemctl isolate graphical.target >/dev/null 2>&1"
 
 # Map each distro to its native KDE/plasma group name
 declare -A KDE_GROUP
@@ -138,7 +138,7 @@ printf ' eZkde for %s installation is complete!\n\n' "$DISTRO"
 read -rp $' Reboot (r) or start KDE now (k)? [r/k] ' choice
 case "${choice,,}" in
     #k) eval "${SRV_START[@]}" && eval "${SRV_TARGET[@]}" ;;
-    k) eval "${SRV_START[@]}" ;;
+    k) systemctl start sddm ;;
     r) echo; (for ((i=5;i>0;i--)); do printf "\r Rebooting in %d...\033[0K" $i; sleep 1; done) && reboot ;;
 esac
 }
@@ -207,7 +207,7 @@ main() {
     esac
     
     (( total )) || {
-    deinit-term
+    #deinit-term
     printf ' Nothing to do – All packages are up to date.\n\n'
     enable_sddm
     end_install
