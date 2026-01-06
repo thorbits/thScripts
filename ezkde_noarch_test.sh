@@ -29,21 +29,20 @@ fatal() {
     exit 1
 }
 
-if   command -v apt-get  &>/dev/null; then
-    DISTRO=Debian
-    PM=(apt-get install -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold")
-    UPDATE="apt-get update -qq"
-    LIST_CMD=(apt-get install --dry-run -qq)
-
-elif command -v pacman  &>/dev/null; then
+if command -v pacman &>/dev/null; then
     DISTRO=Arch
     PM=(pacman -S --needed --noconfirm)
     UPDATE="pacman -Sy >/dev/null 2>&1"
     LIST_CMD=(pacman -Sp --print-format '%n')
 
-elif command -v dnf     &>/dev/null; then
+elif command -v apt-get &>/dev/null; then
+    DISTRO=Debian
+    PM=(apt-get install -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold")
+    UPDATE="apt-get update -qq"
+    LIST_CMD=(apt-get install --dry-run -qq)
+
+elif command -v dnf &>/dev/null; then
     DISTRO=Fedora
-    #PM=(dnf install -y --setopt=install_weak_deps=False)
     PM=(dnf install -y)
     UPDATE="dnf makecache >/dev/null 2>&1"
     LIST_CMD=(dnf install --assumeno)
@@ -58,19 +57,111 @@ else
     fatal "No supported package manager found (apt-get, pacman, dnf, zypper)."
 fi
 
-#SRV_BOOT="systemctl enable sddm >/dev/null 2>&1"
-#SRV_START="systemctl start sddm"
-#SRV_TARGET="systemctl isolate graphical.target >/dev/null 2>&1"
-
 # map each distro to its native KDE/plasma packages
 declare -A KDE_GROUP
-KDE_GROUP[Debian]="plasma-workspace pipewire sddm dolphin konsole"
 KDE_GROUP[Arch]="plasma-meta dolphin konsole"
+KDE_GROUP[Debian]="plasma-workspace pipewire sddm dolphin konsole"
 KDE_GROUP[Fedora]="dolphin plasma-desktop plasma-settings plasma-nm sddm-wayland-plasma kde-baseapps konsole kscreen sddm startplasma-wayland"
 KDE_GROUP[OpenSuse]="patterns-kde-kde_plasma plasma6-desktop discover6 dolphin sddm-config-wayland"
 
 # intro (now $DISTRO and $UPDATE are set)
 clear
+echo
+case "$DISTRO" in
+        Arch)
+        cat << 'ART'
+                    -`
+                  .o+`
+                 `ooo/
+                `+oooo:
+               `+oooooo:
+               -+oooooo+:
+             `/:-:++oooo+:
+            `/++++/+++++++:
+           `/++++++++++++++:
+          `/+++ooooooooooooo/`
+         ./ooosssso++osssssso+`
+        .oossssso-````/ossssss+`
+       -osssssso.      :ssssssso.
+      :osssssss/        osssso+++.
+     /ossssssss/        +ssssooo/-
+   `/ossssso+/:-        -:/+osssso+-
+  `+sso+:-`                 `.-/+oso:
+ `++:.                           `-/+/
+ .`                                 `/
+ART
+        Debian)
+        cat << 'ART'
+          `.-::---..
+      .:++++ooooosssoo:.
+    .+o++::.      `.:oos+.
+   :oo:.`             -+oo:
+ `+o/`    .::::::-.    .++-`
+`/s/    .yyyyyyyyyyo:   +o-`
+`so     .ss       ohyo` :s-:
+`s/     .ss  h  m  myy/ /s``
+`s:     `oo  s  m  Myy+-o:`
+`oo      :+sdoohyoydyso/.
+ :o.      .:////////++:
+ `/++        -:::::-
+  `++-
+   `/+-
+     .+/.
+       .:+-.
+          `--.``
+ART
+        ;;
+        Fedora)
+        cat << 'ART'
+             .',;::::;,'.
+         .';:cccccccccccc:;,.
+      .;cccccccccccccccccccccc;.
+    .:cccccccccccccccccccccccccc:.
+  .;ccccccccccccc;.:dddl:.;ccccccc;.
+ .:ccccccccccccc;OWMKOOXMWd;ccccccc:.
+.:ccccccccccccc;KMMc;cc;xMMc;ccccccc:.
+,cccccccccccccc;MMM.;cc;;WW:;cccccccc,
+:cccccccccccccc;MMM.;cccccccccccccccc:
+:ccccccc;oxOOOo;MMM0OOk.;cccccccccccc:
+cccccc;0MMKxdd:;MMMkddc.;cccccccccccc;
+ccccc;XM0';cccc;MMM.;cccccccccccccccc'
+ccccc;MMo;ccccc;MMW.;ccccccccccccccc;
+ccccc;0MNc.ccc.xMMd;ccccccccccccccc;
+cccccc;dNMWXXXWM0:;cccccccccccccc:,
+cccccccc;.:odl:.;cccccccccccccc:,.
+:cccccccccccccccccccccccccccc:'.
+.:cccccccccccccccccccccc:;,..
+  '::cccccccccccccc::;,.
+ART
+        ;;
+        OpenSuse)
+        cat << 'ART'
+           ,...,                                 
+     .,:lloooooc;.
+   ,ool'     oo,;oo:
+ .lo'        oo.   oo:
+.oo.         oo.    oo:
+:ol          oo.    'oo
+:oo         .oo.    .oo.
+.oooooooooooooo.    .oo.
+ ;oo.               .oo.
+  'oo,              .oo.
+    "ooc,',,,,,,,,,,:ooc,,,,,,,,,,,
+       ':cooooooooooooooooooooooooool;.
+                    .oo.             .oo;
+                    .oo.               .oo.
+                    .oo.    'oooooooooo:ooo.
+                    .oo.    'oo.         col
+                    .oo'    'oo          col
+                     coo    'oo          oo'
+                      coc   'oo        .lo,
+                       `oo, 'oo      .:oo
+                         'ooooc,, ,:lol
+                            `''"clc"'      
+ART
+        ;;
+esac
+
 printf '\n\n Welcome %s, to eZkde for %s.\n\n' "$USER" "$DISTRO"
 printf ' KDE 6.5.x (Wayland only) will be installed with audio support (Pipewire) and a minimum of utilities.\n\n'
 printf ' Press Enter to continue or Ctrl+C to cancel.\n'
