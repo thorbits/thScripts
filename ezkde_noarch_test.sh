@@ -161,7 +161,7 @@ ART
         ;;
 esac
 
-echo
+printf '\n\n'
 printf '         Welcome %s, to eZkde for %s.\n' "$USER" "$DISTRO"
 printf ' #---------------------------------------------------#\n'
 printf ' # The latest version of KDE 6.5.x (Wayland session) #\n # will be installed with audio support (Pipewire)   #\n # and a minimum of utilities.                       #\n'
