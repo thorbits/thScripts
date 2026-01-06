@@ -58,7 +58,7 @@ else
     fatal "No supported package manager found (apt-get, pacman, dnf, zypper)."
 fi
 
-SRV_BOOT="systemctl enable sddm >/dev/null 2>&1"
+#SRV_BOOT="systemctl enable sddm >/dev/null 2>&1"
 SRV_START="systemctl start sddm >/dev/null 2>&1"
 SRV_TARGET="systemctl isolate graphical.target >/dev/null 2>&1"
 
@@ -125,6 +125,12 @@ install_packages() {
             printf '\r%-*s' "$COLUMNS" " -> Now downloading and installing: $pkg"
             "${PM[@]}" "$pkg" >/dev/null
         done
+}
+
+enable_sddm() {
+    if ! systemctl is-enabled sddm &>/dev/null; then
+        systemctl enable sddm >/dev/null 2>&1
+    fi
 }
 
 end_install() {
@@ -202,7 +208,7 @@ main() {
     
     (( total )) || {
     printf ' Nothing to do – All packages are up to date.\n\n'
-    eval "${SRV_BOOT}"
+    enable_sddm
     end_install
     deinit-term
     return 0
@@ -217,7 +223,7 @@ main() {
     done
     progress-bar "$total" "$total"
 
-    eval "${SRV_BOOT}"
+    enable_sddm
     end_install
     deinit-term
 }
