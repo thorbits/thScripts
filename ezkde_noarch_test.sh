@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#
+
 #	_______
 #	\_   _/
 #	  |_|horbits 
@@ -11,7 +11,7 @@
 # (PipeWire) and a minimum of utilities.
 # ------------------------------------------------------------
 
-# Must be run as root
+# must be run as root
 if [[ "$(id -u)" -ne 0 ]]; then
     printf " This script must be run as root. Use sudo.\n"
     exit 1
@@ -43,7 +43,7 @@ elif command -v pacman  &>/dev/null; then
 
 elif command -v dnf     &>/dev/null; then
     DISTRO=Fedora
-    # PM=(dnf install -y --setopt=install_weak_deps=False)
+    #PM=(dnf install -y --setopt=install_weak_deps=False)
     PM=(dnf install -y)
     UPDATE="dnf makecache >/dev/null 2>&1"
     LIST_CMD=(dnf install --assumeno)
@@ -62,7 +62,7 @@ fi
 #SRV_START="systemctl start sddm"
 #SRV_TARGET="systemctl isolate graphical.target >/dev/null 2>&1"
 
-# Map each distro to its native KDE/plasma group name
+# map each distro to its native KDE/plasma packages
 declare -A KDE_GROUP
 KDE_GROUP[Debian]="plasma-workspace pipewire sddm dolphin konsole"
 KDE_GROUP[Arch]="plasma-meta dolphin konsole"
@@ -78,13 +78,13 @@ read -rp '' && eval "$UPDATE" || fatal " ERROR: no internet connection detected.
 
 progress-bar() {
     local current=$1 len=$2
-    # Calculate percentage and string length
+    # calculate percentage and string length
     local perc_done=$((current * 100 / len))
     local suffix=" ($perc_done%)"
     local length=$((COLUMNS - ${#suffix} - 4))
     local num_bars=$((perc_done * length / 100))
 
-    # Construct the bar string
+    # construct the bar string
     local i
     local s='['
     for ((i = 0; i < num_bars; i++)); do
@@ -164,13 +164,13 @@ main() {
 
     printf ' Preparing KDE packages for %s...\n\n' "$DISTRO"
     
-    # Build exact list of packages that will be installed
+    # build exact list of packages that will be installed
     IFS=' ' read -r -a pkg_names <<< "${KDE_GROUP[$DISTRO]}"
     local packages=() total
 
     case "$DISTRO" in
         Debian)
-            # Pre-seed to inherit the user’s current locale 
+            # inherit the user’s current locale 
             current_locale=${LC_ALL:-${LANG:-C.UTF-8}}
             current_locale=${current_locale%%.*}.UTF-8
             echo "locales locales/default_environment_locale select $current_locale" | debconf-set-selections
@@ -214,7 +214,7 @@ main() {
     return 0
     }
 
-    # Batch installation loop
+    # batch installation loop
     local current=0
     for ((i = 0; i < total; i += BATCHSIZE)); do
         install_packages "${packages[@]:i:BATCHSIZE}"
@@ -228,5 +228,5 @@ main() {
     deinit-term
 }
 
-# Run only when executed, not sourced
+# run only when executed, not sourced
 [[ ${BASH_SOURCE[0]} == "$0" ]] && main "$@"
