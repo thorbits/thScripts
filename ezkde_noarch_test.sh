@@ -202,7 +202,7 @@ main() {
     
     (( total )) || {
     printf ' Nothing to do – All packages are up to date.\n\n'
-    enable_sddm
+    eval "${SRV_BOOT}"
     end_install
     }
 
