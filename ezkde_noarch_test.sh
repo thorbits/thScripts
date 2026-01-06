@@ -207,10 +207,10 @@ main() {
     esac
     
     (( total )) || {
+    deinit-term
     printf ' Nothing to do – All packages are up to date.\n\n'
     enable_sddm
     end_install
-    deinit-term
     return 0
     }
 
