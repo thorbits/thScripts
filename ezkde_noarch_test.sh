@@ -69,7 +69,7 @@ clear
 echo
 case "$DISTRO" in
         Arch)
-        cat << 'ART'
+            cat << 'ART'
                     -`
                   .o+`
                  `ooo/
@@ -90,8 +90,9 @@ case "$DISTRO" in
  `++:.                           `-/+/
  .`                                 `/
 ART
+        ;;
         Debian)
-        cat << 'ART'
+            cat << 'ART'
        _,met$$$$$gg.
     ,g$$$$$$$$$$$$$$$P.
   ,g$$P"        "\""Y$$.".
@@ -112,7 +113,7 @@ ART
 ART
         ;;
         Fedora)
-        cat << 'ART'
+            cat << 'ART'
              .',;::::;,'.
          .';:cccccccccccc:;,.
       .;cccccccccccccccccccccc;.
@@ -135,7 +136,7 @@ cccccccc;.:odl:.;cccccccccccccc:,.
 ART
         ;;
         OpenSuse)
-        cat << 'ART'
+            cat << 'ART'
            ,...,                                 
      .,:lloooooc;.
    ,ool'     oo,;oo:
