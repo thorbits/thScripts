@@ -136,12 +136,12 @@ install_packages() {
 
 enable_sddm() {
 case "$DISTRO" in
-    Debian|Arch|Fedora)
+    Debian|Arch|Fedora|OpenSuse)
         systemctl enable sddm.service >/dev/null 2>&1
         ;;
-    OpenSuse)
-        echo "sddm" >> /etc/inittab
-        ;;
+    #OpenSuse)
+    #    echo "sddm" >> /etc/inittab
+    #    ;;
 esac
 }
 
