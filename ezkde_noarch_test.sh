@@ -92,23 +92,23 @@ case "$DISTRO" in
 ART
         Debian)
         cat << 'ART'
-          `.-::---..
-      .:++++ooooosssoo:.
-    .+o++::.      `.:oos+.
-   :oo:.`             -+oo:
- `+o/`    .::::::-.    .++-`
-`/s/    .yyyyyyyyyyo:   +o-`
-`so     .ss       ohyo` :s-:
-`s/     .ss  h  m  myy/ /s``
-`s:     `oo  s  m  Myy+-o:`
-`oo      :+sdoohyoydyso/.
- :o.      .:////////++:
- `/++        -:::::-
-  `++-
-   `/+-
-     .+/.
-       .:+-.
-          `--.``
+       _,met$$$$$gg.
+    ,g$$$$$$$$$$$$$$$P.
+  ,g$$P"        "\""Y$$.".
+ ,$$P'              `$$$.
+',$$P       ,ggs.     `$$b:
+`d$$'     ,$P"'   .    $$$
+ $$P      d$'     ,    $$P
+ $$:      $$.   -    ,d$$'
+ $$;      Y$b._   _,d$P'
+ Y$$.    `.`"Y$$$$P"'
+ `$$b      "-.__ 
+  `Y$$
+   `Y$$.
+     `$$b.
+       `Y$$b.
+          `"Y$b.
+              `"\""
 ART
         ;;
         Fedora)
