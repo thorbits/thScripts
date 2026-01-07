@@ -304,7 +304,6 @@ main() {
     printf ' Nothing to do – All packages are up to date.\n'
     enable_sddm
     end_install
-    return 0
     }
 
     # batch installation loop
