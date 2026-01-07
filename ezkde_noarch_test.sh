@@ -230,13 +230,12 @@ enable_sddm() {
 }
 
 end_install() {
-printf '\n eZkde for %s installation successful.\n\n' "$DISTRO"
 read -n1 -s -r -p $' Reboot (r) or start KDE now (k)? [r/k] ' choice
 printf '\n'
 case "${choice,,}" in
     k) systemctl start sddm ;;
     r) echo; (for ((i=5;i>0;i--)); do printf "\r Rebooting in %d...\033[0K" "$i"; sleep 1; done) && reboot ;;
-    *) :  # do nothing
+    *) end_install
 esac
 }
 
@@ -332,6 +331,7 @@ main() {
     esac
 
     enable_sddm
+    printf '\n eZkde for %s installation successful.\n\n' "$DISTRO"
     end_install
     deinit-term
 }
