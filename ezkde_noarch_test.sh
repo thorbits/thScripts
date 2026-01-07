@@ -236,8 +236,6 @@ prompt_reboot() {
 }
 
 end_install() {
-    printf '\n eZkde for %s installation successful.\n\n' "$DISTRO"
-
     while true; do
         printf '\r' # carriage‑return to the start of the current line
         printf '\033[2K' # clear the entire line (optional but nice)
