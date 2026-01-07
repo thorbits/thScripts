@@ -213,10 +213,17 @@ deinit-term() {
 
 install_packages() {
         local pkg
-        for pkg in "$@"; do
-            printf '\r%-*s' "$COLUMNS" " -> Now downloading and installing: $pkg"
-            "${PM[@]}" "$pkg" >/dev/null
-        done
+        if [[ "$distro" == "Fedora" ]]; then
+            for pkg in "${packages[@]}"; do
+                printf '\r%-*s' "$COLUMNS" " -> Now downloading and installing: $pkg"
+                "${PM[@]}" "$pkg" >/dev/null
+            done
+        else
+            for pkg in "$@"; do
+                printf '\r%-*s' "$COLUMNS" " -> Now downloading and installing: $pkg"
+                "${PM[@]}" "$pkg" >/dev/null
+            done
+        fi
 }
 
 enable_sddm() {
