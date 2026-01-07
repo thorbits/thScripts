@@ -171,6 +171,11 @@ read -rp '' && eval "$UPDATE" || fatal " ERROR: no internet connection detected.
 
 progress-bar() {
     local current=$1 len=$2
+    # avoid division by zero
+    if (( len == 0 )); then
+        printf '\r\e[K All KDE packages are already installed.\n\n'
+        exit 1
+    fi
     # calculate percentage and string length
     local perc_done=$((current * 100 / len))
     local suffix=" ($perc_done%)"
