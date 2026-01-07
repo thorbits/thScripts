@@ -229,14 +229,25 @@ enable_sddm() {
     systemctl is-enabled sddm &>/dev/null || rm -f /etc/systemd/system/display-manager.service && systemctl enable sddm
 }
 
+prompt_reboot() {
+    printf '\r\033[2K'
+    read -n1 -s -r -p $'Reboot (r) or start KDE now (k)? [r/k] ' choice
+    printf '\n'
+}
+
 end_install() {
-read -n1 -s -r -p $' Reboot (r) or start KDE now (k)? [r/k] ' choice
-printf '\n'
-case "${choice,,}" in
-    k) systemctl start sddm ;;
-    r) echo; (for ((i=5;i>0;i--)); do printf "\r Rebooting in %d...\033[0K" "$i"; sleep 1; done) && reboot ;;
-    *) end_install
-esac
+    prompt_reboot
+
+    case "${choice,,}" in
+        k)  systemctl start sddm ;;
+        r)  echo
+            (for ((i=5; i>0; i--)); do
+                 printf "\r Rebooting in %d...\033[0K" "$i"
+                 sleep 1
+             done) && reboot ;;
+        *)  prompt_reboot
+            ;;
+    esac
 }
 
 main() {
