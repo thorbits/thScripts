@@ -61,7 +61,7 @@ fi
 declare -A KDE_GROUP
 KDE_GROUP[Arch]="plasma-meta dolphin konsole"
 KDE_GROUP[Debian]="plasma-workspace pipewire sddm dolphin konsole"
-KDE_GROUP[Fedora]="dolphin plasma-desktop plasma-settings plasma-nm sddm-wayland-plasma kde-baseapps konsole kscreen sddm startplasma-wayland"
+KDE_GROUP[Fedora]="plasma-desktop plasma-settings plasma-nm sddm-wayland-plasma kde-baseapps konsole kscreen sddm startplasma-wayland dolphin"
 KDE_GROUP[OpenSuse]="patterns-kde-kde_plasma plasma6-desktop discover6 dolphin sddm-config-wayland"
 
 # intro (now $DISTRO and $UPDATE are set)
