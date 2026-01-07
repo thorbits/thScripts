@@ -309,25 +309,12 @@ main() {
 
     # batch installation loop
     local current=0
-
-    case "$DISTRO" in
-        Fedora)
-            install_packages
-            current=$((current + BATCHSIZE))
-            progress-bar "$current" "$total"
-            # Ensure progress bar finishes at 100%
-            progress-bar "$total" "$total"
-            ;;
-        *)
-            for ((i = 0; i < total; i += BATCHSIZE)); do
-                install_packages "${packages[@]:i:BATCHSIZE}"
-                current=$((current + BATCHSIZE))
-                progress-bar "$current" "$total"
-            done
-            # Ensure progress bar finishes at 100%
-            progress-bar "$total" "$total"
-            ;;
-    esac
+    for ((i = 0; i < total; i += BATCHSIZE)); do
+        install_packages "${packages[@]:i:BATCHSIZE}"
+        current=$((current + BATCHSIZE))
+        progress-bar "$current" "$total"
+    done
+    progress-bar "$total" "$total"
 
     enable_sddm
     end_install
