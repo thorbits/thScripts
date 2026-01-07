@@ -308,7 +308,7 @@ main() {
     
     (( total )) || {
     #deinit-term
-    printf ' Nothing to do – All packages are up to date.\n\n'
+    printf ' Nothing to do – All packages are up to date.\n'
     enable_sddm
     end_install
     return 0
