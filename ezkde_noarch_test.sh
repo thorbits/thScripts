@@ -299,12 +299,12 @@ main() {
             ;;
     esac
     
-    (( total )) || {
-    #deinit-term
-    printf ' Nothing to do – All packages are up to date.\n'
-    enable_sddm
-    end_install
-    }
+    if (( total == 0 )); then
+        printf ' Nothing to do – All packages are up to date.\n'
+        enable_sddm
+        end_install
+        return 0
+    fi
 
     # batch installation loop
     local current=0
