@@ -292,7 +292,7 @@ main() {
         Fedora)
             mapfile -t packages < <(
                 "${LIST_CMD[@]}" "${pkg_names[@]}" 2>&1 |
-                awk '!/(^$|^=|---|Dependencies resolved|Transaction Summary|Last metadata|Running transaction|Total download size|^Package |^Arch |^Version |^Repository |^Size |Installing|Updating|Repositories)/ {print $1}'
+                awk '!/(^$|^=|---|Dependencies resolved|Transaction Summary|Last metadata|Running transaction|Total download size|^Package |^Arch |^Version |^Repository |^Size |Installing|Updating|Repositories|Total)/ {print $1}'
             )
             total=${#packages[@]}
             ;;
