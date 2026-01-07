@@ -231,11 +231,12 @@ enable_sddm() {
 
 end_install() {
 printf '\n eZkde for %s installation successful.\n\n' "$DISTRO"
-read -rp $' Reboot (r) or start KDE now (k)? [r/k] ' choice
+read -n1 -s -r -p $' Reboot (r) or start KDE now (k)? [r/k] ' choice
+printf '\n'
 case "${choice,,}" in
-    #k) eval "${SRV_START[@]}" && eval "${SRV_TARGET[@]}" ;;
     k) systemctl start sddm ;;
-    r) echo; (for ((i=5;i>0;i--)); do printf "\r Rebooting in %d...\033[0K" $i; sleep 1; done) && reboot ;;
+    r) echo; (for ((i=5;i>0;i--)); do printf "\r Rebooting in %d...\033[0K" "$i"; sleep 1; done) && reboot ;;
+    *) :  # do nothing
 esac
 }
 
