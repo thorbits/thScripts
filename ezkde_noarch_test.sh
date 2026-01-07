@@ -125,12 +125,12 @@ ART
     ,cccccccccccccc;MMM.;cc;;WW:;cccccccc,
     :cccccccccccccc;MMM.;cccccccccccccccc:
     :ccccccc;oxOOOo;MMM0OOk.;cccccccccccc:
-    cccccc;0MMKxdd:;MMMkddc.;cccccccccccc;
-    ccccc;XM0';cccc;MMM.;cccccccccccccccc'
-    ccccc;MMo;ccccc;MMW.;ccccccccccccccc;
-    ccccc;0MNc.ccc.xMMd;ccccccccccccccc;
-    cccccc;dNMWXXXWM0:;cccccccccccccc:,
-    cccccccc;.:odl:.;cccccccccccccc:,.
+    ;cccccc;0MMKxdd:;MMMkddc.;ccccccccccc;
+    ;cccc;XM0';cccc;MMM.;cccccccccccccccc'
+    ;cccc;MMo;ccccc;MMW.;ccccccccccccccc;
+    ;cccc;0MNc.ccc.xMMd;ccccccccccccccc;
+    ;ccccc;dNMWXXXWM0:;cccccccccccccc:,
+    ;ccccccc;.:odl:.;cccccccccccccc:,.
     :cccccccccccccccccccccccccccc:'.
     .:cccccccccccccccccccccc:;,..
       '::cccccccccccccc::;,.
@@ -144,14 +144,14 @@ ART
      .lo'        oo.   oo:
     .oo.         oo.    oo:
     :ol          oo.    'oo
-    :oo         .oo.    .oo.
-    .oooooooooooooo.    .oo.
+    :oooooooooooooo.    .oo.
+    .oo.                .oo.
      ;oo.               .oo.
         "ooc,',,,,,,,,,,:ooc,,,,,,,,,,,
            ':cooooooooooooooooooooooooool;.
                         .oo.             .oo;
-                        .oo.    'oooooooooo:ooo.
-                        .oo.    'oo.         col
+                        .oo.                ooo.
+                        .oo.    'ooooooooooo:col
                         .oo'    'oo          col
                          coo    'oo          oo'
                           coc   'oo        .lo,
