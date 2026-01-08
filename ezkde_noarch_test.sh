@@ -242,7 +242,7 @@ end_install() {
         case "${choice,,}" in
             k) printf '\n'; systemctl start sddm; break ;;
             r) printf '\n'; echo; (for ((i=5; i>0; i--)); do printf "\r Rebooting in %d...\033[0K" "$i"; sleep 1; done) && reboot; break ;;
-            *)  ;;
+            *) continue ;;
         esac
     done
 }
