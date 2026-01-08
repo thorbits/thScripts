@@ -164,7 +164,7 @@ printf ' #---------------------------------------------------#\n'
 printf ' # The latest version of KDE 6.5.x (Wayland session) #\n # will be installed with audio support (Pipewire)   #\n # and a minimum of utilities.                       #\n'
 printf ' #---------------------------------------------------#\n\n'
 while true; do
-    read -rp ' Press Enter to continue or Ctrl+C to cancel.\n'
+    read -rp ' Press Enter to continue or Ctrl+C to cancel.'
     # Check if the user hit Ctrl+C (read returns non-zero)
     if (( $? != 0 )); then
         fatal " Installation cancelled by user."
