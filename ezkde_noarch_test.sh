@@ -4,11 +4,11 @@
 #	\_   _/
 #	  |_|horbits 
 #
-#	eZkde for Arch / Debian / Fedora / OpenSuse
-#	Automated KDE installation script
+#    eZkde for Arch / Debian / Fedora / OpenSuse
+#    Automated KDE installation script
 # ----------------------------------------------------------------
-# Installs latest KDE 6.5.x (Wayland only) with audio support
-# (PipeWire) and a minimum of utilities.
+#    Installs latest KDE 6.5.x (Wayland only) with audio support
+#    (PipeWire) and a minimum of utilities.
 # ----------------------------------------------------------------
 
 # must be run as root
