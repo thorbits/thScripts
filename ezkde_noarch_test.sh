@@ -164,17 +164,18 @@ printf ' #---------------------------------------------------#\n'
 printf ' # The latest version of KDE 6.5.x (Wayland session) #\n # will be installed with audio support (Pipewire)   #\n # and a minimum of utilities.                       #\n'
 printf ' #---------------------------------------------------#\n\n'
 while true; do
-    read -rp ' Press Enter to continue or Ctrl+C to cancel.'
-    # Check if the user hit Ctrl+C (read returns non-zero)
+    printf '\r\033[2K'
+    read -n1 -s -r -p ' Press Enter to continue or Ctrl+C to cancel.'
+    # check if User pressed Ctrl+C
     if (( $? != 0 )); then
         fatal " Installation cancelled by user."
     fi
-    # Check if the user pressed Enter (empty input)
+    # check if user pressed Enter (empty input)
     if [[ -z "$REPLY" ]]; then
         break
     fi
 done
-# If we are here, the user pressed Enter. Run the update.
+# user pressed Enter, run the update.
 eval "$UPDATE" || fatal " ERROR: no internet connection detected. Exiting."
 
 progress-bar() {
@@ -245,6 +246,11 @@ prompt_reboot() {
 end_install() {
     while true; do
         prompt_reboot
+        # check if User pressed Ctrl+C
+        if (( $? != 0 )); then
+            echo
+            fatal " Aborted by user."
+        fi
 
         case "${choice,,}" in
             k) printf '\n'; systemctl start sddm; break ;;
