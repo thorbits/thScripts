@@ -20,7 +20,7 @@ eZkde is a shell script designed to automate the installation of a minimal KDE 6
 
 ## Prerequisites
 
-*   A Debian-based Linux distribution (e.g. Debian, Ubuntu..).
+*   A Linux-based distribution (e.g. Debian, Arch, Fedora, OpenSuse).
 *   Administrative privileges (sudo or root access) are required to install packages and modify system configurations.
 *   A stable internet connection for downloading packages and dependencies.
 
@@ -50,14 +50,13 @@ eZkde is a shell script designed to automate the installation of a minimal KDE 6
     ```
 
 3.  **Follow On-Screen Prompts -**
-    The script will display progress information and prompts during execution.  These prompts may include:
+    The script will display progress information and prompts during execution. These prompts may include:
     *   Confirmation to proceed with the installation.
     *   Automatic components download.
     *   Progress of components intallation.
 
-4.  **Reboot -**
-    After the installation is complete, the script will prompt you to reboot your system. Choose "r" to reboot. The system will restart, and you should be greeted with the KDE 6 login screen (SDDM).
-    You can also directly log in a KDE Wayland session right after the installation.
+4.  **Finalize setup -**
+    Once installation is complete, the script will offer you to either reboot your system or to log immediatly into a KDE Wayland session.
 
 ## Security Considerations
 
