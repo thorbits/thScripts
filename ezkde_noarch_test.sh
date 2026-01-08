@@ -237,26 +237,12 @@ prompt_reboot() {
 
 end_install() {
     while true; do
-        printf '\r' # carriage‑return to the start of the current line
-        printf '\033[2K' # clear the entire line (optional but nice)
-        read -n1 -s -r -p $' Reboot (r) or start KDE now (k)? [r/k] ' choice
-        printf '\n'# consume the stray newline
+        prompt_reboot
 
         case "${choice,,}" in
-            k)
-                systemctl start sddm
-                break
-                ;;
-            r)
-                echo
-                (for ((i=5; i>0; i--)); do
-                     printf "\r Rebooting in %d...\033[0K" "$i"
-                     sleep 1
-                 done) && reboot
-                break
-                ;;
-            *)
-                ;;
+            k) printf '\n'; systemctl start sddm; break ;;
+            r) printf '\n'; echo; (for ((i=5; i>0; i--)); do printf "\r Rebooting in %d...\033[0K" "$i"; sleep 1; done) && reboot; break ;;
+            *)  ;;
         esac
     done
 }
