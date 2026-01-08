@@ -14,14 +14,17 @@ if [[ "$(id -u)" -ne 0 ]]; then
     exit 1
 fi
 
+fatal() {
+    printf '[FATAL] %s\n' "$*" >&2
+    exit 1
+}
+
 clear
 
 printf "\n\nWelcome %s, to eZkernel for Debian.\n\n" "$USER"
 printf "The latest mainline Linux kernel from www.kernel.org will be compiled and installed.\n\n"
 printf "Checking kernels versions... please wait"
-apt-get update -qq || {
-    printf "\n\nConnection error. Exiting.\n"
-    exit 1
+apt-get update -qq || fatal " ERROR: no internet connection detected. Exiting."
 }
 apt-get install -y curl > /dev/null 2>&1
 
@@ -31,8 +34,22 @@ printf "\r%-*s\n\n" "$max_len" "Checking kernels versions... done."
 
 printf "Current kernel version: %s\nIt will be updated to:  %s\n\n" \
        "$(uname -r)" "$KVER"
-printf "Press Enter to continue or Ctrl+C to cancel.\n"
-read -rp '' && printf "Checking compilation dependencies...\n\n"
+
+while true; do
+    printf '\r\033[2K'
+    read -n1 -s -r -p ' Press Enter to continue or Ctrl+C to cancel.'
+    # check if User pressed Ctrl+C
+    if (( $? != 0 )); then
+        echo
+        exit 1
+    fi
+    # check if user pressed Enter (empty input)
+    if [[ -z "$REPLY" ]]; then
+        break
+    fi
+done
+# user pressed Enter, continue.
+printf "\n\nChecking compilation dependencies...\n\n"
 
 pkgs=(
     build-essential libdw-dev libelf-dev zlib1g-dev libncurses-dev
@@ -86,6 +103,7 @@ make menuconfig && (
     printf "\n\nCompilation or installation error. Exiting.\n\n"
     exit 1
 )
+
 
 
 
