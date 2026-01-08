@@ -47,7 +47,7 @@ eZkde is a shell script designed to automate the installation of a minimal KDE 6
     Once installation is complete, the script will offer you to either reboot your system or to log immediatly into a KDE Wayland session.
 
 
-## Security Considerations
+## Security warning
 
 *   **Script Verification -**  Before running the script, verify its authenticity and integrity.  Check the GitHub repository for updates and reviews.
 *   **Root Access -** Understand the implications of running a script with root access.  Only run scripts from trusted sources.
