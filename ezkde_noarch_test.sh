@@ -7,7 +7,7 @@
 #    eZkde for Arch / Debian / Fedora / OpenSuse
 #    Automated KDE installation script
 # ----------------------------------------------------------------
-#    Installs latest KDE 6.5.x (Wayland only) with audio support
+#    Install latest KDE 6.5.x (Wayland session) with audio support
 #    (PipeWire) and a minimum of utilities.
 # ----------------------------------------------------------------
 
