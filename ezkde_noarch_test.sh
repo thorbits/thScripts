@@ -180,6 +180,34 @@ done
 eval "$UPDATE" || fatal " ERROR: no internet connection detected. Exiting."
 printf '\n\n Preparing KDE packages for %s...\n\n' "$DISTRO"
 
+create_swap() {
+    local swap_file="/var/tmp/ezkde_swap"
+    # create 1GB file
+    if dd if=/dev/zero of="$swap_file" bs=1M count=1024 status=none 2>/dev/null; then
+        chmod 600 "$swap_file"
+        mkswap "$swap_file" >/dev/null 2>&1
+        # forces the kernel to use this swap file
+        if swapon "$swap_file" -p 100 >/dev/null 2>&1; then
+            # swappiness 80 force the system to use swap sooner (default 60)
+            sysctl -w vm.swappiness=80 >/dev/null 2>&1
+            return 0
+        else
+            rm -f "$swap_file"
+        fi
+    fi
+}
+
+remove_swap() {
+    local swap_file="/var/tmp/ezkde_swap"
+    
+    if [[ -f "$swap_file" ]]; then
+        swapoff "$swap_file" >/dev/null 2>&1
+        rm -f "$swap_file"
+    fi
+    # reset swappiness
+    sysctl -w vm.swappiness=60 >/dev/null 2>&1
+}
+
 init-term() {
     printf '\n' # ensure we have space for the scrollbar
     printf '\e7' # save the cursor location
@@ -302,6 +330,8 @@ main() {
         esac
     done
 
+    create_swap
+
     shopt -s globstar nullglob checkwinsize
     # ensure LINES and COLUMNS are set
     (:)
@@ -372,6 +402,7 @@ main() {
 
     #progress-bar "$total" "$total"
 
+    remove_swap
     enable_sddm
     printf '\n\n eZkde for %s installation successful.\n\n' "$DISTRO"
     end_install
