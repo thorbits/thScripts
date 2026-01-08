@@ -177,7 +177,7 @@ while true; do
 done
 # user pressed Enter, run the update.
 eval "$UPDATE" || fatal " ERROR: no internet connection detected. Exiting."
-printf '\n\n Preparing KDE packages for %s...\n\n' "$DISTRO"
+printf '\n Preparing KDE packages for %s...\n\n' "$DISTRO"
 
 create_swap() {
     local swap_file="/var/tmp/ezkde_swap"
