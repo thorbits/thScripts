@@ -163,8 +163,19 @@ printf '\n\n Welcome %s, to eZkde for %s.\n\n' "$USER" "$DISTRO"
 printf ' #---------------------------------------------------#\n'
 printf ' # The latest version of KDE 6.5.x (Wayland session) #\n # will be installed with audio support (Pipewire)   #\n # and a minimum of utilities.                       #\n'
 printf ' #---------------------------------------------------#\n\n'
-printf ' Press Enter to continue or Ctrl+C to cancel.\n'
-read -rp '' && eval "$UPDATE" || fatal " ERROR: no internet connection detected. Exiting."
+while true; do
+    read -rp ' Press Enter to continue or Ctrl+C to cancel.\n'
+    # Check if the user hit Ctrl+C (read returns non-zero)
+    if (( $? != 0 )); then
+        fatal " Installation cancelled by user."
+    fi
+    # Check if the user pressed Enter (empty input)
+    if [[ -z "$REPLY" ]]; then
+        break
+    fi
+done
+# If we are here, the user pressed Enter. Run the update.
+eval "$UPDATE" || fatal " ERROR: no internet connection detected. Exiting."
 
 progress-bar() {
     local current=$1 len=$2
