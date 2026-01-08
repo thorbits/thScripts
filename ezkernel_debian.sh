@@ -4,10 +4,10 @@
 #   \_   _/
 #     |_|horbits
 #
-#   eZkernel for Debian
-#   Interactive Linux kernel compilation and installation script
+#    eZkernel for Debian
+#    Interactive Linux kernel compilation and installation script
 # ----------------------------------------------------------------
-# Installs the latest mainline Linux kernel from www.kernel.org.
+#    Installs the latest mainline Linux kernel from www.kernel.org.
 # 
 # ----------------------------------------------------------------
 
@@ -145,6 +145,7 @@ make menuconfig && (
 } && reboot_system || (
     fatal " WARNING: compilation or installation error. Exiting.\n\n"
 )
+
 
 
 
