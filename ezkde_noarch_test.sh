@@ -115,25 +115,21 @@ ART
         ;;
         Fedora)
             cat << 'ART'
-                 .',;::::;,'.
-             .';:cccccccccccc:;,.
-          .;cccccccccccccccccccccc;.
-        .:cccccccccccccccccccccccccc:.
-      .;ccccccccccccc;.:dddl:.;ccccccc;.
-     .:ccccccccccccc;OWMKOOXMWd;ccccccc:.
+            .',;::::::::::::::;,'.
+          .;ccccccccccccccccccccccc;.
+        .;ccccccccccc;.:dddl:.;ccccccc;.
+      .:cccccccccccc;OWMKOOXMWd;ccccccc:.
     .:ccccccccccccc;KMMc;cc;xMMc;ccccccc:.
-    ,cccccccccccccc;MMM.;cc;;WW:;cccccccc,
-    :cccccccccccccc;MMM.;cccccccccccccccc:
-    :ccccccc;oxOOOo;MMM0OOk.;cccccccccccc:
-    ;cccccc;0MMKxdd:;MMMkddc.;ccccccccccc;
-    ;cccc;XM0';cccc;MMM.;cccccccccccccccc'
+    ,cccccccccccccc;MMM.;cc;;WW:;ccccccccc,
+    :cccccccccccccc;MMM.;ccccccccccccccccc:
+    :ccccccc;oxOOOo;MMM0OOk.;ccccccccccccc:
+    ;cccccc;0MMKxdd:;MMMkddc.;cccccccccccc;
+    ;cccc;XM0';cccc;MMM.;ccccccccccccccccc'
     ;cccc;MMo;ccccc;MMW.;ccccccccccccccc;
     ;cccc;0MNc.ccc.xMMd;ccccccccccccccc;
     ;ccccc;dNMWXXXWM0:;cccccccccccccc:,
-    ;ccccccc;.:odl:.;cccccccccccccc:,.
-    :cccccccccccccccccccccccccccc:'.
-    .:cccccccccccccccccccccc:;,..
-      '::cccccccccccccc::;,.
+    ;cccccc;.::odl::.;ccccccccccccc:,.
+    .:cccccccccccccccccccccccc:;,..
 ART
         ;;
         OpenSuse)
