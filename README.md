@@ -27,26 +27,26 @@ eZkde is a shell script designed to automate the installation of a minimal KDE 6
 ## Installation and Usage
 
 1.  **Get the script -**
-    This command download `ezkde_noarch.sh` , save it to /usr/local/bin/ ,make it executable then run the script
-    (be sure to have administrative rights).
+    The command below will download `ezkde_noarch.sh` , save it to /usr/local/bin/ ,make it executable then run the script.
+    (be sure to have administrative rights - curl must be already installed).
 
     Debian
     ```bash
-    apt-get update -qq; apt-get install -y curl > /dev/null 2>&1; curl -fsSL https://raw.githubusercontent.com/thorbits/thScripts/refs/heads/main/ezkde_noarch.sh -o /usr/local/bin/ezkde_noarch.sh && chmod +x /usr/local/bin/ezkde_noarch.sh && ezkde_noarch.sh
+    curl -fsSL https://raw.githubusercontent.com/thorbits/thScripts/refs/heads/main/ezkde_noarch.sh -o /usr/local/bin/ezkde_noarch.sh && chmod +x /usr/local/bin/ezkde_noarch.sh && ezkde_noarch.sh
     ```
 
     Arch    
     ```bash
-    pacman -Sy >/dev/null 2>&1 && pacman -S --noconfirm curl >/dev/null 2>&1 && curl -fsSL https://raw.githubusercontent.com/thorbits/thScripts/refs/heads/main/ezkde_noarch.sh -o /usr/local/bin/ezkde_noarch.sh && chmod +x /usr/local/bin/ezkde_noarch.sh && ezkde_noarch.sh
+    curl -fsSL https://raw.githubusercontent.com/thorbits/thScripts/refs/heads/main/ezkde_noarch.sh -o /usr/local/bin/ezkde_noarch.sh && chmod +x /usr/local/bin/ezkde_noarch.sh && ezkde_noarch.sh
     ```
 
     Fedora    
     ```bash
-    dnf makecache >/dev/null 2>&1 && dnf install -y curl >/dev/null 2>&1 && curl -fsSL https://raw.githubusercontent.com/thorbits/thScripts/refs/heads/main/ezkde_noarch.sh -o /usr/local/bin/ezkde_noarch.sh && chmod +x /usr/local/bin/ezkde_noarch.sh && ezkde_noarch.sh
+    curl -fsSL https://raw.githubusercontent.com/thorbits/thScripts/refs/heads/main/ezkde_noarch.sh -o /usr/local/bin/ezkde_noarch.sh && chmod +x /usr/local/bin/ezkde_noarch.sh && ezkde_noarch.sh
     ```
     OpenSuse
     ```bash
-    zypper --quiet ref && zypper install -y curl >/dev/null 2>&1 && curl -fsSL https://raw.githubusercontent.com/thorbits/thScripts/refs/heads/main/ezkde_noarch.sh -o /usr/local/bin/ezkde_noarch.sh && chmod +x /usr/local/bin/ezkde_noarch.sh && ezkde_noarch.sh
+    curl -fsSL https://raw.githubusercontent.com/thorbits/thScripts/refs/heads/main/ezkde_noarch.sh -o /usr/local/bin/ezkde_noarch.sh && chmod +x /usr/local/bin/ezkde_noarch.sh && ezkde_noarch.sh
     ```
 
 3.  **Follow On-Screen Prompts -**
