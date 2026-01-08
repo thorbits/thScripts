@@ -168,7 +168,8 @@ while true; do
     read -n1 -s -r -p ' Press Enter to continue or Ctrl+C to cancel.'
     # check if User pressed Ctrl+C
     if (( $? != 0 )); then
-        fatal " Installation cancelled by user."
+        echo
+        exit 1
     fi
     # check if user pressed Enter (empty input)
     if [[ -z "$REPLY" ]]; then
@@ -182,7 +183,7 @@ progress-bar() {
     local current=$1 len=$2
     # avoid division by zero
     if (( len == 0 )); then
-        printf '\r\e[K All KDE packages are already installed.\n\n'
+        fatal " ."
         exit 1
     fi
     # calculate percentage and string length
@@ -249,7 +250,7 @@ end_install() {
         # check if User pressed Ctrl+C
         if (( $? != 0 )); then
             echo
-            fatal " Aborted by user."
+            exit 1
         fi
 
         case "${choice,,}" in
