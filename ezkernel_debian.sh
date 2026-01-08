@@ -67,11 +67,11 @@ printf ' Current kernel version: %s\nIt will be updated to:  %s\n\n' \
        "$(uname -r)" "$KVER"
 
 while true; do
-    printf '\r\033[2K'
-    read -n1 -s -r -p ' Press Enter to continue or Ctrl+C to cancel.'
+    printf '\r\033[2K Press Enter to continue or Ctrl+C to cancel.'
+    read -n1 -s -r
     # check if User pressed Ctrl+C
     if (( $? != 0 )); then
-        echo
+        printf '\n Installation cancelled.\n'
         exit 1
     fi
     # check if user pressed Enter (empty input)
@@ -145,6 +145,7 @@ make menuconfig && (
 } && reboot_system || (
     fatal " WARNING: compilation or installation error. Exiting.\n\n"
 )
+
 
 
 
