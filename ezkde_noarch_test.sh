@@ -129,8 +129,8 @@ ART
     ;cccc;0MNc.ccc.xMMd;ccccccccccccccc;
     ;ccccc;dNMWXXXWM0:;cccccccccccccc:,
     ;cccccc;.::odl::.;cccccccccccc:,.
-    .:cccccccccccccccccccccccc:;,..
-    '::ccccccccccccccccccc::;,.
+    ;cccccccccccccccccccccccc:;,..
+    ;:ccccccccccccccccccc::;,.
 ART
         ;;
         OpenSuse)
