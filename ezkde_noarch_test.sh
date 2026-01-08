@@ -115,7 +115,7 @@ ART
         ;;
         Fedora)
             cat << 'ART'
-            .',;::::::::::::::;,'.
+            .',;:ccccccccccccc:;,'.
           .;ccccccccccccccccccccccc;.
         .;ccccccccccc;.:dddl:.;ccccccc;.
       .:cccccccccccc;OWMKOOXMWd;ccccccc:.
@@ -128,8 +128,9 @@ ART
     ;cccc;MMo;ccccc;MMW.;ccccccccccccccc;
     ;cccc;0MNc.ccc.xMMd;ccccccccccccccc;
     ;ccccc;dNMWXXXWM0:;cccccccccccccc:,
-    ;cccccc;.::odl::.;ccccccccccccc:,.
+    ;cccccc;.::odl::.;cccccccccccc:,.
     .:cccccccccccccccccccccccc:;,..
+    '::ccccccccccccccccccc::;,.
 ART
         ;;
         OpenSuse)
