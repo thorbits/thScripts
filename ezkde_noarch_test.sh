@@ -168,7 +168,6 @@ while true; do
     read -n1 -s -r
     # check if User pressed Ctrl+C
     if (( $? != 0 )); then
-        printf '\n Installation cancelled.\n'
         exit 1
     fi
     # check if user pressed Enter (empty input)
