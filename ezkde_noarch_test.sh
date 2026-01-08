@@ -180,6 +180,22 @@ done
 eval "$UPDATE" || fatal " ERROR: no internet connection detected. Exiting."
 printf '\n\n Preparing KDE packages for %s...\n\n' "$DISTRO"
 
+init-term() {
+    printf '\n' # ensure we have space for the scrollbar
+    printf '\e7' # save the cursor location
+    printf '\e[%d;%dr' 0 "$((LINES - 1))" # set the scrollable region (margin)
+    printf '\e8' # restore the cursor location
+    printf '\e[1A' # move cursor up
+}
+
+deinit-term() {
+    printf '\e7' # save the cursor location
+    printf '\e[%d;%dr' 0 "$LINES" # reset the scrollable region (margin)
+    printf '\e[%d;%dH' "$LINES" 0 # move cursor to the bottom line
+    printf '\e[0K' # clear the line
+    printf '\e8' # reset the cursor location
+}
+
 progress-bar() {
     local current=$1 len=$2
     # avoid division by zero
@@ -212,20 +228,9 @@ progress-bar() {
     printf '\e8' # restore the cursor location
 }
 
-init-term() {
-    printf '\n' # ensure we have space for the scrollbar
-    printf '\e7' # save the cursor location
-    printf '\e[%d;%dr' 0 "$((LINES - 1))" # set the scrollable region (margin)
-    printf '\e8' # restore the cursor location
-    printf '\e[1A' # move cursor up
-}
-
-deinit-term() {
-    printf '\e7' # save the cursor location
-    printf '\e[%d;%dr' 0 "$LINES" # reset the scrollable region (margin)
-    printf '\e[%d;%dH' "$LINES" 0 # move cursor to the bottom line
-    printf '\e[0K' # clear the line
-    printf '\e8' # reset the cursor location
+recover_pacman() {
+    rm -f /var/lib/pacman/db.lck >/dev/null
+    pacman -Sy --noconfirm >/dev/null 2>&1 || true
 }
 
 recover_dpkg() {
@@ -242,13 +247,18 @@ recover_rpm() {
     fi
 }
 
-recover_pacman() {
-    rm -f /var/lib/pacman/db.lck >/dev/null
-    pacman -Sy --noconfirm >/dev/null 2>&1 || true
-}
-
 install_packages() {
     local pkg
+    local ret=0
+    local recover=""
+
+    # Determine which recovery function to use
+    case "$DISTRO" in
+        Arch)            recover="recover_pacman" ;;
+        Debian)          recover="recover_dpkg" ;;
+        Fedora|OpenSuse) recover="recover_rpm" ;;
+    esac
+    
     for pkg in "$@"; do
         printf '\r%-*s' "$COLUMNS" " -> Now downloading and installing: $pkg"
         "${PM[@]}" "$pkg" >/dev/null
