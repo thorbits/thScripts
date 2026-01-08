@@ -164,7 +164,7 @@ printf ' #---------------------------------------------------#\n'
 printf ' # The latest version of KDE 6.5.x (Wayland session) #\n # will be installed with audio support (Pipewire)   #\n # and a minimum of utilities.                       #\n'
 printf ' #---------------------------------------------------#\n\n'
 while true; do
-    printf '\r\033[2K Press Enter to continue or Ctrl+C to cancel.\n'
+    printf '\r\033[2K Press Enter to continue or Ctrl+C to cancel.'
     read -n1 -s -r
     # check if User pressed Ctrl+C
     if (( $? != 0 )); then
