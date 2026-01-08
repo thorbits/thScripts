@@ -274,7 +274,7 @@ main() {
     done
 
     shopt -s globstar nullglob checkwinsize
-    # this line is to ensure LINES and COLUMNS are set
+    # ensure LINES and COLUMNS are set
     (:)
 
     trap deinit-term exit
@@ -329,14 +329,19 @@ main() {
         end_install
     fi
 
-    # Batch installation loop
+    # array installation loop
     local current=0
     for ((i = 0; i < total; i += BATCHSIZE)); do
         install_packages "${packages[@]:i:BATCHSIZE}"
         current=$((current + BATCHSIZE))
+        # clamp current to total for the progress bar
+        if (( current > total )); then
+            current=$total
+        fi
         progress-bar "$current" "$total"
     done
-    progress-bar "$total" "$total"
+
+    #progress-bar "$total" "$total"
 
     enable_sddm
     printf '\n eZkde for %s installation successful.\n\n' "$DISTRO"
