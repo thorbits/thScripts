@@ -6,9 +6,12 @@
 #
 #   eZkernel for Debian
 #   Interactive Linux kernel compilation and installation script
-# ------------------------------------------------------------
+# ----------------------------------------------------------------
+# Installs the latest mainline Linux kernel from www.kernel.org.
+# 
+# ----------------------------------------------------------------
 
-# Must be run as root
+# must be run as root
 if [[ "$(id -u)" -ne 0 ]]; then
     printf " This script must be run as root. Use sudo.\n"
     exit 1
@@ -142,6 +145,7 @@ make menuconfig && (
 } && reboot_system || (
     fatal " WARNING: compilation or installation error. Exiting.\n\n"
 )
+
 
 
 
