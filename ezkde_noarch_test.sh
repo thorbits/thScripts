@@ -228,6 +228,25 @@ deinit-term() {
     printf '\e8' # reset the cursor location
 }
 
+recover_dpkg() {
+    rm -f /var/lib/dpkg/lock-frontend /var/lib/dpkg/lock /var/cache/apt/archives/lock  >/dev/null
+    dpkg --configure -a >/dev/null
+    DEBIAN_FRONTEND=noninteractive apt-get install -f -y
+}
+
+recover_rpm() {
+    rm -f /var/lib/rpm/.rpm.lock /var/lib/rpm/__db.* >/dev/null
+    rpm --rebuilddb >/dev/null 2>&1
+    if [[ "$DISTRO" == "OpenSuse" ]]; then
+        zypper verify --no-refresh >/dev/null 2>&1 || true
+    fi
+}
+
+recover_pacman() {
+    rm -f /var/lib/pacman/db.lck >/dev/null
+    pacman -Sy --noconfirm >/dev/null 2>&1 || true
+}
+
 install_packages() {
     local pkg
     for pkg in "$@"; do
