@@ -19,7 +19,35 @@ fatal() {
     exit 1
 }
 
+if command -v apt-get &>/dev/null; then
+    DISTRO=Debian
+fi
+
 clear
+echo
+case "$DISTRO" in
+        Debian)
+            cat << 'ART'
+               _,met$$$$$gg.
+            ,g$$$$$$$$$$$$$$$P.
+          ,g$$P"        "\""Y$$.".
+         ,$$$P'              `$$$:
+        'd$$P       ,ggs.     `$$b:
+        `d$$'     ,$P"'   .    $$$:
+        `d$$      d$'     ,    $$$P
+        `$$:      $$.   -    ,d$$'
+        `$$;      Y$b._   _,d$P'
+        `Y$$.    `.`"Y$$$$P"'
+         `$$b      "-.__ 
+          `Y$$
+           `Y$$.
+             `$$b.
+               `Y$$b.
+                  `"Y$b.
+                      `"\""
+ART
+        ;;
+esac
 
 printf "\n\nWelcome %s, to eZkernel for Debian.\n\n" "$USER"
 printf "The latest mainline Linux kernel from www.kernel.org will be compiled and installed.\n\n"
@@ -103,6 +131,7 @@ make menuconfig && (
     printf "\n\nCompilation or installation error. Exiting.\n\n"
     exit 1
 )
+
 
 
 
