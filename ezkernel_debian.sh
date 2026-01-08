@@ -71,7 +71,6 @@ while true; do
     read -n1 -s -r
     # check if User pressed Ctrl+C
     if (( $? != 0 )); then
-        printf '\n Installation cancelled.\n'
         exit 1
     fi
     # check if user pressed Enter (empty input)
@@ -130,7 +129,6 @@ make menuconfig && (
     read -n1 -s -r -p ' Press Enter to continue or Ctrl+C to cancel.'
     # check if User pressed Ctrl+C
     if (( $? != 0 )); then
-        echo
         exit 1
     fi
     # check if user pressed Enter (empty input)
@@ -145,6 +143,7 @@ make menuconfig && (
 } && reboot_system || (
     fatal " WARNING: compilation or installation error. Exiting.\n\n"
 )
+
 
 
 
