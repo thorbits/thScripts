@@ -30,7 +30,7 @@ eZkde is a shell script designed to automate the installation of a minimal KDE 6
 ## Installation and Usage
 
 1.  **Get the script -**
-    The command below will download `ezkde_noarch.sh` , save it to /usr/local/bin/ ,make it executable then run the script.
+    The command below will download `ezkde_noarch.sh` , save it to /usr/local/bin/ , make it executable then run the script.
     (be sure to have administrative rights - curl must be already installed).
 
     ```bash
