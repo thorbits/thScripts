@@ -373,7 +373,7 @@ main() {
     #progress-bar "$total" "$total"
 
     enable_sddm
-    printf '\n eZkde for %s installation successful.\n\n' "$DISTRO"
+    printf '\n\n eZkde for %s installation successful.\n\n' "$DISTRO"
     end_install
     deinit-term
 }
