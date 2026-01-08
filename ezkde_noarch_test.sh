@@ -177,7 +177,7 @@ while true; do
 done
 # user pressed Enter, run the update.
 eval "$UPDATE" || fatal " ERROR: no internet connection detected. Exiting."
-printf '\n Preparing KDE packages for %s...\n\n' "$DISTRO"
+printf '\n\n Preparing KDE packages for %s...\n\n' "$DISTRO"
 
 progress-bar() {
     local current=$1 len=$2
