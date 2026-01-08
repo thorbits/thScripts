@@ -124,13 +124,13 @@ ART
     .cccccccccccccc;MMM.;ccccccccccccccccc:
     .ccccccc;oxOOOo;MMM0OOk.;ccccccccccccc:
     .cccccc;0MMKxdd:;MMMkddc.;cccccccccccc;
-    ;cccc;XM0';cccc;MMM.;ccccccccccccccccc'
-    ;cccc;MMo;ccccc;MMW.;ccccccccccccccc;
-    ;cccc;0MNc.ccc.xMMd;ccccccccccccccc;
-    ;ccccc;dNMWXXXWM0:;ccccccccccccc:.,
-    ;cccccc;.::odl::.;cccccccccccc:,.
-    ;cccccccccccccccccccccccc:;,..
-    ;:ccccccccccccccccccc::;,.
+    .cccc;XM0';cccc;MMM.;ccccccccccccccccc'
+    .cccc;MMo;ccccc;MMW.;ccccccccccccccc;
+    .cccc;0MNc.ccc.xMMd;ccccccccccccccc;
+    .ccccc;dNMWXXXWM0:;ccccccccccccc:,.
+    .cccccc;.::odl::.;cccccccccccc:,.
+    ;cccccccccccccccccccccccc:;,.
+    ;:cccccccccccccccccccc:;,.
 ART
         ;;
         OpenSuse)
