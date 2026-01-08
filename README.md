@@ -20,7 +20,7 @@ eZkde is a shell script designed to automate the installation of a minimal KDE 6
 
 ## Prerequisites
 
-*   A Linux-based distribution (e.g. Debian, Arch, Fedora, OpenSuse).
+*   A Linux-based distribution (Debian, Arch, Fedora, OpenSuse).
 *   Administrative privileges (sudo or root access) are required to install packages and modify system configurations.
 *   A stable internet connection for downloading packages and dependencies.
 
