@@ -228,7 +228,7 @@ enable_sddm() {
 
 prompt_reboot() {
     printf '\r\033[2K'
-    read -n1 -s -r -p $'Reboot (r) or start KDE now (k)? [r/k] ' choice
+    read -n1 -s -r -p $' Reboot (r) or start KDE now (k)? [r/k] ' choice
 }
 
 end_install() {
