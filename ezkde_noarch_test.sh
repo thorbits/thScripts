@@ -166,7 +166,6 @@ printf ' #---------------------------------------------------#\n\n'
 while true; do
     printf '\r\033[2K'
     read -n1 -s -r -p ' Press Enter to continue or Ctrl+C to cancel.'
-    printf '\n'
     # check if User pressed Ctrl+C
     if (( $? != 0 )); then
         echo
@@ -179,7 +178,7 @@ while true; do
 done
 # user pressed Enter, run the update.
 eval "$UPDATE" || fatal " ERROR: no internet connection detected. Exiting."
-printf ' Preparing KDE packages for %s...\n\n' "$DISTRO"
+printf '\n Preparing KDE packages for %s...\n\n' "$DISTRO"
 
 progress-bar() {
     local current=$1 len=$2
