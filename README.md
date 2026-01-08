@@ -89,7 +89,7 @@ ezkernel is a semi-automated shell script designed for Debian-based systems to s
 
 ## Prerequisites
 
-*   A Debian-based Linux distribution (e.g. Debian, Ubuntu..)
+*   A Debian-based Linux distribution (Debian, Ubuntu..)
 *   Administrative privileges (sudo or root access) are required to install packages and modify system configurations.
 *   A stable internet connection for downloading sources and dependencies.
 *   Approximately 20GB of free disk space
