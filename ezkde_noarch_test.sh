@@ -120,14 +120,14 @@ ART
         .;ccccccccccc;.:dddl:.;ccccccc;.
       .:cccccccccccc;OWMKOOXMWd;ccccccc:.
     .:ccccccccccccc;KMMc;cc;xMMc;ccccccc:.
-    ,cccccccccccccc;MMM.;cc;;WW:;ccccccccc,
-    :cccccccccccccc;MMM.;ccccccccccccccccc:
-    :ccccccc;oxOOOo;MMM0OOk.;ccccccccccccc:
-    ;cccccc;0MMKxdd:;MMMkddc.;cccccccccccc;
+    .:ccccccccccccc;MMM.;cc;;WW:;ccccccccc,
+    .cccccccccccccc;MMM.;ccccccccccccccccc:
+    .ccccccc;oxOOOo;MMM0OOk.;ccccccccccccc:
+    .cccccc;0MMKxdd:;MMMkddc.;cccccccccccc;
     ;cccc;XM0';cccc;MMM.;ccccccccccccccccc'
     ;cccc;MMo;ccccc;MMW.;ccccccccccccccc;
     ;cccc;0MNc.ccc.xMMd;ccccccccccccccc;
-    ;ccccc;dNMWXXXWM0:;cccccccccccccc:,
+    ;ccccc;dNMWXXXWM0:;ccccccccccccc:.,
     ;cccccc;.::odl::.;cccccccccccc:,.
     ;cccccccccccccccccccccccc:;,..
     ;:ccccccccccccccccccc::;,.
@@ -237,7 +237,7 @@ install_packages() {
 }
 
 enable_sddm() {
-    systemctl is-enabled sddm &>/dev/null || rm -f /etc/systemd/system/display-manager.service && systemctl enable sddm
+    systemctl is-enabled sddm &>/dev/null || rm -f /etc/systemd/system/display-manager.service && systemctl enable sddm &>/dev/null
 }
 
 prompt_reboot() {
