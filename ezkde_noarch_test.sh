@@ -187,7 +187,7 @@ create_swap() {
         mkswap "$swap_file" >/dev/null 2>&1
         # forces the kernel to use this swap file
         if swapon "$swap_file" -p 100 >/dev/null 2>&1; then
-            # swappiness 80 force the system to use swap sooner (default 60)
+            # swappiness 80 force the system to use swap sooner
             sysctl -w vm.swappiness=80 >/dev/null 2>&1
             return 0
         else
@@ -203,7 +203,7 @@ remove_swap() {
         swapoff "$swap_file" >/dev/null 2>&1
         rm -f "$swap_file"
     fi
-    # reset swappiness
+    # reset swappiness to default
     sysctl -w vm.swappiness=60 >/dev/null 2>&1
 }
 
@@ -297,8 +297,8 @@ enable_sddm() {
 }
 
 prompt_reboot() {
-    printf '\r\033[2K'
-    read -n1 -s -r -p $' Reboot (r) or start KDE now (k)? [r/k] ' choice
+    printf '\r\033[2K Reboot (r) or start KDE now (k)? [r/k] '
+    read -n1 -s -r
 }
 
 end_install() {
@@ -310,7 +310,7 @@ end_install() {
         fi
 
         case "${choice,,}" in
-            k) printf '\n'; systemctl start sddm; break ;;
+            k) systemctl start sddm; break ;;
             r) printf '\n'; echo; (for ((i=5; i>0; i--)); do printf "\r Rebooting in %d...\033[0K" "$i"; sleep 1; done) && reboot; break ;;
             *) ;;
         esac
