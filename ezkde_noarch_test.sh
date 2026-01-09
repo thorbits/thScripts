@@ -77,7 +77,7 @@ KDE_GROUP[Arch]="plasma-meta networkmanager dolphin konsole"
 KDE_GROUP[Debian]="plasma-workspace pipewire sddm dolphin konsole"
 KDE_GROUP[Fedora]="@kde-desktop"
 #KDE_GROUP[Fedora]="plasma-desktop plasma-settings plasma-nm sddm-wayland-plasma kde-baseapps konsole kscreen sddm startplasma-wayland dolphin"
-KDE_GROUP[OpenSuse]="patterns-kde-kde_plasma discover6" #plasma6-desktop dolphin sddm sddm-config-wayland
+KDE_GROUP[OpenSuse]="discover6 patterns-kde-kde_plasma" #plasma6-desktop dolphin sddm sddm-config-wayland
 
 # intro - DISTRO and UPDATE are set
 clear
@@ -342,7 +342,6 @@ main() {
                 usage >&2;
                 exit 1
                 ;;
-            #*) fatal 'Usage: ezkde_noarch [-b batchsize] [-c bar_char] [-e empty_char]';;
         esac
     done
 
@@ -369,7 +368,7 @@ main() {
             total=${#packages[@]}
             ;;
         Debian)
-            # inherit the current locale 
+            # inherit the current locale for install
             current_locale=${LC_ALL:-${LANG:-C.UTF-8}}
             current_locale=${current_locale%%.*}.UTF-8
             echo "locales locales/default_environment_locale select $current_locale" | debconf-set-selections
@@ -392,7 +391,7 @@ main() {
         OpenSuse)
             mapfile -t packages < <(
                 "${LIST_CMD[@]}" "${pkg_names[@]}" 2>&1 |
-                awk '/new/ {for(i=1;i<=NF;i++) if ($i ~ /^[a-zA-Z0-9.-]+$/) print $i}' | head -n -5                
+                awk '/new/ {for(i=1;i<=NF;i++) if ($i ~ /^[a-zA-Z0-9.-]+$/) print $i}' | grep -v "Mozilla" | grep -v "vlc" | grep -v "x11" | grep -v "xorg" | head -n -5                
             )
             total=${#packages[@]}
             ;;
