@@ -52,9 +52,9 @@ This script aims to provide a streamlined installation experience, especially fo
 ## Security warning
 
 *   **Script Verification -**  Before running the script, verify its authenticity and integrity.
-  Check the GitHub repository for updates and reviews.
+    Check the GitHub repository for updates and reviews.
 *   **Root Access -** Understand the implications of running a script with root access.
-  Only run scripts from trusted sources.
+    Only run scripts from trusted sources.
 
 </div>
 
