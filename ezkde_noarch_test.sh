@@ -307,9 +307,9 @@ install_packages() {
 }
 
 enable_sddm() {
-    #if systemctl is-enabled display-manager.service &>/dev/null; then
-    #    systemctl disable display-manager.service &>/dev/null
-    #fi
+    if systemctl is-enabled display-manager.service &>/dev/null; then
+        systemctl disable display-manager.service &>/dev/null
+    fi
     systemctl enable sddm &>/dev/null
 }
 
