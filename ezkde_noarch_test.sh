@@ -39,7 +39,7 @@ EOF
 }
 
 fatal() {
-    printf '[FATAL] %s\n' "$*" >&2
+    printf '[WARNING] %s\n' "$*" >&2
     exit 1
 }
 
@@ -398,7 +398,8 @@ main() {
     esac
     
     if (( total == 0 )); then
-        fatal ' Nothing to do – All packages are up to date.\n\n'
+        fatal ' Nothing to do – All packages are up to date.'
+		echo
         #enable_sddm
         end_install
     fi
