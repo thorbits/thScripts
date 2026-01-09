@@ -398,7 +398,7 @@ main() {
     esac
     
     if (( total == 0 )); then
-        printf ' Nothing to do – All packages are up to date.\n\n'
+        fatal ' Nothing to do – All packages are up to date.\n\n'
         #enable_sddm
         end_install
     fi
