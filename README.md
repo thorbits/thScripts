@@ -66,7 +66,7 @@ This script aims to provide a streamlined installation experience, especially fo
   </p>
 </div>
 
-<div align="center">
+<div>
   <p><br><br><br><br><br></p>
 </div>
 
@@ -140,7 +140,7 @@ While ezkernel strives to minimize risks, incorrect configuration or unforeseen 
 
 </div>
 
-<div align="center">
+<div>
   <p><br><br><br><br><br></p>
 </div>
 
