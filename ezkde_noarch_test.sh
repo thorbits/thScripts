@@ -137,24 +137,24 @@ ART
             cat << 'ART'
                ,...,                                 
          .,:lloooooc;.
-       ,ool'     oo,;oo:
-     .lo'        oo.   oo:
-    .oo.         oo.    oo:
-    :ol          oo.    'oo
-    :oooooooooooooo.    .oo.
-    .oo.                .oo.
-     ;oo.               .oo.
+       ,ool'    oo,  ;oo:
+     .lo'       oo.     oo:
+    .oo.        oo.      oo:
+    :ol         oo.      'oo
+    :oo.oooooooooo.      .oo.
+    .oo                  .oo.
+     ;oo.                .oo.
         "ooc,',,,,,,,,,,:ooc,,,,,,,,,,,
            ':cooooooooooooooooooooooooool;.
                         .oo.             .oo;
-                        .oo.                ooo.
-                        .oo.    'ooooooooooo:col
-                        .oo'    'oo          col
-                         coo    'oo          oo'
-                          coc   'oo        .lo,
-                           `oo, 'oo      .:oo
-                             'ooooc,, ,:lol
-                                `''"clc"'      
+                       .oo.                ooo.
+                       .oo.    'oooooooooooo:col
+                       .oo'    'oo           col
+                        coo    'oo           oo'
+                         coc   'oo         .lo,
+                          `oo, 'oo        .:oo
+                            'oo;ocoooooco;oo
+                                `''"cc'"'      
 ART
         ;;
 esac
