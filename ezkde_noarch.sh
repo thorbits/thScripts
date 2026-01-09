@@ -327,7 +327,6 @@ install_packages() {
 
 enable_wayland() {
     local sddm_file="/etc/sddm.conf"
-
     if [ ! -f "$sddm_file" ]; then
         touch "$sddm_file"
     fi
@@ -335,12 +334,14 @@ enable_wayland() {
     if grep -q "Session=plasmawayland" "$sddm_file"; then
         :
     else
-        # check if a 'Session=' line exists
-        if grep -q "^Session=" "$sddm_file"; then
-            sed -i 's/^Session=.*/Session=plasmawayland/' "$sddm_file"
-        else
-            printf "Session=plasmawayland\n" | tee -a "$sddm_file" >/dev/null
+        if ! grep -q "^\[General\]" "$sddm_file"; then
+             printf "[General]\n" | tee -a "$sddm_file" >/dev/null
         fi
+        if grep -q "^Session=" "$sddm_file"; then
+             sed -i 's/^Session=.*/Session=plasmawayland/' "$sddm_file"
+         else
+             printf "Session=plasmawayland\n" | tee -a "$sddm_file" >/dev/null
+         fi
     fi
 
     if systemctl is-enabled display-manager.service &>/dev/null; then
