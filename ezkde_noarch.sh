@@ -198,6 +198,7 @@ done
 
 # user pressed Enter, run the update.
 eval "$UPDATE" || fatal " no internet connection detected. Exiting."
+"$PM" expac >/dev/null
 
 nvidia_warning() {
 	nvidia_fix=false
@@ -423,6 +424,7 @@ main() {
                 grep -v '^warning' || true
             )
             total=${#packages[@]}
+			#expac -S '%D' plasma-meta networkmanager dolphin konsole | 
             ;;
         Debian)
             # inherit the current locale for install
