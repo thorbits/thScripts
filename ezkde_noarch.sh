@@ -193,23 +193,23 @@ done
 # user pressed Enter, run the update.
 eval "$UPDATE" || fatal " no internet connection detected. Exiting."
 
-warn_nvidia() {
+nvidia_warning() {
+	nvidia_fix=false
+	
     if lspci | grep -i nvidia >/dev/null; then
-        printf "\n WARNING: NVIDIA GPU Detected\n\n"
-		printf " Checking for NVIDIA Wayland fix...\n\n"
+        printf "\n WARNING: NVIDIA GPU Detected\n\n Checking for NVIDIA Wayland fix...\n\n"
 		sleep 2
         if grep -q "nvidia-drm.modeset=1" /etc/default/grub; then
 			printf " Fix already present in GRUB config. Continuing with KDE installation..."
         else
             sed -i 's/^GRUB_CMDLINE_LINUX_DEFAULT="\(.*\)"/GRUB_CMDLINE_LINUX_DEFAULT="\1 nvidia-drm.modeset=1"/' /etc/default/grub
-			printf " NVIDIA Wayland fix applied. You will need to reboot your system !\n"
-			printf " Continuing with KDE installation..."
+			printf " NVIDIA Wayland fix applied. You will need to reboot your system !\n Continuing with KDE installation..."
             nvidia_fix=true
         fi
     fi
 }
 
-warn_nvidia
+nvidia_warning
 
 printf "\n\n Preparing KDE packages for %s...\n\n" "$DISTRO"
 
