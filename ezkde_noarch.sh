@@ -445,7 +445,6 @@ main() {
 if (( total == 0 )); then
     printf " Nothing to do – All packages are up to date.\n\n"
 	enable_wayland
-    echo
 	end_install
 fi
 
