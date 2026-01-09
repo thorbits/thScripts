@@ -45,14 +45,16 @@ This script aims to provide a streamlined installation experience, especially fo
     *   Progress of components intallation.
 
 3.  **Finalize setup -**
-    Once installation is complete, the script will offer you to either reboot your system  
+    Once installation is complete, the script will offer you to either reboot your system,  
     or to log immediatly into a KDE Wayland session.
 
 
 ## Security warning
 
-*   **Script Verification -**  Before running the script, verify its authenticity and integrity. Check the GitHub repository for updates and reviews.
-*   **Root Access -** Understand the implications of running a script with root access. Only run scripts from trusted sources.
+*   **Script Verification -**  Before running the script, verify its authenticity and integrity.
+  Check the GitHub repository for updates and reviews.
+*   **Root Access -** Understand the implications of running a script with root access.
+  Only run scripts from trusted sources.
 
 </div>
 
