@@ -45,26 +45,26 @@ fatal() {
 
 if command -v pacman &>/dev/null; then
     DISTRO=Arch
+    UPDATE=(pacman -Sy)
     PM=(pacman -S --needed --noconfirm)
-    UPDATE="pacman -Sy >/dev/null 2>&1"
     LIST_CMD=(pacman -Sp --print-format '%n')
 
 elif command -v apt-get &>/dev/null; then
     DISTRO=Debian
+    UPDATE=(apt-get update)
     PM=(apt-get install -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold")
-    UPDATE="apt-get update -qq"
     LIST_CMD=(apt-get install --dry-run -qq)
 
 elif command -v dnf &>/dev/null; then
     DISTRO=Fedora
+    UPDATE=(dnf makecache)
     PM=(dnf install -y)
-    UPDATE="dnf makecache >/dev/null 2>&1"
     LIST_CMD=(dnf install --assumeno)
 
 elif command -v zypper &>/dev/null; then
     DISTRO=OpenSuse
+    UPDATE=(zypper ref)
     PM=(zypper install -y)
-    UPDATE="zypper --quiet ref"
     LIST_CMD=(zypper install -y --dry-run)
 
 else
@@ -197,8 +197,8 @@ while true; do
 done
 
 # user pressed Enter, run the update.
-eval "$UPDATE" || fatal " no internet connection detected. Exiting."
-"${PM[@]}" expac >/dev/null
+"${UPDATE[@]}" >/dev/null 2>&1 || fatal " no internet connection detected. Exiting."
+"${PM[@]}" expac  >/dev/null 2>&1
 
 nvidia_warning() {
 	nvidia_fix=false
