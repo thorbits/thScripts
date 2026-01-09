@@ -77,7 +77,7 @@ KDE_GROUP[Arch]="plasma-meta networkmanager dolphin konsole"
 KDE_GROUP[Debian]="plasma-workspace pipewire sddm dolphin konsole"
 KDE_GROUP[Fedora]="@kde-desktop"
 #KDE_GROUP[Fedora]="plasma-desktop plasma-settings plasma-nm sddm-wayland-plasma kde-baseapps konsole kscreen sddm startplasma-wayland dolphin"
-KDE_GROUP[OpenSuse]="patterns-kde-kde_plasma plasma6-desktop discover6 dolphin sddm" #sddm-config-wayland"
+KDE_GROUP[OpenSuse]="patterns-kde-kde_plasma discover6" #plasma6-desktop dolphin sddm sddm-config-wayland
 
 # intro - DISTRO and UPDATE are set
 clear
