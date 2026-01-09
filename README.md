@@ -51,10 +51,8 @@ This script aims to provide a streamlined installation experience, especially fo
 
 ## Security warning
 
-*   **Script Verification -**  Before running the script, verify its authenticity and integrity.
-    Check the GitHub repository for updates and reviews.
-*   **Root Access -** Understand the implications of running a script with root access.
-    Only run scripts from trusted sources.
+*   **Script Verification -**  Before running the script, verify its authenticity and integrity. Check the GitHub repository for updates and reviews.
+*   **Root Access -** Understand the implications of running a script with root access. Only run scripts from trusted sources.
 
 </div>
 
@@ -67,11 +65,10 @@ This script aims to provide a streamlined installation experience, especially fo
     <img src="https://github.com/devicons/devicon/blob/master/icons/bash/bash-plain.svg" width="128" height="128">
   </p>
 </div>
+
 <div align="center">
-
-
-
-
+  <p><br><br><br><br><br></p>
+</div>
 
 
 # eZkernel - Interactive Linux Kernel Compilation Script
@@ -131,15 +128,15 @@ While ezkernel strives to minimize risks, incorrect configuration or unforeseen 
 
 ## Important Considerations
 
-*   **Compilation -** The script is configured to utilize ALL available CPU threads during compilation time. Refer to the script's documentation or seek help from the online community if you encounter problems.
+*   **Compilation -** The script is configured to utilize ALL available CPU threads during compilation time.
 *   **Error Handling -** The script includes basic error handling, but be prepared to troubleshoot issues. Refer to the script's documentation or seek help from the online community if you encounter problems.
 *   **Rollback -** If the new kernel causes problems, you can typically boot into your previous kernel using your bootloader's menu (e.g., Grub).   
 
 
 ## Security warning
 
-*   **Script Verification -**  Before running the script, verify its authenticity and integrity.  Check the GitHub repository for updates and reviews.
-*   **Root Access -** Understand the implications of running a script with root access.  Only run scripts from trusted sources.
+*   **Script Verification -**  Before running the script, verify its authenticity and integrity. Check the GitHub repository for updates and reviews.
+*   **Root Access -** Understand the implications of running a script with root access. Only run scripts from trusted sources.
 
 </div>
 
