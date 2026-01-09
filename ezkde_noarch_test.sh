@@ -399,8 +399,7 @@ main() {
     
     if (( total == 0 )); then
         fatal ' Nothing to do – All packages are up to date.'
-		echo
-        #enable_sddm
+        enable_sddm
         end_install
     fi
 
