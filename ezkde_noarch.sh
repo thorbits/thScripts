@@ -422,7 +422,7 @@ main() {
             mapfile -t packages < <(
                 #"${LIST_CMD[@]}" "${pkg_names[@]}" 2>&1 |
                 #grep -v '^warning' || true
-				expac -S '%D' "${pkg_names[@]}" 2>&1 | tr -s ' ' '\n' || true
+				expac -S '%D' "${pkg_names[@]}" 2>&1 | tr -s ' ' '\n' | sort -u || true
             )
             total=${#packages[@]}
             ;;
