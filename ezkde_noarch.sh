@@ -326,24 +326,30 @@ install_packages() {
 }
 
 enable_wayland() {
-    local sddm_file="/etc/sddm.conf.d/sddm.conf"
-    if [ ! -f "$sddm_file" ]; then
-        touch "$sddm_file"
-    fi
+	case "$DISTRO" in
+        Arch|Debian)
+			systemctl enable sddm &>/dev/null
+			;;
+		Fedora|OpenSuse)
+    		local sddm_file="/etc/sddm.conf.d/sddm.conf"
+    		if [ ! -f "$sddm_file" ]; then
+        	touch "$sddm_file"
+    		fi
 
-    if grep -q "DisplayServer=wayland" "$sddm_file"; then
-        :
-    else
-        if ! grep -q "^\[General\]" "$sddm_file"; then
-             printf "[General]\n" | tee -a "$sddm_file" >/dev/null
-        fi
-        if grep -q "^SDisplayServer=" "$sddm_file"; then
-             sed -i 's/^DisplayServer=.*/DisplayServer=wayland/' "$sddm_file"
-         else
-             printf "DisplayServer=wayland\n" | tee -a "$sddm_file" >/dev/null
-         fi
-    fi
-
+    		if grep -q "DisplayServer=wayland" "$sddm_file"; then
+        	:
+    		else
+        		if ! grep -q "^\[General\]" "$sddm_file"; then
+             		printf "[General]\n" | tee -a "$sddm_file" >/dev/null
+        		fi
+        		if grep -q "^SDisplayServer=" "$sddm_file"; then
+             	sed -i 's/^DisplayServer=.*/DisplayServer=wayland/' "$sddm_file"
+         		else
+             		printf "DisplayServer=wayland\n" | tee -a "$sddm_file" >/dev/null
+         		fi
+    		fi
+			;;
+	esac
     if systemctl is-enabled display-manager.service &>/dev/null; then
         systemctl disable display-manager.service &>/dev/null
     fi
