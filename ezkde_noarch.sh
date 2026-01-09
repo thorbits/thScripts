@@ -199,11 +199,12 @@ warn_nvidia() {
 		printf " Checking for NVIDIA Wayland fix...\n\n"
 		sleep 2
         if grep -q "nvidia-drm.modeset=1" /etc/default/grub; then
-			echo " Fix already present in GRUB config."
+			printf " Fix already present in GRUB config. Continuing with KDE installation..."
         else
-            sudo sed -i 's/^GRUB_CMDLINE_LINUX_DEFAULT="\(.*\)"/GRUB_CMDLINE_LINUX_DEFAULT="\1 nvidia-drm.modeset=1"/' /etc/default/grub
-			printf " NVIDIA Wayland fix applied."
-            fix_applied=true
+            sed -i 's/^GRUB_CMDLINE_LINUX_DEFAULT="\(.*\)"/GRUB_CMDLINE_LINUX_DEFAULT="\1 nvidia-drm.modeset=1"/' /etc/default/grub
+			printf " NVIDIA Wayland fix applied. You will need to reboot your system !\n"
+			printf " Continuing with KDE installation..."
+            nvidia_fix=true
         fi
     fi
 }
@@ -332,12 +333,17 @@ enable_sddm() {
 }
 
 end_install() {
+    if [ "$nvidia_fix" = true ]; then
+        update-grub >/dev/null
+    fi
+
     while true; do
-		if [ "$fix_applied" = true ]; then
-		update-grub >/dev/null
-		
-        printf "\r\033[2K Reboot (r) or start KDE now (k)? [r/k] "
-        read -n1 -s -r choice
+        if [ "$nvidia_fix" = true ]; then
+            printf "\r\033[2K Press (r) to reboot: "
+        else
+            printf "\r\033[2K Reboot (r) or start KDE now (k)? [r/k]: "
+        fi
+		read -n1 -s -r choice
         # check if Ctrl+C
         if (( $? != 0 )); then
             exit 1
