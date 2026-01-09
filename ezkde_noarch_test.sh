@@ -150,8 +150,8 @@ ART
                        .oo.                ooo.
                        .oo.    'oooooooooooo:col
                        .oo'    'oo           col
-                        coo    'oo           oo'
-                         coc   'oo         .lo,
+                        coo    'oo           col'
+                         coc   'oo          .lo,
                           `oo, 'oo        .:oo
                             'oo;ocoooooco;oo
                                 `''"cc'"'      
