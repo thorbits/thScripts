@@ -350,7 +350,7 @@ enable_wayland() {
     if systemctl is-enabled display-manager.service &>/dev/null; then
         systemctl disable display-manager.service &>/dev/null
     fi
-    systemctl enable sddm &>/dev/null
+    systemctl enable sddm #&>/dev/null
 }
 
 end_install() {
