@@ -399,8 +399,8 @@ main() {
     
     if (( total == 0 )); then
         fatal ' Nothing to do – All packages are up to date.'
-        enable_sddm
-        end_install
+        #enable_sddm
+        #end_install
     fi
 
     # array installation loop
