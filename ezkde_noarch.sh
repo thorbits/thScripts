@@ -330,7 +330,7 @@ enable_wayland() {
 
     #if ! command -v sddm &>/dev/null; then
     #    return 1
-    fi
+    #fi
 
     if [ ! -f "$sddm_file" ]; then
         touch "$sddm_file"
