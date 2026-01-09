@@ -89,7 +89,7 @@ This script aims to provide a streamlined installation experience, especially fo
   <p><br></p>
 
 eZkernel is a semi-automated shell script designed for Debian-based systems to simplify the process of compiling and installing the latest Linux kernel from git.kernel.org.  
-It aims to provide a user-friendly experience, automating key steps like source code download, dependency checking, and system configuration.
+This script aims to provide a user-friendly experience, automating key steps like source code download, dependency checking, and system configuration.
 
 **⚠️ Important Disclaimer -** Compiling and installing a new kernel can be a complex process.  
 While ezkernel strives to minimize risks, incorrect configuration or unforeseen errors can lead to system instability or a non-bootable system.  
