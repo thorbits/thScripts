@@ -85,7 +85,7 @@ echo
 case "$DISTRO" in
         Arch)
             cat << 'ART'
-                        -`
+                    	-`
                       .o+`
                      `ooo/
                     `+oooo:
@@ -132,9 +132,9 @@ ART
             .',;:ccccccccccccc:;,'.
           .;ccccccccccccccccccccccc;.
         .;ccccccccccc;.:dddl:.;ccccccc;.
-      .:cccccccccccc;OWMKOOXMWd;ccccccc:.
-    .:ccccccccccccc;KMMc;cc;xMMc;ccccccc:.
-    .:ccccccccccccc;MMM.;cc;;WW:;ccccccccc,
+       .:ccccccccccc;OWMKOOXMWd;ccccccc:.
+      :cccccccccccc;KMMc;cc;xMMc;ccccccc:.
+     :ccccccccccccc;MMM.;cc;;WW:;ccccccccc,
     .cccccccccccccc;MMM.;ccccccccccccccccc:
     .ccccccc;oxOOOo;MMM0OOk.;ccccccccccccc:
     .cccccc;0MMKxdd:;MMMkddc.;cccccccccccc;
@@ -149,7 +149,7 @@ ART
         ;;
         OpenSuse)
             cat << 'ART'
-               ,...,                                 
+            ,.,ccc,.,                                 
          .,:lloooooc;.
        ,ool'    oo,  ;oo:
      .lo'       oo.     oo:
