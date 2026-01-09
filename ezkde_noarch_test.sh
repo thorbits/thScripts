@@ -77,7 +77,7 @@ KDE_GROUP[Arch]="plasma-meta networkmanager dolphin konsole"
 KDE_GROUP[Debian]="plasma-workspace pipewire sddm dolphin konsole"
 KDE_GROUP[Fedora]="@kde-desktop"
 #KDE_GROUP[Fedora]="plasma-desktop plasma-settings plasma-nm sddm-wayland-plasma kde-baseapps konsole kscreen sddm startplasma-wayland dolphin"
-KDE_GROUP[OpenSuse]="discover6 patterns-kde-kde_plasma" #plasma6-desktop dolphin sddm sddm-config-wayland
+KDE_GROUP[OpenSuse]="discover6 sddm patterns-kde-kde_plasma" #plasma6-desktop dolphin sddm sddm-config-wayland
 
 # intro - DISTRO and UPDATE are set
 clear
@@ -399,7 +399,7 @@ main() {
     
 if (( total == 0 )); then
     printf " Nothing to do – All packages are up to date.\n\n"
-	#enable_sddm
+	enable_sddm
     end_install
 fi
 
