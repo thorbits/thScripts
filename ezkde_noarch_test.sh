@@ -24,6 +24,20 @@ BATCHSIZE=${BATCHSIZE:-1}
 BAR_CHAR=${BAR_CHAR:-'|'}
 EMPTY_CHAR=${EMPTY_CHAR:-' '}
 
+usage() {
+	local prog=${0##*/}
+	cat <<-EOF
+	Usage: $prog [options]
+
+	Tweak batch install size and progress bar appearance.
+
+	Options
+	  -b          batch size for packages, default is 1
+	  -c          progress bar fill character, default is |
+	  -e          progress bar empty character, default is ' '
+EOF
+}
+
 fatal() {
     printf '[FATAL] %s\n' "$*" >&2
     exit 1
@@ -54,7 +68,7 @@ elif command -v zypper &>/dev/null; then
     LIST_CMD=(zypper install -y --dry-run)
 
 else
-    fatal "No supported package manager found (apt-get, pacman, dnf, zypper)."
+    fatal " No supported package manager found (apt-get, pacman, dnf, zypper)."
 fi
 
 # map each distro to its native KDE/plasma packages
@@ -163,6 +177,7 @@ printf '\n\n Welcome %s, to eZkde for %s.\n\n' "$USER" "$DISTRO"
 printf ' #---------------------------------------------------#\n'
 printf ' # The latest version of KDE 6.5.x (Wayland session) #\n # will be installed with audio support (Pipewire)   #\n # and a minimum of utilities.                       #\n'
 printf ' #---------------------------------------------------#\n\n'
+
 while true; do
     printf '\r\033[2K Press Enter to continue or Ctrl+C to cancel.'
     read -n1 -s -r
@@ -175,6 +190,7 @@ while true; do
         break
     fi
 done
+
 # user pressed Enter, run the update.
 eval "$UPDATE" || fatal " ERROR: no internet connection detected. Exiting."
 printf '\n\n Preparing KDE packages for %s...\n\n' "$DISTRO"
@@ -322,7 +338,12 @@ main() {
             b) BATCHSIZE=$OPTARG;;
             c) BAR_CHAR=$OPTARG;;
             e) EMPTY_CHAR=$OPTARG;;
-            *) fatal 'Usage: ezkde_noarch [-b batchsize] [-c bar_char] [-e empty_char]';;
+            *) 
+                echo >&2;
+                usage >&2;
+                exit 1
+                ;;
+            #*) fatal 'Usage: ezkde_noarch [-b batchsize] [-c bar_char] [-e empty_char]';;
         esac
     done
 
