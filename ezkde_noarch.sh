@@ -198,7 +198,7 @@ done
 
 # user pressed Enter, run the update.
 eval "$UPDATE" || fatal " no internet connection detected. Exiting."
-"$PM" expac >/dev/null
+"${PM[@]}" expac >/dev/null
 
 nvidia_warning() {
 	nvidia_fix=false
