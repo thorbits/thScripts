@@ -112,23 +112,17 @@ While ezkernel strives to minimize risks, incorrect configuration or unforeseen 
 
     Debian
     ```bash
-    curl -fsSL https://raw.githubusercontent.com/thorbits/thScripts/refs/heads/main/ezkernel_debian.sh -o /usr/local/bin/ezkernel_debian.sh && chmod +x /usr/local/bin/ezkernel_debian.sh
+    curl -fsSL https://raw.githubusercontent.com/thorbits/thScripts/refs/heads/main/ezkernel_debian.sh -o /usr/local/bin/ezkernel_debian.sh && chmod +x /usr/local/bin/ezkernel_debian.sh && ezkernel_debian.sh
     ```
 
-2.  **Run the Script -**
-    Execute the script with root privileges
-    ```bash
-    sudo ezkernel_debian.sh
-    ```
-
-3.  **Follow On-Screen Prompts -** The script will guide you through the process such as:
+2.  **Follow On-Screen Prompts -** The script will guide you through the process such as:
     *   **Check Kernel Version -** The latest kernel version available will be displayed.
     *   **Confirm installation -**  This allows you to continue with the script.
     *   **Dependencies and sources -** The script will install necessary dependencies and then download the latest kernel sources.
     *   **Configuration -** Advanced users can customize the kernel configuration by modifying the `.config` file before compilation via menuconfig.
     *   **Compilation -**  The kernel will be compiled once you manually exit the configuration screen. This can take a significant amount of time depending on your system's hardware.
 
-4.  **Reboot -**  After successful compilation, the script will prompt you to reboot your system.  Select "Yes" to reboot with the newly compiled kernel.
+3.  **Reboot -**  After successful compilation, the script will prompt you to reboot your system.  Select "Yes" to reboot with the newly compiled kernel.
 
 
 ## Important Considerations
