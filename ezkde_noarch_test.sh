@@ -397,11 +397,10 @@ main() {
             ;;
     esac
     
-    if (( total == 0 )); then
-        printf  '\n Nothing to do – All packages are up to date.' &&
-        #enable_sddm
-        end_install
-    fi
+if (( total == 0 )); then
+    printf "\n Nothing to do – All packages are up to date.\n"
+    end_install
+fi
 
     # array installation loop
     local current=0
