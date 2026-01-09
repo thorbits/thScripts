@@ -3,13 +3,14 @@
     <img src="https://github.com/devicons/devicon/blob/master/icons/bash/bash-plain.svg" width="128" height="128">
   </p>
 </div>
+
 <div align="center">
-  
+
 # eZkde - Automated KDE 6 Installation Script
 </div>
+
 <div align="center">
   <p><br></p>
-
 
 ## User Manual
 </div>
@@ -73,11 +74,13 @@ This script aims to provide a streamlined installation experience, especially fo
   </p>
 </div>
 
+<div align="center">
+
 # eZkernel - Interactive Linux Kernel Compilation Script
 </div>
+
 <div align="center">
   <p><br></p>
-
 
 ## User Manual
 </div>
@@ -85,7 +88,7 @@ This script aims to provide a streamlined installation experience, especially fo
 <div>
   <p><br></p>
 
-ezkernel is a semi-automated shell script designed for Debian-based systems to simplify the process of compiling and installing the latest Linux kernel from git.kernel.org.  
+eZkernel is a semi-automated shell script designed for Debian-based systems to simplify the process of compiling and installing the latest Linux kernel from git.kernel.org.  
 It aims to provide a user-friendly experience, automating key steps like source code download, dependency checking, and system configuration.
 
 **⚠️ Important Disclaimer -** Compiling and installing a new kernel can be a complex process.  
