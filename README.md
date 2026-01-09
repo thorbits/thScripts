@@ -38,11 +38,13 @@ This script aims to provide a streamlined installation experience, especially fo
     curl -fsSL https://raw.githubusercontent.com/thorbits/thScripts/refs/heads/main/ezkde_noarch.sh -o /usr/local/bin/ezkde_noarch.sh && chmod +x /usr/local/bin/ezkde_noarch.sh && ezkde_noarch.sh
     ```
 
+
 2.  **Follow On-Screen Prompts -**
     The script will display progress information and prompts during execution. These prompts may include:
     *   Confirmation to proceed with the installation.
     *   Automatic components download.
     *   Progress of components intallation.
+
 
 3.  **Finalize setup -**
     Once installation is complete, the script will offer you to either reboot your system,  
@@ -56,20 +58,20 @@ This script aims to provide a streamlined installation experience, especially fo
 
 </div>
 
-<div align="center">
-  <p><br><br><br><br><br></p>
+
+<div>
+  <p><br><br><br><br></p>
 </div>
+<div>
+  <p><br><br><br><br></p>
+</div>
+
 
 <div align="center">
   <p>
     <img src="https://github.com/devicons/devicon/blob/master/icons/bash/bash-plain.svg" width="128" height="128">
   </p>
 </div>
-
-<div>
-  <p><br><br><br><br><br></p>
-</div>
-
 
 # eZkernel - Interactive Linux Kernel Compilation Script
 </div>
@@ -110,20 +112,20 @@ While ezkernel strives to minimize risks, incorrect configuration or unforeseen 
     curl -fsSL https://raw.githubusercontent.com/thorbits/thScripts/refs/heads/main/ezkernel_debian.sh -o /usr/local/bin/ezkernel_debian.sh && chmod +x /usr/local/bin/ezkernel_debian.sh
     ```
 
-3.  **Run the Script -**
+2.  **Run the Script -**
     Execute the script with root privileges
     ```bash
     sudo ezkernel_debian.sh
     ```
 
-4.  **Follow On-Screen Prompts -** The script will guide you through the process such as:
+3.  **Follow On-Screen Prompts -** The script will guide you through the process such as:
     *   **Check Kernel Version -** The latest kernel version available will be displayed.
     *   **Confirm installation -**  This allows you to continue with the script.
     *   **Dependencies and sources -** The script will install necessary dependencies and then download the latest kernel sources.
     *   **Configuration -** Advanced users can customize the kernel configuration by modifying the `.config` file before compilation via menuconfig.
     *   **Compilation -**  The kernel will be compiled once you manually exit the configuration screen. This can take a significant amount of time depending on your system's hardware.
 
-5.  **Reboot -**  After successful compilation, the script will prompt you to reboot your system.  Select "Yes" to reboot with the newly compiled kernel.
+4.  **Reboot -**  After successful compilation, the script will prompt you to reboot your system.  Select "Yes" to reboot with the newly compiled kernel.
 
 
 ## Important Considerations
