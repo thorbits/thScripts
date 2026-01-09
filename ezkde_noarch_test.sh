@@ -59,7 +59,7 @@ fi
 
 # map each distro to its native KDE/plasma packages
 declare -A KDE_GROUP
-KDE_GROUP[Arch]="plasma-meta dolphin konsole"
+KDE_GROUP[Arch]="plasma-meta networkmanager dolphin konsole"
 KDE_GROUP[Debian]="plasma-workspace pipewire sddm dolphin konsole"
 KDE_GROUP[Fedora]="@kde-desktop"
 #KDE_GROUP[Fedora]="plasma-desktop plasma-settings plasma-nm sddm-wayland-plasma kde-baseapps konsole kscreen sddm startplasma-wayland dolphin"
