@@ -122,7 +122,7 @@ While ezkernel strives to minimize risks, incorrect configuration or unforeseen 
     *   **Configuration -** Advanced users can customize the kernel configuration by modifying the `.config` file before compilation via menuconfig.
     *   **Compilation -**  The kernel will be compiled once you manually exit the configuration screen. This can take a significant amount of time depending on your system's hardware.
 
-3.  **Reboot -**  After successful compilation, the script will prompt you to reboot your system.  Select "Yes" to reboot with the newly compiled kernel.
+3.  **Reboot -**  After successful compilation, the script will prompt you to reboot, select "Yes" to reboot with the newly compiled kernel.
 
 
 ## Important Considerations
