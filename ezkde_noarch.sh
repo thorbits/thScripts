@@ -197,7 +197,7 @@ nvidia_warning() {
 	nvidia_fix=false
 	
     if lspci | grep -i nvidia >/dev/null; then
-        printf "\n WARNING: NVIDIA GPU Detected\n\n Checking for NVIDIA Wayland fix...\n\n"
+        printf "\n\n WARNING: NVIDIA GPU Detected. Checking for NVIDIA Wayland fix...\n\n"
 		sleep 2
         if grep -q "nvidia-drm.modeset=1" /etc/default/grub; then
 			printf " Fix already present in GRUB config. Continuing with KDE installation..."
