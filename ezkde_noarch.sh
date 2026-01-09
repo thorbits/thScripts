@@ -178,7 +178,7 @@ cat <<EOF
  #---------------------------------------------------#
  # The latest version of KDE 6.5.x (Wayland session) #
  #  will be installed with audio support (Pipewire), #
- #			SDDM and a minimum of utilities.		 #
+ #          SDDM and a minimum of utilities.         #
  #---------------------------------------------------#
 
 EOF
