@@ -307,9 +307,9 @@ install_packages() {
 }
 
 enable_sddm() {
-    if systemctl is-enabled display-manager.service &>/dev/null; then
-        systemctl disable display-manager.service &>/dev/null
-    fi
+    #if systemctl is-enabled display-manager.service &>/dev/null; then
+    #    systemctl disable display-manager.service &>/dev/null
+    #fi
     systemctl enable sddm &>/dev/null
 }
 
@@ -398,8 +398,8 @@ main() {
     esac
     
 if (( total == 0 )); then
-    printf "\n Nothing to do – All packages are up to date.\n\n"
-	#enable_sddm
+    printf " Nothing to do – All packages are up to date.\n\n"
+	enable_sddm
     end_install
 fi
 
