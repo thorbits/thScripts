@@ -420,11 +420,11 @@ main() {
     case "$DISTRO" in
         Arch)
             mapfile -t packages < <(
-                "${LIST_CMD[@]}" "${pkg_names[@]}" 2>&1 |
-                grep -v '^warning' || true
+                #"${LIST_CMD[@]}" "${pkg_names[@]}" 2>&1 |
+                #grep -v '^warning' || true
+				expac -S '%D' "${pkg_names[@]}" 2>&1 | tr -s ' ' '\n' || true
             )
             total=${#packages[@]}
-			#expac -S '%D' plasma-meta networkmanager dolphin konsole | 
             ;;
         Debian)
             # inherit the current locale for install
