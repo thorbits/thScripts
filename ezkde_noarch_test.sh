@@ -39,7 +39,7 @@ EOF
 }
 
 fatal() {
-    printf '[WARNING] %s\n' "$*" >&2
+    printf "[WARNING] %s\n" "$*" >&2
     exit 1
 }
 
@@ -68,7 +68,7 @@ elif command -v zypper &>/dev/null; then
     LIST_CMD=(zypper install -y --dry-run)
 
 else
-    fatal ' No supported package manager found (apt-get, pacman, dnf, zypper).'
+    fatal " No supported package manager found (apt-get, pacman, dnf, zypper)."
 fi
 
 # map each distro to its native KDE/plasma packages
@@ -172,13 +172,13 @@ ART
         ;;
 esac
 
-printf '\n\n Welcome %s, to eZkde for %s.\n\n' "$USER" "$DISTRO"
-printf ' #---------------------------------------------------#\n'
-printf ' # The latest version of KDE 6.5.x (Wayland session) #\n # will be installed with audio support (Pipewire)   #\n # and a minimum of utilities.                       #\n'
-printf ' #---------------------------------------------------#\n\n'
+printf "\n\n Welcome %s, to eZkde for %s.\n\n" "$USER" "$DISTRO"
+printf " #---------------------------------------------------#\n"
+printf " # The latest version of KDE 6.5.x (Wayland session) #\n # will be installed with audio support (Pipewire)   #\n # and a minimum of utilities.                       #\n"
+printf " #---------------------------------------------------#\n\n"
 
 while true; do
-    printf '\r\033[2K Press Enter to continue or Ctrl+C to cancel.'
+    printf "\r\033[2K Press Enter to continue or Ctrl+C to cancel."
     read -n1 -s -r
     # check if Ctrl+C
     if (( $? != 0 )); then
@@ -192,7 +192,7 @@ done
 
 # user pressed Enter, run the update.
 eval "$UPDATE" || fatal " ERROR: no internet connection detected. Exiting."
-printf '\n\n Preparing KDE packages for %s...\n\n' "$DISTRO"
+printf "\n\n Preparing KDE packages for %s...\n\n" "$DISTRO"
 
 create_swap() {
     local swap_file="/var/tmp/ezkde_swap"
@@ -315,7 +315,7 @@ enable_sddm() {
 
 end_install() {
     while true; do
-        printf '\r\033[2K Reboot (r) or start KDE now (k)? [r/k] '
+        printf "\r\033[2K Reboot (r) or start KDE now (k)? [r/k] "
         read -n1 -s -r choice
         # check if Ctrl+C
         if (( $? != 0 )); then
@@ -324,7 +324,7 @@ end_install() {
 
         case "${choice,,}" in
             k) systemctl start sddm; break ;;
-            r) printf '\n'; echo; (for ((i=5; i>0; i--)); do printf "\r Rebooting in %d...\033[0K" "$i"; sleep 1; done) && reboot; break ;;
+            r) printf "\n"; echo; (for ((i=5; i>0; i--)); do printf "\r Rebooting in %d...\033[0K" "$i"; sleep 1; done) && reboot; break ;;
             *) ;;
         esac
     done
@@ -398,7 +398,8 @@ main() {
     esac
     
 if (( total == 0 )); then
-    printf "\n Nothing to do – All packages are up to date.\n"
+    printf "\n Nothing to do – All packages are up to date.\n\n"
+	enable_sddm
     end_install
 fi
 
@@ -418,7 +419,7 @@ fi
 
     remove_swap
     enable_sddm
-    printf '\n\n eZkde for %s installation successful.\n\n' "$DISTRO"
+    printf "\n\n eZkde for %s installation successful.\n\n" "$DISTRO"
     end_install
     deinit-term
 }
