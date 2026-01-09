@@ -68,7 +68,7 @@ elif command -v zypper &>/dev/null; then
     LIST_CMD=(zypper install -y --dry-run)
 
 else
-    fatal " No supported package manager found (apt-get, pacman, dnf, zypper)."
+    fatal " no supported package manager found (apt-get, pacman, dnf, zypper). Exiting."
 fi
 
 # map each distro to its native KDE/plasma packages
@@ -191,7 +191,25 @@ while true; do
 done
 
 # user pressed Enter, run the update.
-eval "$UPDATE" || fatal " ERROR: no internet connection detected. Exiting."
+eval "$UPDATE" || fatal " no internet connection detected. Exiting."
+
+warn_nvidia() {
+    if lspci | grep -i nvidia >/dev/null; then
+        printf "\n WARNING: NVIDIA GPU Detected\n\n"
+		printf " Checking for NVIDIA Wayland fix...\n\n"
+		sleep 2
+        if grep -q "nvidia-drm.modeset=1" /etc/default/grub; then
+			echo " Fix already present in GRUB config."
+        else
+            sudo sed -i 's/^GRUB_CMDLINE_LINUX_DEFAULT="\(.*\)"/GRUB_CMDLINE_LINUX_DEFAULT="\1 nvidia-drm.modeset=1"/' /etc/default/grub
+			printf " NVIDIA Wayland fix applied."
+            fix_applied=true
+        fi
+    fi
+}
+
+warn_nvidia
+
 printf "\n\n Preparing KDE packages for %s...\n\n" "$DISTRO"
 
 create_swap() {
@@ -315,6 +333,9 @@ enable_sddm() {
 
 end_install() {
     while true; do
+		if [ "$fix_applied" = true ]; then
+		update-grub >/dev/null
+		
         printf "\r\033[2K Reboot (r) or start KDE now (k)? [r/k] "
         read -n1 -s -r choice
         # check if Ctrl+C
@@ -414,8 +435,6 @@ fi
         fi
         progress-bar "$current" "$total"
     done
-
-    #progress-bar "$total" "$total"
 
     remove_swap
     enable_sddm
