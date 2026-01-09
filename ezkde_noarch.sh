@@ -326,21 +326,21 @@ install_packages() {
 }
 
 enable_wayland() {
-    local sddm_file="/etc/sddm.conf"
+    local sddm_file="/etc/sddm.conf.d/sddm.conf"
     if [ ! -f "$sddm_file" ]; then
         touch "$sddm_file"
     fi
 
-    if grep -q "Session=plasmawayland" "$sddm_file"; then
+    if grep -q "DisplayServer=wayland" "$sddm_file"; then
         :
     else
-        if ! grep -q "^\[Autologin\]" "$sddm_file"; then
-             printf "[Autologin]\n" | tee -a "$sddm_file" >/dev/null
+        if ! grep -q "^\[General\]" "$sddm_file"; then
+             printf "[General]\n" | tee -a "$sddm_file" >/dev/null
         fi
-        if grep -q "^Session=" "$sddm_file"; then
-             sed -i 's/^Session=.*/Session=plasmawayland/' "$sddm_file"
+        if grep -q "^SDisplayServer=" "$sddm_file"; then
+             sed -i 's/^DisplayServer=.*/DisplayServer=wayland/' "$sddm_file"
          else
-             printf "Session=plasmawayland\n" | tee -a "$sddm_file" >/dev/null
+             printf "DisplayServer=wayland\n" | tee -a "$sddm_file" >/dev/null
          fi
     fi
 
