@@ -325,7 +325,27 @@ install_packages() {
     done
 }
 
-enable_sddm() {
+enable_wayland() {
+    local sddm_dir="/etc/sddm.conf.d"
+    local sddm_file="$sddm_dir/kde_wayland_only.conf"
+
+    if ! command -v sddm &> /dev/null; then
+        return 1
+    fi
+
+    if [ ! -d "$sddm_dir" ]; then
+        sudo mkdir -p "$sddm_dir"
+    fi
+
+    if [ -f "$sddm_file" ] && grep -q "Session=plasmawayland" "$sddm_file"; then
+        :
+    else
+        sudo tee "$sddm_file" > /dev/null <<EOF
+[General]
+Session=plasmawayland
+EOF
+    fi
+
     if systemctl is-enabled display-manager.service &>/dev/null; then
         systemctl disable display-manager.service &>/dev/null
     fi
@@ -426,7 +446,7 @@ main() {
     
 if (( total == 0 )); then
     printf " Nothing to do – All packages are up to date.\n\n"
-	enable_sddm
+	enable_wayland
     end_install
 fi
 
@@ -443,7 +463,7 @@ fi
     done
 
     remove_swap
-    enable_sddm
+    enable_wayland
     printf "\n\n eZkde for %s installation successful.\n\n" "$DISTRO"
     end_install
     deinit-term
