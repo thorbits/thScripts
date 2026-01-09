@@ -334,8 +334,8 @@ enable_wayland() {
     if grep -q "Session=plasmawayland" "$sddm_file"; then
         :
     else
-        if ! grep -q "^\[General\]" "$sddm_file"; then
-             printf "[General]\n" | tee -a "$sddm_file" >/dev/null
+        if ! grep -q "^\[Autologin\]" "$sddm_file"; then
+             printf "[Autologin]\n" | tee -a "$sddm_file" >/dev/null
         fi
         if grep -q "^Session=" "$sddm_file"; then
              sed -i 's/^Session=.*/Session=plasmawayland/' "$sddm_file"
