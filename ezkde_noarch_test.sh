@@ -19,7 +19,7 @@ fi
 
 set -euo pipefail
 
-# Default tunables
+# default tunables: ezkde_noarch [-b batchsize] [-c bar_char] [-e empty_char]
 BATCHSIZE=${BATCHSIZE:-1}
 BAR_CHAR=${BAR_CHAR:-'|'}
 EMPTY_CHAR=${EMPTY_CHAR:-' '}
@@ -65,7 +65,7 @@ KDE_GROUP[Fedora]="@kde-desktop"
 #KDE_GROUP[Fedora]="plasma-desktop plasma-settings plasma-nm sddm-wayland-plasma kde-baseapps konsole kscreen sddm startplasma-wayland dolphin"
 KDE_GROUP[OpenSuse]="patterns-kde-kde_plasma plasma6-desktop discover6 dolphin sddm-config-wayland"
 
-# intro (now $DISTRO and $UPDATE are set)
+# intro - DISTRO and UPDATE are set
 clear
 echo
 case "$DISTRO" in
@@ -166,11 +166,11 @@ printf ' #---------------------------------------------------#\n\n'
 while true; do
     printf '\r\033[2K Press Enter to continue or Ctrl+C to cancel.'
     read -n1 -s -r
-    # check if User pressed Ctrl+C
+    # check if Ctrl+C
     if (( $? != 0 )); then
         exit 1
     fi
-    # check if user pressed Enter (empty input)
+    # check if Enter (empty input)
     if [[ -z "$REPLY" ]]; then
         break
     fi
@@ -185,7 +185,7 @@ create_swap() {
     if dd if=/dev/zero of="$swap_file" bs=1M count=1024 status=none 2>/dev/null; then
         chmod 600 "$swap_file"
         mkswap "$swap_file" >/dev/null 2>&1
-        # forces the kernel to use this swap file
+        # force the kernel to use swap file
         if swapon "$swap_file" -p 100 >/dev/null 2>&1; then
             # swappiness 80 force the system to use swap sooner
             sysctl -w vm.swappiness=80 >/dev/null 2>&1
@@ -279,7 +279,6 @@ install_packages() {
     local ret=0
     local recover=""
 
-    # Determine which recovery function to use
     case "$DISTRO" in
         Arch)            recover="recover_pacman" ;;
         Debian)          recover="recover_dpkg" ;;
@@ -293,18 +292,17 @@ install_packages() {
 }
 
 enable_sddm() {
-    systemctl is-enabled sddm &>/dev/null || rm -f /etc/systemd/system/display-manager.service && systemctl enable sddm &>/dev/null
-}
-
-prompt_reboot() {
-    printf '\r\033[2K Reboot (r) or start KDE now (k)? [r/k] '
-    read -n1 -s -r choice
+    if systemctl is-enabled display-manager.service &>/dev/null; then
+        systemctl disable display-manager.service &>/dev/null
+    fi
+    systemctl enable sddm &>/dev/null
 }
 
 end_install() {
     while true; do
-        prompt_reboot
-        # check if User pressed Ctrl+C
+        printf '\r\033[2K Reboot (r) or start KDE now (k)? [r/k] '
+        read -n1 -s -r choice
+        # check if Ctrl+C
         if (( $? != 0 )); then
             exit 1
         fi
@@ -351,7 +349,7 @@ main() {
             total=${#packages[@]}
             ;;
         Debian)
-            # inherit the user’s current locale 
+            # inherit the current locale 
             current_locale=${LC_ALL:-${LANG:-C.UTF-8}}
             current_locale=${current_locale%%.*}.UTF-8
             echo "locales locales/default_environment_locale select $current_locale" | debconf-set-selections
