@@ -68,7 +68,7 @@ elif command -v zypper &>/dev/null; then
     LIST_CMD=(zypper install -y --dry-run)
 
 else
-    fatal " No supported package manager found (apt-get, pacman, dnf, zypper)."
+    fatal ' No supported package manager found (apt-get, pacman, dnf, zypper).'
 fi
 
 # map each distro to its native KDE/plasma packages
@@ -398,9 +398,9 @@ main() {
     esac
     
     if (( total == 0 )); then
-        fatal ' Nothing to do – All packages are up to date.'
+        #printf  '\n Nothing to do – All packages are up to date.'
         #enable_sddm
-        #end_install
+        end_install
     fi
 
     # array installation loop
