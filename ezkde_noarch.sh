@@ -43,14 +43,18 @@ fatal() {
     exit 1
 }
 
-if command -v pacman &>/dev/null; then
-    DISTRO=Arch
+os_release() {
+    local key=$1
+    echo "$(awk -F= '/^ID=/{print $2; exit}' /etc/os-release | tr -d '"')"
+}
+
+DISTRO=$(os_release)
+if [ "$DISTRO" = "arch" ]; then
     UPDATE=(pacman -Sy)
     PM=(pacman -S --needed --noconfirm)
     LIST_CMD=(pacman -Sp --print-format '%n')
 
-elif command -v apt-get &>/dev/null; then
-    DISTRO=Debian
+elif [ "$DISTRO" = "debian" ]; then
     UPDATE=(apt-get update)
     PM=(apt-get install -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold")
     LIST_CMD=(apt-get install --dry-run -qq)
