@@ -35,16 +35,18 @@ This script aims to provide a streamlined installation experience, especially fo
     The command below will download `ezkde_noarch.sh` , save it to /usr/local/bin/ , make it executable then run the script.  
     (be sure to have administrative rights - curl must be already installed).
 
+
     ```bash
     curl -fsSL https://raw.githubusercontent.com/thorbits/thScripts/refs/heads/main/ezkde_noarch.sh -o /usr/local/bin/ezkde_noarch.sh && chmod +x /usr/local/bin/ezkde_noarch.sh && ezkde_noarch.sh
     ```
     
 
     ```markdown
-    ```bash
     
-    Usage: $prog [options]
+    Usage: ezkde_noarch [options]
+    
     Tweak install batch size and progress bar appearance.
+    
     Options
     -b batch size for packages, default is 1
     -c progress bar fill character, default is |
