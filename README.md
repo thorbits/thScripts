@@ -40,6 +40,7 @@ This script aims to provide a streamlined installation experience, especially fo
     ```
     
 
+    ```markdown
     ```bash
     
     Usage: $prog [options]
