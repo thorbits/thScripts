@@ -36,6 +36,7 @@ usage() {
  -b	batch size for packages, default is 1
  -c	progress bar fill character, default is |
  -e	progress bar empty character, default is ' '
+ -s uses a 1gb swap file for install then removes it
  
  #---------------------------------------------------#
  
@@ -430,8 +431,6 @@ main() {
 
     if [ "$USE_SWAP" = true ]; then
     	create_swap
-		else
-		
 	fi
 
     shopt -s globstar nullglob checkwinsize
