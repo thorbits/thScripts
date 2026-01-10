@@ -73,7 +73,7 @@ fi
 
 # map each distro to its native KDE/plasma packages
 declare -A KDE_GROUP
-KDE_GROUP[Arch]="plasma-meta networkmanager dolphin konsole"
+KDE_GROUP[Arch]="plasma-meta dolphin konsole"
 KDE_GROUP[Debian]="plasma-workspace pipewire sddm dolphin konsole"
 KDE_GROUP[Fedora]="@kde-desktop"
 #KDE_GROUP[Fedora]="plasma-desktop plasma-settings plasma-nm sddm-wayland-plasma kde-baseapps konsole kscreen sddm startplasma-wayland dolphin"
@@ -202,15 +202,14 @@ done
 
 nvidia_warning() {
 	nvidia_fix=false
-	
     if lspci | grep -i nvidia >/dev/null; then
         printf "\n\n WARNING: NVIDIA GPU Detected. Checking for NVIDIA Wayland fix...\n\n"
 		sleep 2
         if grep -q "nvidia-drm.modeset=1" /etc/default/grub; then
-			printf " Fix already present in GRUB config. Continuing with KDE installation..."
+			printf " Fix already present in GRUB config. Proceeding with KDE installation..."
         else
             sed -i 's/^GRUB_CMDLINE_LINUX_DEFAULT="\(.*\)"/GRUB_CMDLINE_LINUX_DEFAULT="\1 nvidia-drm.modeset=1"/' /etc/default/grub
-			printf " NVIDIA Wayland fix applied. You will need to reboot your system !\n Continuing with KDE installation..."
+			printf " NVIDIA Wayland fix applied. You will need to reboot your system !\n Proceeding with KDE installation..."
             nvidia_fix=true
         fi
     fi
@@ -333,6 +332,9 @@ install_packages() {
 }
 
 enable_wayland() {
+	if systemctl is-enabled display-manager.service &>/dev/null; then
+		systemctl disable display-manager.service &>/dev/null
+    fi
 	case "$DISTRO" in
         Arch|Debian)
 			systemctl enable sddm &>/dev/null
@@ -357,15 +359,26 @@ enable_wayland() {
     		fi
 			;;
 	esac
-    if systemctl is-enabled display-manager.service &>/dev/null; then
-        systemctl disable display-manager.service &>/dev/null
+}
+
+update_bootloader() {
+    local cmd cfg
+    if cmd=$(command -v update-grub 2>/dev/null); then
+        "$cmd" >/dev/null
+    elif cmd=$(command -v grub-mkconfig 2>/dev/null); then
+        if cfg=$(grub2-editenv --boot-directory 2>/dev/null | cut -d= -f2); then
+            cfg="$cfg/grub.cfg"
+        else
+            cfg="/boot/grub/grub.cfg"
+            [[ -f /boot/grub2/grub.cfg ]] && cfg="/boot/grub2/grub.cfg"
+        fi
+			"$cmd" -o "$cfg" >/dev/null
     fi
-    systemctl enable sddm &>/dev/null
 }
 
 end_install() {
     if [ "$nvidia_fix" = true ]; then
-        update-grub >/dev/null
+        update_bootloader
     fi
 
     while true; do
