@@ -41,7 +41,6 @@ This script aims to provide a streamlined installation experience, especially fo
     
 
     ```bash
-    $ cat <<-EOF
     
     Usage: $prog [options]
     Tweak install batch size and progress bar appearance.
@@ -50,9 +49,7 @@ This script aims to provide a streamlined installation experience, especially fo
     -c progress bar fill character, default is |
     -e progress bar empty character, default is ' '
     
-    #-------------------------------------------#
-  EOF
-  ```
+    ```
 
 
 2.  **Follow On-Screen Prompts -**
