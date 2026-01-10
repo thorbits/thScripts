@@ -19,10 +19,11 @@ fi
 
 set -euo pipefail
 
-# default tunables: ezkde_noarch [-b batchsize] [-c bar_char] [-e empty_char]
+# default tunables
 BATCHSIZE=${BATCHSIZE:-1}
 BAR_CHAR=${BAR_CHAR:-'|'}
 EMPTY_CHAR=${EMPTY_CHAR:-' '}
+USE_SWAP=false
 
 usage() {
 	local prog=${0##*/}
@@ -204,7 +205,6 @@ while true; do
     fi
 done
 
-# user pressed Enter, run the update.
 "${UPDATE[@]}" >/dev/null 2>&1 || fatal " no internet connection detected. Exiting."
 if [ "$DISTRO" = "arch" ]; then 
 "${PM[@]}" expac  >/dev/null 2>&1
@@ -241,8 +241,12 @@ create_swap() {
             sysctl -w vm.swappiness=80 >/dev/null 2>&1
             return 0
         else
-            rm -f "$swap_file"
+            echo "Failed to enable $swap_file." >&2
+            return 1
         fi
+    else
+        echo "Cannot write to $swap_file" >&2
+        return 1
     fi
 }
 
@@ -413,20 +417,21 @@ end_install() {
 
 main() {
     local OPTARG OPTIND opt
-    while getopts 'b:c:e:' opt; do
+    while getopts 'b:c:e:s:h' opt; do
         case "$opt" in
             b) BATCHSIZE=$OPTARG;;
             c) BAR_CHAR=$OPTARG;;
             e) EMPTY_CHAR=$OPTARG;;
-            *) 
-                echo >&2;
-                usage >&2;
-                exit 1
-                ;;
+			s) USE_SWAP=true ;;
+			h) usage ;; exit 0
+            \?) echo "Unknown option: -$OPTARG" >&2; usage; exit 1 ;;
         esac
     done
 
-    #create_swap
+    if [ "$USE_SWAP" = true ]; then
+    	create_swap
+		else
+	fi
 
     shopt -s globstar nullglob checkwinsize
     # ensure LINES and COLUMNS are set
@@ -497,7 +502,10 @@ fi
         progress-bar "$current" "$total"
     done
 
-    #remove_swap
+	if [ "$do_swap" = true ]; then
+    	remove_swap
+	fi
+	
     enable_wayland
     printf "\n\n eZkde for %s installation successful.\n\n" "$DISTRO"
     end_install
