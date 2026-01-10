@@ -37,8 +37,6 @@ usage() {
  -c	progress bar fill character, default is |
  -e	progress bar empty character, default is ' '
 
- #---------------------------------------------------#
-
 EOF
 }
 
