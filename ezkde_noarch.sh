@@ -215,7 +215,7 @@ nvidia_warning() {
     fi
 }
 
-nvidia_warning
+#nvidia_warning
 
 printf "\n\n Preparing KDE packages for %s...\n\n" "$DISTRO"
 
@@ -416,7 +416,7 @@ main() {
         esac
     done
 
-    create_swap
+    #create_swap
 
     shopt -s globstar nullglob checkwinsize
     # ensure LINES and COLUMNS are set
@@ -487,7 +487,7 @@ fi
         progress-bar "$current" "$total"
     done
 
-    remove_swap
+    #remove_swap
     enable_wayland
     printf "\n\n eZkde for %s installation successful.\n\n" "$DISTRO"
     end_install
