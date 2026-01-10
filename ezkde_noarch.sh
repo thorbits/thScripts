@@ -215,7 +215,7 @@ nvidia_warning() {
     fi
 }
 
-#nvidia_warning
+nvidia_warning
 
 printf "\n\n Preparing KDE packages for %s...\n\n" "$DISTRO"
 
@@ -361,7 +361,7 @@ enable_wayland() {
 	esac
 }
 
-update_bootloader() {
+upd_bootloader() {
     local cmd cfg
     if cmd=$(command -v update-grub 2>/dev/null); then
         "$cmd" >/dev/null
@@ -378,7 +378,7 @@ update_bootloader() {
 
 end_install() {
     if [ "$nvidia_fix" = true ]; then
-        update_bootloader
+        upd_bootloader
     fi
 
     while true; do
