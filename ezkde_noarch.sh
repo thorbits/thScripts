@@ -28,14 +28,14 @@ usage() {
 	local prog=${0##*/}
 	cat <<-EOF
 
-  Usage: $prog [options]
+ Usage: $prog [options]
 
-  Tweak install batch size and progress bar appearance.
+ Tweak install batch size and progress bar appearance.
 
-  Options
-  -b	batch size for packages, default is 1
-  -c	progress bar fill character, default is |
-  -e	progress bar empty character, default is ' '
+ Options
+ -b	batch size for packages, default is 1
+ -c	progress bar fill character, default is |
+ -e	progress bar empty character, default is ' '
 
  #---------------------------------------------------#
 
