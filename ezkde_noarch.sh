@@ -27,7 +27,6 @@ EMPTY_CHAR=${EMPTY_CHAR:-' '}
 usage() {
 	local prog=${0##*/}
 	cat <<-EOF
-
  Usage: $prog [options]
 
  Tweak install batch size and progress bar appearance.
@@ -90,7 +89,7 @@ KDE_GROUP[opensuse]="discover6 sddm patterns-kde-kde_plasma" #plasma6-desktop do
 
 # intro - DISTRO and UPDATE are set
 clear
-usage
+#usage
 case "$DISTRO" in
         arch)
             cat << 'ART'
