@@ -44,7 +44,6 @@ fatal() {
 }
 
 os_release() {
-    local key=$1
     echo "$(awk -F= '/^ID=/{print $2; exit}' /etc/os-release | tr -d '"')"
 }
 
