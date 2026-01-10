@@ -480,14 +480,14 @@ main() {
                 awk '/new/ {for(i=1;i<=NF;i++) if ($i ~ /^[a-zA-Z0-9.-]+$/) print $i}' | grep -v "Mozilla" | grep -v "vlc" | grep -v "x11" | grep -v "xorg" | head -n -5                
             )
             ;;
-		total=${#packages[@]}
     esac
+	total=${#packages[@]}
     
-if (( total == 0 )); then
-    printf " Nothing to do – All packages are up to date.\n\n"
-	enable_wayland
-	end_install
-fi
+	if (( total == 0 )); then
+    	printf " Nothing to do – All packages are up to date.\n\n"
+		enable_wayland
+		end_install
+	fi
 
     # array installation loop
     local current=0
