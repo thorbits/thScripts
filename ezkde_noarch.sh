@@ -187,6 +187,7 @@ esac
 printf "\n\n Welcome %s, to eZkde for %s.\n\n" "$USER" "$DISTRO"
 
 cat <<EOF
+
  #---------------------------------------------------#
    The latest version of KDE 6.5.x (Wayland session)
    will be installed with audio support (Pipewire)
