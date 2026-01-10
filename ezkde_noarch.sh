@@ -29,7 +29,7 @@ usage() {
 	cat <<-EOF
 	Usage: $prog [options]
 
-	Tweak batch install size and progress bar appearance.
+	Tweak install batch size and progress bar appearance.
 
 	Options
 	  -b          batch size for packages, default is 1
@@ -44,46 +44,49 @@ fatal() {
 }
 
 os_release() {
-    echo "$(awk -F= '/^ID=/{print $2; exit}' /etc/os-release | tr -d '"')"
+    awk -F= '/^ID=/{gsub(/"/,""); print tolower($2)}' /etc/os-release | cut -d- -f1
 }
 
 DISTRO=$(os_release)
-if [ "$DISTRO" = "arch" ]; then
+
+case "$DISTRO" in
+    arch)
     UPDATE=(pacman -Sy)
     PM=(pacman -S --needed --noconfirm)
     LIST_CMD=(pacman -Sp --print-format '%n')
-
-elif [ "$DISTRO" = "debian" ]; then
+	;;
+    debian)
     UPDATE=(apt-get update)
     PM=(apt-get install -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold")
     LIST_CMD=(apt-get install --dry-run -qq)
-
-elif [ "$DISTRO" = "fedora" ]; then
+	;;
+    fedora)
     UPDATE=(dnf makecache)
     PM=(dnf install -y)
     LIST_CMD=(dnf install --assumeno)
-
-elif [ "$DISTRO" = "openSUSE" ]; then
+	;;
+    opensuse)
     UPDATE=(zypper ref)
     PM=(zypper install -y)
     LIST_CMD=(zypper install -y --dry-run)
-
-else
+	;;
+    *)
     #fatal " no supported package manager found (apt-get, pacman, dnf, zypper). Exiting."
 	fatal " no supported linux distribution found (arch, debian, fedora, opensuse). Exiting."
-fi
+	;;
+esac
 
 # map each distro to its native KDE/plasma packages
 declare -A KDE_GROUP
 KDE_GROUP[arch]="plasma-meta dolphin konsole"
 KDE_GROUP[debian]="plasma-workspace pipewire sddm dolphin konsole"
 KDE_GROUP[fedora]="@kde-desktop"
-#KDE_GROUP[Fedora]="plasma-desktop plasma-settings plasma-nm sddm-wayland-plasma kde-baseapps konsole kscreen sddm startplasma-wayland dolphin"
-KDE_GROUP[openSUSE]="discover6 sddm patterns-kde-kde_plasma" #plasma6-desktop dolphin sddm sddm-config-wayland
+#KDE_GROUP[fedora]="plasma-desktop plasma-settings plasma-nm sddm-wayland-plasma kde-baseapps konsole kscreen sddm startplasma-wayland dolphin"
+KDE_GROUP[opensuse]="discover6 sddm patterns-kde-kde_plasma" #plasma6-desktop dolphin sddm sddm-config-wayland
 
 # intro - DISTRO and UPDATE are set
 clear
-echo
+usage
 case "$DISTRO" in
         arch)
             cat << 'ART'
@@ -148,7 +151,7 @@ ART
     ;:cccccccccccccccccccc:;,.
 ART
         ;;
-        openSUSE)
+        opensuse)
             cat << 'ART'
             ,.,ccc,.,                                 
          .,:lloooooc;.
@@ -324,7 +327,7 @@ install_packages() {
     case "$DISTRO" in
         arch)            recover="recover_pacman" ;;
         debian)          recover="recover_dpkg" ;;
-        fedora|openSUSE) recover="recover_rpm" ;;
+        fedora|opensuse) recover="recover_rpm" ;;
     esac
     
     for pkg in "$@"; do
@@ -341,7 +344,7 @@ enable_wayland() {
         arch|debian)
 			systemctl enable sddm &>/dev/null
 			;;
-		fedora|openSUSE)
+		fedora|opensuse)
     		local sddm_file="/etc/sddm.conf.d/sddm.conf"
     		if [ ! -f "$sddm_file" ]; then
         	touch "$sddm_file"
@@ -462,7 +465,7 @@ main() {
             )
             total=${#packages[@]}
             ;;
-        openSUSE)
+        opensuse)
             mapfile -t packages < <(
                 "${LIST_CMD[@]}" "${pkg_names[@]}" 2>&1 |
                 awk '/new/ {for(i=1;i<=NF;i++) if ($i ~ /^[a-zA-Z0-9.-]+$/) print $i}' | grep -v "Mozilla" | grep -v "vlc" | grep -v "x11" | grep -v "xorg" | head -n -5                
