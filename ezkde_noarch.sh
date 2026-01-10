@@ -58,35 +58,34 @@ elif [ "$DISTRO" = "debian" ]; then
     PM=(apt-get install -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold")
     LIST_CMD=(apt-get install --dry-run -qq)
 
-elif command -v dnf &>/dev/null; then
-    DISTRO=Fedora
+elif [ "$DISTRO" = "fedora" ]; then
     UPDATE=(dnf makecache)
     PM=(dnf install -y)
     LIST_CMD=(dnf install --assumeno)
 
-elif command -v zypper &>/dev/null; then
-    DISTRO=OpenSuse
+elif [ "$DISTRO" = "openSUSE" ]; then
     UPDATE=(zypper ref)
     PM=(zypper install -y)
     LIST_CMD=(zypper install -y --dry-run)
 
 else
-    fatal " no supported package manager found (apt-get, pacman, dnf, zypper). Exiting."
+    #fatal " no supported package manager found (apt-get, pacman, dnf, zypper). Exiting."
+	fatal " no supported linux distribution found (arch, debian, fedora, opensuse). Exiting."
 fi
 
 # map each distro to its native KDE/plasma packages
 declare -A KDE_GROUP
-KDE_GROUP[Arch]="plasma-meta dolphin konsole"
-KDE_GROUP[Debian]="plasma-workspace pipewire sddm dolphin konsole"
-KDE_GROUP[Fedora]="@kde-desktop"
+KDE_GROUP[arch]="plasma-meta dolphin konsole"
+KDE_GROUP[debian]="plasma-workspace pipewire sddm dolphin konsole"
+KDE_GROUP[fedora]="@kde-desktop"
 #KDE_GROUP[Fedora]="plasma-desktop plasma-settings plasma-nm sddm-wayland-plasma kde-baseapps konsole kscreen sddm startplasma-wayland dolphin"
-KDE_GROUP[OpenSuse]="discover6 sddm patterns-kde-kde_plasma" #plasma6-desktop dolphin sddm sddm-config-wayland
+KDE_GROUP[openSUSE]="discover6 sddm patterns-kde-kde_plasma" #plasma6-desktop dolphin sddm sddm-config-wayland
 
 # intro - DISTRO and UPDATE are set
 clear
 echo
 case "$DISTRO" in
-        Arch)
+        arch)
             cat << 'ART'
                       .o+`
                      `ooo/
@@ -108,7 +107,7 @@ case "$DISTRO" in
      .`                                 `/
 ART
         ;;
-        Debian)
+        debian)
             cat << 'ART'
                _,met$$$$$gg.
             ,g$$$$$$$$$$$$$$$P.
@@ -129,7 +128,7 @@ ART
                       `"\""
 ART
         ;;
-        Fedora)
+        fedora)
             cat << 'ART'
             .',;:ccccccccccccc:;,'.
           .;ccccccccccccccccccccccc;.
@@ -149,7 +148,7 @@ ART
     ;:cccccccccccccccccccc:;,.
 ART
         ;;
-        OpenSuse)
+        openSUSE)
             cat << 'ART'
             ,.,ccc,.,                                 
          .,:lloooooc;.
@@ -323,9 +322,9 @@ install_packages() {
     local recover=""
 
     case "$DISTRO" in
-        Arch)            recover="recover_pacman" ;;
-        Debian)          recover="recover_dpkg" ;;
-        Fedora|OpenSuse) recover="recover_rpm" ;;
+        arch)            recover="recover_pacman" ;;
+        debian)          recover="recover_dpkg" ;;
+        fedora|openSUSE) recover="recover_rpm" ;;
     esac
     
     for pkg in "$@"; do
@@ -339,10 +338,10 @@ enable_wayland() {
 		systemctl disable display-manager.service &>/dev/null
     fi
 	case "$DISTRO" in
-        Arch|Debian)
+        arch|debian)
 			systemctl enable sddm &>/dev/null
 			;;
-		Fedora|OpenSuse)
+		fedora|openSUSE)
     		local sddm_file="/etc/sddm.conf.d/sddm.conf"
     		if [ ! -f "$sddm_file" ]; then
         	touch "$sddm_file"
@@ -434,7 +433,7 @@ main() {
     local packages=() total
 
     case "$DISTRO" in
-        Arch)
+        arch)
             mapfile -t packages < <(
                 #"${LIST_CMD[@]}" "${pkg_names[@]}" 2>&1 |
                 #grep -v '^warning' || true
@@ -442,7 +441,7 @@ main() {
             )
             total=${#packages[@]}
             ;;
-        Debian)
+        debian)
             # inherit the current locale for install
             current_locale=${LC_ALL:-${LANG:-C.UTF-8}}
             current_locale=${current_locale%%.*}.UTF-8
@@ -456,14 +455,14 @@ main() {
             )
             total=${#packages[@]}
             ;;
-        Fedora)
+        fedora)
             mapfile -t packages < <(
                 "${LIST_CMD[@]}" "${pkg_names[@]}" 2>&1 |
                 awk '!/(^$|^=|---|Dependencies resolved|Transaction Summary|Running transaction|Total download size|^Package |^Arch |^Version |^Repository |^Size |Installing|Updating|Repositories|Total|Operation|Nothing|After|KDE)/ {print $1}'
             )
             total=${#packages[@]}
             ;;
-        OpenSuse)
+        openSUSE)
             mapfile -t packages < <(
                 "${LIST_CMD[@]}" "${pkg_names[@]}" 2>&1 |
                 awk '/new/ {for(i=1;i<=NF;i++) if ($i ~ /^[a-zA-Z0-9.-]+$/) print $i}' | grep -v "Mozilla" | grep -v "vlc" | grep -v "x11" | grep -v "xorg" | head -n -5                
