@@ -327,7 +327,7 @@ install_packages() {
     
     for pkg in "$@"; do
         printf '\r%-*s' "$COLUMNS" " -> Now downloading and installing: $pkg"
-        "${PM[@]}" "$pkg" | grep -v '^warning:' >/dev/null
+        "${PM[@]}" "$pkg" >/dev/null
     done
 }
 
