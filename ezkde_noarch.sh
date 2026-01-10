@@ -431,6 +431,7 @@ main() {
     if [ "$USE_SWAP" = true ]; then
     	create_swap
 		else
+		
 	fi
 
     shopt -s globstar nullglob checkwinsize
