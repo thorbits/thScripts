@@ -184,7 +184,7 @@ ART
         ;;
 esac
 
-printf "\n\n Welcome %s, to eZkde for %s.\n\n" "$USER" "$DISTRO"
+printf "\n\n Welcome %s, to eZkde for %s.\n" "$USER" "$DISTRO"
 
 cat <<EOF
 
@@ -193,6 +193,7 @@ cat <<EOF
    will be installed with audio support (Pipewire)
    SDDM and a minimum of utilities.
  #---------------------------------------------------#
+ 
 EOF
 
 while true; do
