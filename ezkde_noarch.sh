@@ -27,6 +27,7 @@ EMPTY_CHAR=${EMPTY_CHAR:-' '}
 usage() {
 	local prog=${0##*/}
 	cat <<-EOF
+
 	Usage: $prog [options]
 
 	Tweak install batch size and progress bar appearance.
@@ -35,6 +36,9 @@ usage() {
 	  -b          batch size for packages, default is 1
 	  -c          progress bar fill character, default is |
 	  -e          progress bar empty character, default is ' '
+
+
+
 EOF
 }
 
@@ -203,7 +207,9 @@ done
 
 # user pressed Enter, run the update.
 "${UPDATE[@]}" >/dev/null 2>&1 || fatal " no internet connection detected. Exiting."
+if [ "$DISTRO" = "arch" ]; then 
 "${PM[@]}" expac  >/dev/null 2>&1
+fi
 
 nvidia_warning() {
 	nvidia_fix=false
