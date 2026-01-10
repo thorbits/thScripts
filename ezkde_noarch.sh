@@ -36,7 +36,9 @@ usage() {
  -b	batch size for packages, default is 1
  -c	progress bar fill character, default is |
  -e	progress bar empty character, default is ' '
-
+ 
+ #---------------------------------------------------#
+ 
 EOF
 }
 
@@ -183,9 +185,9 @@ printf "\n\n Welcome %s, to eZkde for %s.\n\n" "$USER" "$DISTRO"
 
 cat <<EOF
  #---------------------------------------------------#
- # The latest version of KDE 6.5.x (Wayland session) #
- #  will be installed with audio support (Pipewire), #
- #          SDDM and a minimum of utilities.         #
+  The latest version of KDE 6.5.x (Wayland session)
+   will be installed with audio support (Pipewire)
+		  SDDM and a minimum of utilities.
  #---------------------------------------------------#
 
 EOF
