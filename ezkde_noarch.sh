@@ -184,13 +184,14 @@ ART
         ;;
 esac
 
-printf "\n\n Welcome %s, to eZkde for %s.\n\n" "$USER" "$DISTRO"
+printf "\n\n Welcome %s, to eZkde for %s." "$USER" "$DISTRO"
 
 cat <<EOF
+
  #---------------------------------------------------#
   The latest version of KDE 6.5.x (Wayland session)
-   will be installed with audio support (Pipewire)
-		  SDDM and a minimum of utilities.
+  will be installed with audio support (Pipewire)
+  SDDM and a minimum of utilities.
  #---------------------------------------------------#
 
 EOF
@@ -481,6 +482,7 @@ main() {
             )
             ;;
     esac
+	
 	total=${#packages[@]}
     
 	if (( total == 0 )); then
