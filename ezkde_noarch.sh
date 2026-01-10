@@ -184,17 +184,7 @@ ART
         ;;
 esac
 
-printf "\n\n Welcome %s, to eZkde for %s.\n" "$USER" "$DISTRO"
-
-cat <<EOF
-
- #-------------------------------------------------#
- The latest version of KDE 6.5.x (Wayland session)
- will be installed with audio support (Pipewire)
- SDDM and a minimum of utilities.
- #-------------------------------------------------#
- 
-EOF
+printf "\n\n  #-------------------------------------------------#\nWelcome %s, to eZkde for %s.\n The latest version of KDE 6.5.x (Wayland session)\n will be installed with audio support (Pipewire)\n SDDM and a minimum of utilities.\n #-------------------------------------------------#\n\n" "$USER" "$DISTRO"
 
 while true; do
     printf "\r\033[2K Press Enter to continue or Ctrl+C to cancel."
