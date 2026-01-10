@@ -30,13 +30,15 @@ usage() {
 	cat <<-EOF
  Usage: $prog [options]
 
- Tweak install batch size and progress bar appearance.
+ Tweak install batch size, use a custom swap file 
+ or customize progress bar appearance.
 
  Options
  -b	batch size for packages, default is 1
  -c	progress bar fill character, default is |
  -e	progress bar empty character, default is ' '
- -s uses a 1gb swap file for install then removes it
+ -s create a 1gb swap file for install then removes it,
+ 	default is false
  
  #---------------------------------------------------#
  
@@ -452,7 +454,6 @@ main() {
                 #grep -v '^warning' || true
 				expac -S '%D' "${pkg_names[@]}" 2>&1 | tr -s ' ' '\n' | sort -u || true
             )
-            total=${#packages[@]}
             ;;
         debian)
             # inherit the current locale for install
@@ -466,22 +467,20 @@ main() {
                 "${LIST_CMD[@]}" "${pkg_names[@]}" 2>&1 |
                 awk '/^Inst / {print $2}'
             )
-            total=${#packages[@]}
             ;;
         fedora)
             mapfile -t packages < <(
                 "${LIST_CMD[@]}" "${pkg_names[@]}" 2>&1 |
                 awk '!/(^$|^=|---|Dependencies resolved|Transaction Summary|Running transaction|Total download size|^Package |^Arch |^Version |^Repository |^Size |Installing|Updating|Repositories|Total|Operation|Nothing|After|KDE)/ {print $1}'
             )
-            total=${#packages[@]}
             ;;
         opensuse)
             mapfile -t packages < <(
                 "${LIST_CMD[@]}" "${pkg_names[@]}" 2>&1 |
                 awk '/new/ {for(i=1;i<=NF;i++) if ($i ~ /^[a-zA-Z0-9.-]+$/) print $i}' | grep -v "Mozilla" | grep -v "vlc" | grep -v "x11" | grep -v "xorg" | head -n -5                
             )
-            total=${#packages[@]}
             ;;
+		total=${#packages[@]}
     esac
     
 if (( total == 0 )); then
