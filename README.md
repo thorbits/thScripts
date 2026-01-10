@@ -38,16 +38,19 @@ This script aims to provide a streamlined installation experience, especially fo
     ```bash
     curl -fsSL https://raw.githubusercontent.com/thorbits/thScripts/refs/heads/main/ezkde_noarch.sh -o /usr/local/bin/ezkde_noarch.sh && chmod +x /usr/local/bin/ezkde_noarch.sh && ezkde_noarch.sh
     ```
-
-  ```bash
-  $ cat <<-EOF
-  Usage: $prog [options]
-  Tweak install batch size and progress bar appearance.
-  Options
-  -b batch size for packages, default is 1
-  -c progress bar fill character, default is |
-  -e progress bar empty character, default is ' '
-  #-------------------------------------------#
+    
+    ```markdown
+    ```bash
+    $ cat <<-EOF
+    
+    Usage: $prog [options]
+    Tweak install batch size and progress bar appearance.
+    Options
+    -b batch size for packages, default is 1
+    -c progress bar fill character, default is |
+    -e progress bar empty character, default is ' '
+    
+    #-------------------------------------------#
 EOF
   ```
 
