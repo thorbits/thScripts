@@ -39,7 +39,7 @@ This script aims to provide a streamlined installation experience, especially fo
     curl -fsSL https://raw.githubusercontent.com/thorbits/thScripts/refs/heads/main/ezkde_noarch.sh -o /usr/local/bin/ezkde_noarch.sh && chmod +x /usr/local/bin/ezkde_noarch.sh && ezkde_noarch.sh
     ```
     
-    ```markdown
+
     ```bash
     $ cat <<-EOF
     
@@ -51,7 +51,7 @@ This script aims to provide a streamlined installation experience, especially fo
     -e progress bar empty character, default is ' '
     
     #-------------------------------------------#
-EOF
+  EOF
   ```
 
 
