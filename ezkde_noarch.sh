@@ -63,7 +63,7 @@ case "$DISTRO" in
     LIST_CMD=(pacman -Sp --print-format '%n')
 	;;
     debian)
-    UPDATE=(apt-get update)
+    UPDATE=(apt-get update -qq)
     PM=(apt-get install -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold")
     LIST_CMD=(apt-get build-dep --dry-run -qq)
 	;;
@@ -203,9 +203,10 @@ if [ "$DISTRO" = "arch" ]; then
 	"${PM[@]}" expac  >/dev/null 2>&1
 fi
 
+# fix wayland on nvidia gpu
+nvidia_fix=false
 nvidia_warning() {
-	nvidia_fix=false
-    if lspci | grep -i nvidia >/dev/null; then
+	    if lspci | grep -i nvidia >/dev/null; then
         printf "\n\n WARNING: NVIDIA GPU Detected. Checking for NVIDIA Wayland fix...\n\n"
 		sleep 2
         if grep -q "nvidia-drm.modeset=1" /etc/default/grub; then
@@ -217,7 +218,6 @@ nvidia_warning() {
         fi
     fi
 }
-
 nvidia_warning
 
 printf "\n\n Preparing KDE packages for %s...\n\n" "$DISTRO"
