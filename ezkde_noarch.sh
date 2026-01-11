@@ -335,10 +335,14 @@ install_packages() {
     esac
     
     for pkg in "$@"; do
-        printf '\r%-*s' "$COLUMNS" " -> Now downloading and installing: $pkg"
+		printf '\r' " -> Now downloading and installing: $pkg"
+        #printf '\r%-*s' "$COLUMNS" " -> Now downloading and installing: $pkg"
         "${PM[@]}" "$pkg" >/dev/null 2>&1
     done
-	printf '\n' && ( iftop -t ) &
+	
+	iftop -t | head -n1 | while IFS= read -r line; do
+		echo -ne "\r${line:0:$(tput cols)}"
+	done &
 	iftop_pid=$!
 }
 
