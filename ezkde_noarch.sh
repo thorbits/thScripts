@@ -336,15 +336,10 @@ install_packages() {
     
     for pkg in "$@"; do
         printf '\r%-*s' "$COLUMNS" " -> Now downloading and installing: $pkg"
-		printf '\n' && ( iftop -t ) &
-		iftop_pid=$!
         "${PM[@]}" "$pkg" >/dev/null 2>&1
     done
-	# kill iftop now that the install is done
-    if [[ -n ${iftop_pid:-} ]]; then
-        kill "$iftop_pid" 2>/dev/null || true
-        wait "$iftop_pid" 2>/dev/null || true
-    fi
+	printf '\n' && ( iftop -t ) &
+	iftop_pid=$!
 }
 
 enable_wayland() {
@@ -488,6 +483,13 @@ main() {
         progress-bar "$current" "$total"
     done
 
+	# kill iftop now that install is done
+    if [[ -n ${iftop_pid:-} ]]; then
+        kill "$iftop_pid" 2>/dev/null || true
+        wait "$iftop_pid" 2>/dev/null || true
+    fi
+
+	# remove swap if it was created
 	if [[ -f /var/tmp/ezkde_swap ]] then
 		if swapon -s | awk '$1=="/var/tmp/ezkde_swap" {print 1}' >/dev/null; then
 			remove_swap
