@@ -493,8 +493,9 @@ main() {
         progress-bar "$current" "$total"
     done
 
-	if [ "$do_swap" = true ]; then
-    	remove_swap
+	if [[ -f /var/tmp/ezkde_swap ]] && \
+	swapon -s | awk '$1=="/var/tmp/ezkde_swap" {print 1}' >/dev/null; then
+		remove_swap
 	fi
 	
     enable_wayland
