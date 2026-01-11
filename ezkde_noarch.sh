@@ -335,7 +335,7 @@ install_packages() {
     esac
     
     for pkg in "$@"; do
-        printf '\r%-*s' "$COLUMNS" " -> Now downloading and installing: $pkg | pv -r $pkg"
+        printf '\r%-*s' "$COLUMNS" " -> Now downloading and installing: $pkg" | pv -r "$pkg"
         "${PM[@]}" "$pkg" 2>&1 | tee /dev/null
     done
 }
