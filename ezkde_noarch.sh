@@ -92,7 +92,6 @@ KDE_GROUP[opensuse]="discover6 sddm patterns-kde-kde_plasma" #plasma6-desktop do
 
 # intro - DISTRO and UPDATE are set
 clear
-#usage
 case "$DISTRO" in
         arch)
             cat << 'ART'
@@ -425,14 +424,13 @@ main() {
     case "$DISTRO" in
         arch)
 			# use pactree instead of expac >>>>>>>>
-			#all_dep=$(pactree -l -s plasma-meta | sort -u && \
-			#pactree -l -s dolphin | sort -u && \
-			#pactree -l -s konsole | sort -u)
-			#mapfile -t packages < <(
-			#echo "$all_dep" | sort -u | comm -13 <(pacman -Qq) -
+			# all_dep=$(pactree -l -s plasma-meta | sort -u && pactree -l -s dolphin | sort -u && pactree -l -s konsole | sort -u)
+			# mapfile -t packages < <(
+			# echo "$all_dep" | sort -u | comm -13 <(pacman -Qq) -
+			# )
 			# <<<<<<<<
             mapfile -t packages < <(
-				expac -S '%D' "${pkg_names[@]}" 2>&1 | tr -s ' ' '\n' | sort -u | comm -13 <(pacman -Qq) - || true
+				expac -S '%D' "${pkg_names[@]}" | tr -s ' ' '\n' | sort -u | comm -13 <(pacman -Qq) - || true
             )
             ;;
         debian)
@@ -444,8 +442,7 @@ main() {
             export DEBIAN_FRONTEND=noninteractive
             
             mapfile -t packages < <(
-                "${LIST_CMD[@]}" "${pkg_names[@]}" 2>&1 |
-                awk '/^Inst / {print $2}'
+                "${LIST_CMD[@]}" "${pkg_names[@]}" | awk '/^Inst / {print $2}'
             )
             ;;
         fedora)
