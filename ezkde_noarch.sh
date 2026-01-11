@@ -84,7 +84,7 @@ esac
 
 # map each distro to its native KDE/plasma packages
 declare -A KDE_GROUP
-KDE_GROUP[arch]="plasma-meta dolphin konsole"
+KDE_GROUP[arch]="plasma-meta dolphin konsole pipewire"
 KDE_GROUP[debian]="plasma-workspace pipewire sddm dolphin konsole"
 KDE_GROUP[fedora]="@kde-desktop"
 #KDE_GROUP[fedora]="plasma-desktop plasma-settings plasma-nm sddm-wayland-plasma kde-baseapps konsole kscreen sddm startplasma-wayland dolphin"
@@ -200,7 +200,7 @@ done
 
 "${UPDATE[@]}" >/dev/null 2>&1 || fatal " no internet connection detected. Exiting."
 if [ "$DISTRO" = "arch" ]; then
-	#"${PM[@]}" pacman-contrib  >/dev/null 2>&1
+	#"${PM[@]}" pacman-contrib  >/dev/null 2>&1 # use pactree instead of expac
 	"${PM[@]}" expac  >/dev/null 2>&1
 fi
 
@@ -424,12 +424,14 @@ main() {
 
     case "$DISTRO" in
         arch)
+			# use pactree instead of expac >>
+			#all_dep=$(pactree -l -s plasma-meta | sort -u && \
+			#pactree -l -s dolphin | sort -u && \
+			#pactree -l -s konsole | sort -u)
+			#mapfile -t packages < <(
+			#echo "$all_dep" | sort -u | comm -13 <(pacman -Qq) -
+			# << use pactree instead of expac
             mapfile -t packages < <(
-                #all_dep=$(pactree -l -s plasma-meta | sort -u && \
-				#pactree -l -s dolphin | sort -u && \
-				#pactree -l -s konsole | sort -u)
-				#mapfile -t packages < <(
-				#echo "$all_dep" | sort -u | comm -13 <(pacman -Qq) -
 				expac -S '%D' "${pkg_names[@]}" 2>&1 | tr -s ' ' '\n' | sort -u || true
             )
             ;;
