@@ -38,7 +38,7 @@ usage() {
  -c	progress bar fill character, default is |
  -e	progress bar empty character, default is ' '
  -s create a 1gb swap file for install then removes it,
- 	default is false
+ 	use if OOM error happens, default is false
  
  #-----------------------------------------------------#
  
