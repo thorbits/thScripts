@@ -65,7 +65,7 @@ case "$DISTRO" in
     debian)
     UPDATE=(apt-get update -qq)
     PM=(apt-get install -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold")
-    LIST_CMD=(apt-get build-dep --dry-run -qq)
+    LIST_CMD=(apt-get install --dry-run -qq)
 	;;
     fedora)
     UPDATE=(dnf makecache)
@@ -197,7 +197,7 @@ while true; do
     fi
 done
 
-"${UPDATE[@]}" >/dev/null 2>&1 || fatal " no internet connection detected. Exiting."
+"${UPDATE[@]}" || fatal " no internet connection detected. Exiting."
 if [ "$DISTRO" = "arch" ]; then
 	#"${PM[@]}" pacman-contrib  >/dev/null 2>&1 # use pactree instead of expac
 	"${PM[@]}" expac  >/dev/null 2>&1
