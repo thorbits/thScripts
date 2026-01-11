@@ -200,8 +200,8 @@ done
 
 "${UPDATE[@]}" >/dev/null 2>&1 || fatal " no internet connection detected. Exiting."
 if [ "$DISTRO" = "arch" ]; then
-#"${PM[@]}" pacman-contrib  >/dev/null 2>&1
-"${PM[@]}" expac  >/dev/null 2>&1
+	#"${PM[@]}" pacman-contrib  >/dev/null 2>&1
+	"${PM[@]}" expac  >/dev/null 2>&1
 fi
 
 nvidia_warning() {
