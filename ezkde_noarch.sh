@@ -336,8 +336,15 @@ install_packages() {
     
     for pkg in "$@"; do
         printf '\r%-*s' "$COLUMNS" " -> Now downloading and installing: $pkg"
+		printf '\n' && ( iftop -t ) &
+		iftop_pid=$!
         "${PM[@]}" "$pkg" >/dev/null 2>&1
     done
+	# kill iftop now that the install is done
+    if [[ -n ${iftop_pid:-} ]]; then
+        kill "$iftop_pid" 2>/dev/null || true
+        wait "$iftop_pid" 2>/dev/null || true
+    fi
 }
 
 enable_wayland() {
