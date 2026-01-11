@@ -432,7 +432,7 @@ main() {
 			#echo "$all_dep" | sort -u | comm -13 <(pacman -Qq) -
 			# << use pactree instead of expac
             mapfile -t packages < <(
-				expac -S '%D' "${pkg_names[@]}" 2>&1 | tr -s ' ' '\n' | sort -u || true
+				expac -S '%D' "${pkg_names[@]}" 2>&1 | tr -s ' ' '\n' | sort -u | comm -13 <(pacman -Qq) - || true
             )
             ;;
         debian)
