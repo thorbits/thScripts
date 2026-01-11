@@ -211,6 +211,7 @@ nvidia_warning() {
 		sleep 2
         if grep -q "nvidia-drm.modeset=1" /etc/default/grub; then
 			printf " Fix already present in GRUB config. Proceeding with KDE installation..."
+			nvidia_fix=true
         else
             sed -i 's/^GRUB_CMDLINE_LINUX_DEFAULT="\(.*\)"/GRUB_CMDLINE_LINUX_DEFAULT="\1 nvidia-drm.modeset=1"/' /etc/default/grub
 			printf " NVIDIA Wayland fix applied. You will need to reboot your system !\n Proceeding with KDE installation..."
