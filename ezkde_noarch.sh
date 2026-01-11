@@ -339,9 +339,9 @@ install_packages() {
 }
 
 enable_wayland() {
-	if systemctl is-enabled display-manager.service &>/dev/null; then
-		systemctl disable display-manager.service --now &>/dev/null
-    fi
+	#if systemctl is-enabled display-manager.service &>/dev/null; then
+	#	systemctl disable display-manager.service --now &>/dev/null
+    #fi
 	case "$DISTRO" in
         arch|debian|fedora)
 			systemctl enable sddm &>/dev/null
