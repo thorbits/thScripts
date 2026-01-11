@@ -310,9 +310,13 @@ recover_pacman() {
 }
 
 recover_dpkg() {
-    rm -f /var/lib/dpkg/lock-frontend /var/lib/dpkg/lock /var/cache/apt/archives/lock  >/dev/null
-    dpkg --configure -a >/dev/null
-    DEBIAN_FRONTEND=noninteractive apt-get install -f -y
+    rm -f /var/lib/dpkg/lock-frontend \
+        /var/lib/dpkg/lock \
+        /var/cache/apt/archives/lock >/dev/null || ret=1
+    dpkg --configure -a >/dev/null || ret=1
+    DEBIAN_FRONTEND=noninteractive \
+		apt-get install -f -y >/dev/null || ret=1
+	return 0
 }
 
 recover_rpm() {
@@ -338,11 +342,12 @@ install_packages() {
         printf '\r%-*s' "$COLUMNS" " -> Now downloading and installing: $pkg"
         "${PM[@]}" "$pkg" >/dev/null 2>&1
     done
-	
-	#( iftop -t | while IFS= read -r line; do
-	#	printf "\r${line:0:$(tput cols)}"
-	#done &
-	#iftop_pid=$! )
+    # Recover on failure (if a recovery function was defined)
+    if [[ $ret -ne 0 && -n $recover ]]; then
+		printf '\n'    # move to a new line before the recovery message
+		echo "Package $pkg failed. Running $recover..."
+		$recover "$pkg"
+        fi
 }
 
 enable_wayland() {
@@ -485,12 +490,6 @@ main() {
         fi
         progress-bar "$current" "$total"
     done
-
-	# kill iftop now that install is done
-    if [[ -n ${iftop_pid:-} ]]; then
-        kill "$iftop_pid" 2>/dev/null || true
-        wait "$iftop_pid" 2>/dev/null || true
-    fi
 
 	# remove swap if it was created
 	if [[ -f /var/tmp/ezkde_swap ]] then
