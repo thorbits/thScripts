@@ -339,10 +339,10 @@ install_packages() {
         "${PM[@]}" "$pkg" >/dev/null 2>&1
     done
 	
-	iftop -t | head -n1 | while IFS= read -r line; do
-		echo -ne "\r${line:0:$(tput cols)}"
+	( iftop -t | while IFS= read -r line; do
+		printf "\r${line:0:$(tput cols)}"
 	done &
-	iftop_pid=$!
+	iftop_pid=$! )
 }
 
 enable_wayland() {
