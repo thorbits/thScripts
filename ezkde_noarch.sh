@@ -85,7 +85,7 @@ esac
 # map each distro to its native KDE/plasma packages
 declare -A KDE_GROUP
 KDE_GROUP[arch]="plasma-meta dolphin konsole pipewire"
-KDE_GROUP[debian]="plasma-workspace pipewire sddm dolphin konsole"
+KDE_GROUP[debian]="plasma-workspace dolphin konsole pipewire sddm"
 KDE_GROUP[fedora]="@kde-desktop"
 #KDE_GROUP[fedora]="plasma-desktop plasma-settings plasma-nm sddm-wayland-plasma kde-baseapps konsole kscreen sddm startplasma-wayland dolphin"
 KDE_GROUP[opensuse]="discover6 sddm patterns-kde-kde_plasma" #plasma6-desktop dolphin sddm sddm-config-wayland
@@ -424,13 +424,13 @@ main() {
 
     case "$DISTRO" in
         arch)
-			# use pactree instead of expac >>
+			# use pactree instead of expac >>>>>>>>
 			#all_dep=$(pactree -l -s plasma-meta | sort -u && \
 			#pactree -l -s dolphin | sort -u && \
 			#pactree -l -s konsole | sort -u)
 			#mapfile -t packages < <(
 			#echo "$all_dep" | sort -u | comm -13 <(pacman -Qq) -
-			# << use pactree instead of expac
+			# <<<<<<<<
             mapfile -t packages < <(
 				expac -S '%D' "${pkg_names[@]}" 2>&1 | tr -s ' ' '\n' | sort -u | comm -13 <(pacman -Qq) - || true
             )
