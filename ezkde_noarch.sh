@@ -65,7 +65,7 @@ case "$DISTRO" in
     debian)
     UPDATE=(apt-get update)
     PM=(apt-get install -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold")
-    LIST_CMD=(apt-get install --dry-run -qq)
+    LIST_CMD=(apt-get build-dep --dry-run -qq)
 	;;
     fedora)
     UPDATE=(dnf makecache)
