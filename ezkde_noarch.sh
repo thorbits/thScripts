@@ -58,7 +58,7 @@ DISTRO=$(os_release)
 
 case "$DISTRO" in
     arch)
-    UPDATE=(pacman -Sy)
+    UPDATE=(pacman -Syu --noconfirm)
     PM=(pacman -S --needed --noconfirm)
     LIST_CMD=(pacman -Sp --print-format '%n')
 	;;
@@ -335,7 +335,7 @@ install_packages() {
     
     for pkg in "$@"; do
         printf '\r%-*s' "$COLUMNS" " -> Now downloading and installing: $pkg"
-        "${PM[@]}" "$pkg" >/dev/null
+        "${PM[@]}" "$pkg" >/dev/null 2>&1
     done
 }
 
