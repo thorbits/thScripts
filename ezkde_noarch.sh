@@ -425,8 +425,11 @@ main() {
     case "$DISTRO" in
         arch)
             mapfile -t packages < <(
-                #"${LIST_CMD[@]}" "${pkg_names[@]}" 2>&1 |
-                #grep -v '^warning' || true
+                #all_dep=$(pactree -l -s plasma-meta | sort -u && \
+				#pactree -l -s dolphin | sort -u && \
+				#pactree -l -s konsole | sort -u)
+				#mapfile -t packages < <(
+				#echo "$all_dep" | sort -u | comm -13 <(pacman -Qq) -
 				expac -S '%D' "${pkg_names[@]}" 2>&1 | tr -s ' ' '\n' | sort -u || true
             )
             ;;
