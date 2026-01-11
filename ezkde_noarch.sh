@@ -40,7 +40,7 @@ usage() {
  -s create a 1gb swap file for install then removes it,
  	default is false
  
- #---------------------------------------------------#
+ #-----------------------------------------------------#
  
 EOF
 }
@@ -78,7 +78,6 @@ case "$DISTRO" in
     LIST_CMD=(zypper install -y --dry-run)
 	;;
     *)
-    #fatal " no supported package manager found (apt-get, pacman, dnf, zypper). Exiting."
 	fatal " no supported linux distribution found (arch, debian, fedora, opensuse). Exiting."
 	;;
 esac
@@ -493,9 +492,10 @@ main() {
         progress-bar "$current" "$total"
     done
 
-	if [[ -f /var/tmp/ezkde_swap ]] && \
-	swapon -s | awk '$1=="/var/tmp/ezkde_swap" {print 1}' >/dev/null; then
-		remove_swap
+	if [[ -f /var/tmp/ezkde_swap ]] then
+		if swapon -s | awk '$1=="/var/tmp/ezkde_swap" {print 1}' >/dev/null; then
+			remove_swap
+		fi
 	fi
 	
     enable_wayland
