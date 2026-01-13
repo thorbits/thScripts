@@ -312,10 +312,10 @@ recover_pacman() {
 recover_dpkg() {
     rm -f /var/lib/dpkg/lock-frontend \
         /var/lib/dpkg/lock \
-        /var/cache/apt/archives/lock >/dev/null || ret=1
-    dpkg --configure -a >/dev/null || ret=1
+        /var/cache/apt/archives/lock >/dev/null || return 1
+    dpkg --configure -a >/dev/null || return 1
     DEBIAN_FRONTEND=noninteractive \
-		apt-get install -f -y >/dev/null || ret=1
+		apt-get install -f -y >/dev/null || return 1
 	return 0
 }
 
@@ -342,7 +342,7 @@ install_packages() {
         printf '\r%-*s' "$COLUMNS" " -> Now downloading and installing: $pkg"
         "${PM[@]}" "$pkg" >/dev/null 2>&1
     done
-    # Recover on failure (if a recovery function was defined)
+
     if [[ $ret -ne 0 && -n $recover ]]; then
 		printf '\n'    # move to a new line before the recovery message
 		echo "Package $pkg failed. Running $recover..."
