@@ -60,7 +60,7 @@ case "$DISTRO" in
     LIST_CMD=(pacman -Sp --print-format '%n')
 	;;
     debian)
-    UPDATE=(apt-get update -qq)
+    UPDATE=(apt-get update)
     PM=(apt-get install -y -o Dpkg::Options::="--force-confdef")
     LIST_CMD=(apt-get install --dry-run -qq)
 	;;
@@ -70,7 +70,7 @@ case "$DISTRO" in
     LIST_CMD=(dnf install --assumeno)
 	;;
     opensuse)
-    UPDATE=(zypper --quiet ref)
+    UPDATE=(zypper ref)
     PM=(zypper install -y)
     LIST_CMD=(zypper install -y --dry-run)
 	;;
@@ -193,7 +193,7 @@ while true; do
     fi
 done
 
-"${UPDATE[@]}" >/dev/null || fatal " no internet connection detected. Exiting."
+"${UPDATE[@]}" >/dev/null 2>&1 || fatal " no internet connection detected. Exiting."
 if [ "$DISTRO" = "arch" ]; then
 	#"${PM[@]}" pacman-contrib  >/dev/null 2>&1 # use pactree instead of expac
 	"${PM[@]}" expac  >/dev/null 2>&1
@@ -474,7 +474,7 @@ main() {
         fedora)
             mapfile -t packages < <(
                 "${LIST_CMD[@]}" "${pkg_names[@]}" 2>&1 |
-                awk '!/(^$|^=|---|Dependencies resolved|Transaction Summary|Running transaction|Total download size|^Package |^Arch |^Version |^Repository |^Size |Installing|Updating|Repositories|Total|Operation|Nothing|After|KDE)/ {print $1}'
+                awk '!/(^$|^=|---|Dependencies resolved|Transaction Summary|Running transaction|Total download size|^Package |^Arch |^Version |^Repository |^Size |Installing|Updating|Upgrading|Repositories|Total|Operation|Nothing|After|KDE)/ {print $1}'
             )
             ;;
         opensuse)
