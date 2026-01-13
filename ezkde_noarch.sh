@@ -474,7 +474,7 @@ main() {
         fedora)
             mapfile -t packages < <(
                 "${LIST_CMD[@]}" "${pkg_names[@]}" 2>&1 |
-                awk '!/(^$|^=|---|Dependencies resolved|Transaction Summary|Running transaction|Total download size|^Package |^Arch |^Version |^Repository |^Size |Installing|Updating|Upgrading|Repositories|Total|Operation|Nothing|After|KDE)/ {print $1}'
+                awk '!/(^$|^=|---|Dependencies resolved|Transaction Summary|Running transaction|Total download size|^Package |^Arch |^Version |^Repository |^Size |Installing|Updating|Upgrading|replacing|Repositories|Total|Operation|Nothing|After|KDE)/ {print $1}'
             )
             ;;
         opensuse)
