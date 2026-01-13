@@ -305,32 +305,28 @@ progress-bar() {
 }
 
 recover_pacman() {
-    rm -f /var/lib/pacman/db.lck >/dev/null
+    rm -f /var/lib/pacman/db.lck >/dev/null 2>&1
     pacman -Sy --noconfirm >/dev/null 2>&1 || true
 }
 
 recover_dpkg() {
-    rm -f /var/lib/dpkg/lock-frontend \
-        /var/lib/dpkg/lock \
-        /var/cache/apt/archives/lock >/dev/null || return 1
-    dpkg --configure -a >/dev/null || return 1
-    DEBIAN_FRONTEND=noninteractive \
-		apt-get install -f -y >/dev/null || return 1
-	return 0
+    rm -f /var/lib/dpkg/lock-frontend /var/lib/dpkg/lock /var/cache/apt/archives/lock  >/dev/null 2>&1
+    dpkg --configure -a >/dev/null 2>&1
+    DEBIAN_FRONTEND=noninteractive apt-get install -f -y 2>/dev/null || true
 }
 
 recover_rpm() {
-    rm -f /var/lib/rpm/.rpm.lock /var/lib/rpm/__db.* >/dev/null
-    rpm --rebuilddb >/dev/null 2>&1
+    rm -f /var/lib/rpm/.rpm.lock /var/lib/rpm/__db.* 2>/dev/null
+    rpm --rebuilddb 2>/dev/null || true
     if [[ "$DISTRO" == "OpenSuse" ]]; then
-        zypper verify --no-refresh >/dev/null 2>&1 || true
+        zypper verify --no-refresh 2>/dev/null || true
     fi
 }
 
 install_packages() {
     local pkg
-    local ret=0
     local recover=""
+	ret=0 
 
     case "$DISTRO" in
         arch)            recover="recover_pacman" ;;
@@ -341,13 +337,15 @@ install_packages() {
     for pkg in "$@"; do
         printf '\r%-*s' "$COLUMNS" " -> Now downloading and installing: $pkg"
         "${PM[@]}" "$pkg" >/dev/null 2>&1
-    done
 
-    if [[ $ret -ne 0 && -n $recover ]]; then
-		printf '\n'    # move to a new line before the recovery message
-		echo "Package $pkg failed. Running $recover..."
-		$recover "$pkg"
-        fi
+		if [ $? -ne 0 ]; then
+        	$recover 2>&1
+        ret=1
+    	fi
+	
+	done
+
+	return $ret
 }
 
 enable_wayland() {
