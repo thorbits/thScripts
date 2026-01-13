@@ -343,12 +343,13 @@ install_packages() {
             	"${PM[@]}" "$pkg" 2>&1 | tee -a "$ERROR_LOG" > /dev/null
 				printf '\r%-*s' "$COLUMNS" " -> Installation FAILED: $pkg"
 				ret=1
-        else
+        	else
 			if [ ! -f "$SUCCESS_LOG" ]; then
             echo "$TIMESTAMP-install OK: $pkg" >> "$SUCCESS_LOG"
-        fi
-	return $ret
+        	fi
+		fi
 	done
+	return $ret
 }
 
 disable_dms() {
