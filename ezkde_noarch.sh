@@ -56,7 +56,7 @@ DISTRO=$(os_release)
 
 case "$DISTRO" in
     arch)
-    UPDATE=(pacman -Syu --noconfirm)
+    UPDATE=(pacman -Syu --noconfirm >/dev/null)
     PM=(pacman -S --needed --noconfirm)
     LIST_CMD=(pacman -Sp --print-format '%n')
 	;;
@@ -323,8 +323,14 @@ recover_rpm() {
 
 install_packages() {
     local pkg
+	local ret=0
     local recover=""
-	ret=0 
+    local LOG_DIR="/var/log/install-scripts"
+    local TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+
+    mkdir -p "$LOG_DIR"
+	SUCCESS_LOG="$LOG_DIR/$TIMESTAMP-install.log"
+    ERROR_LOG="$LOG_DIR/$TIMESTAMP-error.log"
 
     case "$DISTRO" in
         arch)            recover="recover_pacman" ;;
@@ -338,11 +344,17 @@ install_packages() {
 
 		if [ $? -ne 0 ]; then
         	$recover 2>&1
-        ret=1
-    	fi
-	
-	done
 
+    		# create or append to the global error log
+            if [ ! -f "$ERROR_LOG" ]; then
+                echo "$TIMESTAMP-install failed: $pkg" >> "$ERROR_LOG"
+            	"${PM[@]}" "$pkg" 2>&1 | tee -a "$ERROR_LOG" > /dev/null
+				printf '\r%-*s\n' "$COLUMNS" " -> Installation FAILED: $pkg"
+				ret=1
+        else
+            echo "$TIMESTAMP-install OK: $pkg" >> "$SUCCESS_LOG"
+        fi
+	done
 	return $ret
 }
 
