@@ -66,7 +66,7 @@ case "$DISTRO" in
 	;;
     fedora)
     UPDATE=(dnf makecache)
-    PM=(dnf install -y)
+    PM=(dnf install -y --best)
     LIST_CMD=(dnf install --assumeno)
 	;;
     opensuse)
