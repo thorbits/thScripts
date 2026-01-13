@@ -56,7 +56,7 @@ DISTRO=$(os_release)
 
 case "$DISTRO" in
     arch)
-    UPDATE=(pacman -Syu --noconfirm >/dev/null)
+    UPDATE=(pacman -Syu --noconfirm)
     PM=(pacman -S --needed --noconfirm)
     LIST_CMD=(pacman -Sp --print-format '%n')
 	;;
@@ -195,7 +195,7 @@ while true; do
     fi
 done
 
-"${UPDATE[@]}" || fatal " no internet connection detected. Exiting."
+"${UPDATE[@]}" >/dev/null || fatal " no internet connection detected. Exiting."
 if [ "$DISTRO" = "arch" ]; then
 	#"${PM[@]}" pacman-contrib  >/dev/null 2>&1 # use pactree instead of expac
 	"${PM[@]}" expac  >/dev/null 2>&1
