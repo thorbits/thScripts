@@ -30,10 +30,7 @@ usage() {
 	cat <<-EOF
  Usage: $prog [options]
 
- Tweak install batch size, use a custom swap file 
- or customize progress bar appearance.
-
- Options
+ options:
  -b	batch size for packages, default is 1
  -c	progress bar fill character, default is |
  -e	progress bar empty character, default is ' '
@@ -83,7 +80,7 @@ case "$DISTRO" in
 	;;
 esac
 
-# map each distro to its native KDE/plasma packages
+# map each distro to its native KDE (meta) packages
 declare -A KDE_GROUP
 KDE_GROUP[arch]="plasma-meta dolphin konsole pipewire"
 KDE_GROUP[debian]="plasma-workspace dolphin konsole pipewire sddm"
@@ -503,7 +500,7 @@ main() {
         progress-bar "$current" "$total"
     done
 
-	# remove swap if it was created
+	# remove swap if created
 	if [[ -f /var/tmp/ezkde_swap ]] then
 		if swapon -s | awk '$1=="/var/tmp/ezkde_swap" {print 1}' >/dev/null; then
 			remove_swap
