@@ -320,7 +320,7 @@ install_packages() {
     local ret=0
     local recover=""
     local LOG_DIR="/var/log/install-scripts"
-    local TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+    local TIMESTAMP=$(date +%Y%m%d)
     mkdir -p "$LOG_DIR"
     local SUCCESS_LOG="$LOG_DIR/$TIMESTAMP-install.log"
     local ERROR_LOG="$LOG_DIR/$TIMESTAMP-error.log"
