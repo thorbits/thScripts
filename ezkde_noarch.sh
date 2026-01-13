@@ -11,7 +11,6 @@
 #    (PipeWire) and a minimum of utilities.
 # ----------------------------------------------------------------
 
-# must be run as root
 if [[ "$(id -u)" -ne 0 ]]; then
     printf " This script must be run as root. Use sudo.\n"
     exit 1
@@ -19,7 +18,7 @@ fi
 
 set -euo pipefail
 
-# default tunables
+# default tunables, see usage
 BATCHSIZE=${BATCHSIZE:-1}
 BAR_CHAR=${BAR_CHAR:-'|'}
 EMPTY_CHAR=${EMPTY_CHAR:-' '}
@@ -43,7 +42,7 @@ usage() {
 EOF
 }
 
-fatal() {
+fatal() { # critical error message
     printf "[WARNING] %s\n" "$*" >&2
     exit 1
 }
@@ -80,15 +79,14 @@ case "$DISTRO" in
 	;;
 esac
 
-# map each distro to its native KDE (meta) packages
-declare -A KDE_GROUP
+declare -A KDE_GROUP # map each distro to its native KDE (meta) packages
 KDE_GROUP[arch]="plasma-meta dolphin konsole pipewire"
 KDE_GROUP[debian]="plasma-workspace dolphin konsole pipewire sddm"
 KDE_GROUP[fedora]="@kde-desktop"
 #KDE_GROUP[fedora]="plasma-desktop plasma-settings plasma-nm sddm-wayland-plasma kde-baseapps konsole kscreen sddm startplasma-wayland dolphin"
 KDE_GROUP[opensuse]="discover6 sddm patterns-kde-kde_plasma" #plasma6-desktop dolphin sddm sddm-config-wayland
 
-# intro - DISTRO and UPDATE are set
+# intro, DISTRO and UPDATE are set
 clear
 case "$DISTRO" in
         arch)
@@ -224,14 +222,11 @@ printf "\n\n Preparing KDE packages for %s...\n\n" "$DISTRO"
 
 create_swap() {
     local swap_file="/var/tmp/ezkde_swap"
-    # create 1GB file
-    if dd if=/dev/zero of="$swap_file" bs=1M count=1024 status=none 2>/dev/null; then
+    if dd if=/dev/zero of="$swap_file" bs=1M count=1024 status=none 2>/dev/null; then # create 1GB file
         chmod 600 "$swap_file"
         mkswap "$swap_file" >/dev/null 2>&1
-        # force the kernel to use swap file
-        if swapon "$swap_file" -p 100 >/dev/null 2>&1; then
-            # swappiness 80 force the system to use swap sooner
-            sysctl -w vm.swappiness=80 >/dev/null 2>&1
+        if swapon "$swap_file" -p 100 >/dev/null 2>&1; then # force the kernel to use swap file
+            sysctl -w vm.swappiness=80 >/dev/null 2>&1 # force the system to use swap sooner
             return 0
         else
             echo "Failed to enable $swap_file." >&2
@@ -250,8 +245,7 @@ remove_swap() {
         swapoff "$swap_file" >/dev/null 2>&1
         rm -f "$swap_file"
     fi
-    # reset swappiness to default
-    sysctl -w vm.swappiness=60 >/dev/null 2>&1
+    sysctl -w vm.swappiness=60 >/dev/null 2>&1 # reset swappiness to default 60
 }
 
 init-term() {
@@ -343,15 +337,14 @@ install_packages() {
         "${PM[@]}" "$pkg" >/dev/null 2>&1
 
 		if [ $? -ne 0 ]; then
-        	$recover 2>&1
-
-    		# create or append to the global error log
-            if [ ! -f "$ERROR_LOG" ]; then
+        	$recover 2>&1 # recover install    		
+            if [ ! -f "$ERROR_LOG" ]; then # append to error log
                 echo "$TIMESTAMP-install failed: $pkg" >> "$ERROR_LOG"
             	"${PM[@]}" "$pkg" 2>&1 | tee -a "$ERROR_LOG" > /dev/null
-				printf '\r%-*s\n' "$COLUMNS" " -> Installation FAILED: $pkg"
+				printf '\r%-*s' "$COLUMNS" " -> Installation FAILED: $pkg"
 				ret=1
         else
+			if [ ! -f "$SUCCESS_LOG" ]; then
             echo "$TIMESTAMP-install OK: $pkg" >> "$SUCCESS_LOG"
         fi
 	done
@@ -360,14 +353,12 @@ install_packages() {
 
 disable_dms() {
     case "$DISTRO" in
-        arch|debian|fedora)
-            # disable common display managers
+        arch|debian|fedora) # disable common display managers
             systemctl disable gdm &>/dev/null || true
             systemctl disable lightdm &>/dev/null || true
             systemctl disable kdm &>/dev/null || true
             ;;
-        opensuse)
-            # use yast to set the DM to none first
+        opensuse) # use yast to set the DM to none first
             yast --quiet --modules 'System/DisplayManager' set_display_manager none &>/dev/null
             ;;
     esac
@@ -505,15 +496,13 @@ main() {
     for ((i = 0; i < total; i += BATCHSIZE)); do
         install_packages "${packages[@]:i:BATCHSIZE}"
         current=$((current + BATCHSIZE))
-        # clamp current to total for the progress bar
-        if (( current > total )); then
+        if (( current > total )); then # clamp current to total for the progress bar
             current=$total
         fi
         progress-bar "$current" "$total"
     done
 
-	# remove swap if created
-	if [[ -f /var/tmp/ezkde_swap ]] then
+	if [[ -f /var/tmp/ezkde_swap ]] then # remove swap if created
 		if swapon -s | awk '$1=="/var/tmp/ezkde_swap" {print 1}' >/dev/null; then
 			remove_swap
 		fi
