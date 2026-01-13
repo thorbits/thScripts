@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+st#!/usr/bin/env bash
 
 #	_______
 #	\_   _/
@@ -74,7 +74,7 @@ case "$DISTRO" in
     LIST_CMD=(dnf install --assumeno)
 	;;
     opensuse)
-    UPDATE=(zypper ref)
+    UPDATE=(zypper --quiet ref)
     PM=(zypper install -y)
     LIST_CMD=(zypper install -y --dry-run)
 	;;
@@ -220,6 +220,7 @@ nvidia_warning() {
         fi
     fi
 }
+
 nvidia_warning
 
 printf "\n\n Preparing KDE packages for %s...\n\n" "$DISTRO"
