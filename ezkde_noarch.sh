@@ -347,8 +347,8 @@ install_packages() {
 			if [ ! -f "$SUCCESS_LOG" ]; then
             echo "$TIMESTAMP-install OK: $pkg" >> "$SUCCESS_LOG"
         fi
-	done
 	return $ret
+	done
 }
 
 disable_dms() {
