@@ -43,7 +43,7 @@ EOF
 }
 
 fatal() { # critical error message
-    printf "[WARNING] %s\n" "$*" >&2
+    printf "\n\n [WARNING] %s\n\n" "$*" >&2
     exit 1
 }
 
