@@ -349,10 +349,23 @@ install_packages() {
 	return $ret
 }
 
+disable_dms() {
+    case "$DISTRO" in
+        arch|debian|fedora)
+            # disable common display managers
+            systemctl disable gdm &>/dev/null || true
+            systemctl disable lightdm &>/dev/null || true
+            systemctl disable kdm &>/dev/null || true
+            ;;
+        opensuse)
+            # use yast to set the DM to none first
+            yast --quiet --modules 'System/DisplayManager' set_display_manager none &>/dev/null
+            ;;
+    esac
+}
+
 enable_wayland() {
-	#if systemctl is-enabled display-manager.service &>/dev/null; then
-	#	systemctl disable display-manager.service --now &>/dev/null
-    #fi
+	disable_dms
 	case "$DISTRO" in
         arch|debian|fedora)
 			systemctl enable sddm &>/dev/null
