@@ -227,25 +227,26 @@ printf "\n\n Preparing KDE packages for %s...\n\n" "$DISTRO"
 
 create_swap() {
     local swap_file="/var/tmp/ezkde_swap"
-    if dd if=/dev/zero of="$swap_file" bs=1M count=1024 status=none 2>/dev/null; then # create 1GB file
-        chmod 600 "$swap_file"
-        mkswap "$swap_file" >/dev/null 2>&1
-        if swapon "$swap_file" -p 100 >/dev/null 2>&1; then # force the kernel to use swap file
-            sysctl -w vm.swappiness=80 >/dev/null 2>&1 # force the system to use swap sooner
-            return 0
-        else
-            echo "Failed to enable $swap_file." >&2
-            return 1
-        fi
-    else
-        echo "Cannot write to $swap_file" >&2
-        return 1
+    if ! dd if=/dev/zero of="$swap_file" bs=1M count=1024 status=none 2>/dev/null; then # create 1GB file
+        fatal "cannot write to $swap_file."
     fi
+    if ! chmod 600 "$swap_file"; then
+		rm -f "$swap_file"
+        fatal "failed to set permissions for $swap_file."
+    fi
+    if ! mkswap "$swap_file" >/dev/null 2>&1; then
+		rm -f "$swap_file"
+        fatal "failed to format $swap_file as swap."
+    fi
+    if ! swapon "$swap_file" -p 100 >/dev/null 2>&1; then # force the kernel to use swap file
+		rm -f "$swap_file"
+        fatal "failed to enable $swap_file."
+    fi
+    sysctl -w vm.swappiness=80 >/dev/null 2>&1 # force the system to use swap sooner
+    return 0
 }
-
 remove_swap() {
     local swap_file="/var/tmp/ezkde_swap"
-    
     if [[ -f "$swap_file" ]]; then
         swapoff "$swap_file" >/dev/null 2>&1
         rm -f "$swap_file"
@@ -497,6 +498,7 @@ main() {
     
 	if (( total == 0 )); then
     	printf " Nothing to do – All packages are up to date.\n\n"
+		remove_swap
 		enable_wayland
 		end_install
 	fi
@@ -512,12 +514,7 @@ main() {
         progress-bar "$current" "$total"
     done
 
-	if [[ -f /var/tmp/ezkde_swap ]] then # remove swap if created
-		if swapon -s | awk '$1=="/var/tmp/ezkde_swap" {print 1}' >/dev/null; then
-			remove_swap
-		fi
-	fi
-	
+	remove_swap
     enable_wayland
     printf "\n\n eZkde for %s installation successful.\n\n" "$DISTRO"
     end_install
