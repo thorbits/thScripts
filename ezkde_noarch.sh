@@ -200,10 +200,10 @@ case "$DISTRO" in
 		#"${PM[@]}" pacman-contrib  >/dev/null 2>&1 # use pactree instead of expac
 		"${PM[@]}" expac pacman >/dev/null 2>&1 # pacman is included as expac rely on its latest version
 	;;
-	fedora)
+	#fedora)
 		#dnf rm -y -q gpgme >/dev/null 2>&1 # bug fix for akonadi-server ?
 		#dnf in -yq dnf-plugins-core >/dev/null 2>&1
-	;;
+	#;;
 esac
 
 # fix wayland on nvidia gpu
