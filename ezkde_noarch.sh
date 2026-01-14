@@ -194,10 +194,15 @@ while true; do
 done
 
 "${UPDATE[@]}" >/dev/null 2>&1 || fatal " no internet connection detected. Exiting."
-if [ "$DISTRO" = "arch" ]; then
-	#"${PM[@]}" pacman-contrib  >/dev/null 2>&1 # use pactree instead of expac
-	"${PM[@]}" expac  >/dev/null 2>&1
-fi
+case "$DISTRO" in
+    arch)
+		#"${PM[@]}" pacman-contrib  >/dev/null 2>&1 # use pactree instead of expac
+		"${PM[@]}" expac  >/dev/null 2>&1
+	;;
+	Fedora)
+		dnf rm -y -q gpgme #bug fix for akonadi-server
+	;;
+esac
 
 # fix wayland on nvidia gpu
 nvidia_fix=false
@@ -474,7 +479,7 @@ main() {
         fedora)
             mapfile -t packages < <(
                 "${LIST_CMD[@]}" "${pkg_names[@]}" 2>&1 |
-                awk '!/(^$|^=|---|^Package |^Arch |^Version |^Repository |^Size |After|Installing|Updating|Transaction|KDE)/ {print $1}' | sort -u
+                awk '!/(^$|^=|---|^Package |^Arch |^Version |^Repository |^Size |After|Installing|Updating|Transaction|Operation|KDE)/ {print $1}' | sort -u
             )
             ;;
         opensuse)
