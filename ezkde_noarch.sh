@@ -479,7 +479,7 @@ main() {
         fedora)
             mapfile -t packages < <(
                 "${LIST_CMD[@]}" "${pkg_names[@]}" 2>&1 |
-                awk '!/(^$|^=|---|^Package |^Arch |^Version |^Repository |^Size |After|Installing|Updating|Transaction|Operation|KDE)/ {print $1}' | sort -u
+                awk '!/(^$|^=|---|^Package |^Arch |^Version |^Repository |^Size |After|Installing|Updating|Transaction|Operation|Repositories|KDE)/ {print $1}' | sort -u
             )
             ;;
         opensuse)
