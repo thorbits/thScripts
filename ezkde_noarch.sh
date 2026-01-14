@@ -66,14 +66,14 @@ case "$DISTRO" in
     LIST_CMD=(apt-get install --dry-run -qq)
 	;;
     fedora)
-    UPDATE=(dnf makecache)
-    PM=(dnf install -y)
-    LIST_CMD=(dnf install --assumeno)
+    UPDATE=(dnf mc)
+    PM=(dnf in -y)
+    LIST_CMD=(dnf in --assumeno)
 	;;
     opensuse)
     UPDATE=(zypper ref)
-    PM=(zypper install -y)
-    LIST_CMD=(zypper install -y --dry-run)
+    PM=(zypper in -y)
+    LIST_CMD=(zypper in -y --dry-run)
 	;;
     *)
 	fatal " no supported linux distribution found (arch, debian, fedora, opensuse). Exiting."
@@ -84,7 +84,7 @@ declare -A KDE_GROUP # map each distro to its native KDE (meta) packages
 KDE_GROUP[arch]="plasma-meta dolphin konsole pipewire"
 KDE_GROUP[debian]="plasma-workspace dolphin konsole pipewire sddm"
 KDE_GROUP[fedora]="@kde-desktop sddm gpgme"
-#KDE_GROUP[fedora]="plasma-desktop plasma-settings plasma-nm sddm-wayland-plasma kde-baseapps konsole kscreen sddm startplasma-wayland dolphin"
+#KDE_GROUP[fedora]="plasma-desktop plasma-settings plasma-nm sddm-wayland-plasma kde-baseapps konsole kscreen sddm startplasma-wayland dolphin discover"
 KDE_GROUP[opensuse]="discover6 sddm patterns-kde-kde_plasma" #plasma6-desktop dolphin sddm sddm-config-wayland
 
 # intro, DISTRO and UPDATE are set
@@ -201,7 +201,8 @@ case "$DISTRO" in
 		"${PM[@]}" expac pacman >/dev/null 2>&1 # pacman is included as expac rely on its latest version
 	;;
 	fedora)
-		dnf rm -y -q gpgme >/dev/null 2>&1 # bug fix for akonadi-server ?
+		#dnf rm -y -q gpgme >/dev/null 2>&1 # bug fix for akonadi-server ?
+		#dnf in -yq dnf-plugins-core >/dev/null 2>&1
 	;;
 esac
 
@@ -476,8 +477,9 @@ main() {
             ;;
         fedora)
             mapfile -t packages < <(
-                "${LIST_CMD[@]}" "${pkg_names[@]}" 2>&1 |
-                awk '!/(^$|^=|---|^Package |^Arch |^Version |^Repository |^Size |After|Installing|Updating|replacing|Transaction|Operation|Repositories|Total|KDE)/ {print $1}' | sort -u
+                #"${LIST_CMD[@]}" "${pkg_names[@]}" 2>&1 |
+                #awk '!/(^$|^=|---|^Package |^Arch |^Version |^Repository |^Size |After|Installing|Updating|replacing|Transaction|Operation|Repositories|Total|KDE)/ {print $1}' | sort -u
+				dnf rq *plasma-desktop* *plasma-settings* *plasma-nm* *kde-baseapps* *konsole* *kscreen* *sddm-wayland* *sddm* *dolphin* *plasma-discover* | sed -E 's/-(0|1):.*$//; s/(-x11|-devel|-qt5)$//'
             )
             ;;
         opensuse)
