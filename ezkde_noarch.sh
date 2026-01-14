@@ -479,7 +479,7 @@ main() {
             mapfile -t packages < <(
                 #"${LIST_CMD[@]}" "${pkg_names[@]}" 2>&1 |
                 #awk '!/(^$|^=|---|^Package |^Arch |^Version |^Repository |^Size |After|Installing|Updating|replacing|Transaction|Operation|Repositories|Total|KDE)/ {print $1}' | sort -u
-				dnf rq *plasma-desktop* *plasma-settings* *plasma-nm* *kde-baseapps* *konsole* *kscreen* *sddm-wayland* *sddm* *dolphin* *plasma-discover* | sed -E 's/-(0|1):.*$//; s/(-x11|-devel|-qt5)$//'
+				dnf rq *plasma-* *kde-baseapps* *konsole* *kscreen* *sddm* *dolphin* | sed -E 's/-(0|1):.*$//; s/(-x11|-devel|-qt5)$//'
             )
             ;;
         opensuse)
