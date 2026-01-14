@@ -355,7 +355,7 @@ install_packages() {
             #fi
     #    fi
     done
-	printf '\r%-*s' "$COLUMNS" '' # clear the line
+	printf '\r%-*s\n' "$COLUMNS" '' # clear the line
     #if [ $ret -ne 0 ]; then
     #    $recover
     #fi
