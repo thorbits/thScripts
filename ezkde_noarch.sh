@@ -381,21 +381,6 @@ enable_wayland() {
         	fatal " sddm binary not found. Please install it first."
     	fi
 	fi
-	
-	if [[ -n "$dm_unit" ]]; then
-        systemctl disable "$dm_unit" 2>/dev/null
-        status=$?
-        if [[ $status -ne 0 && $status -ne 5 ]]; then
-            echo "WARNING: $dm_unit (exit $status)." >&2
-        fi
-    fi
-	if ! command -v sddm >/dev/null 2>&1; then
-		fatal " 'sddm' binary not found. Please install it first."
-	fi
-	systemctl enable sddm.service &>/dev/null || fatal " failed to enable SDDM."
-    #if [[ $? -ne 0 ]]; then
-    #    fatal " failed to enable SDDM."
-    #fi
 }
 
 upd_bootloader() {
