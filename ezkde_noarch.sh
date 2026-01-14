@@ -363,9 +363,26 @@ install_packages() {
 }
 
 enable_wayland() {
-	local dm_unit status
+	local dm_unit
 	dm_unit=$(systemctl show -p Id --value display-manager 2>/dev/null)
-    if [[ -n "$dm_unit" ]]; then
+    # no real DM is configured (server), just enable sddm
+	if [[ "$dm_unit" == "display-manager.service" ]]; then
+    	if command -v sddm >/dev/null 2>&1; then
+        	enable sddm.service >/dev/null 2>&1
+    	else
+        	fatal " sddm binary not found. Please install it first."
+    	fi
+	# a specific DM unit is present
+	elif [[ -n "$dm_unit" ]]; then
+    	if command -v sddm >/dev/null 2>&1; then
+        	disable "$dm_unit"
+        	enable sddm.service >/dev/null 2>&1
+    	else
+        	fatal " sddm binary not found. Please install it first."
+    	fi
+	fi
+	
+	if [[ -n "$dm_unit" ]]; then
         systemctl disable "$dm_unit" 2>/dev/null
         status=$?
         if [[ $status -ne 0 && $status -ne 5 ]]; then
