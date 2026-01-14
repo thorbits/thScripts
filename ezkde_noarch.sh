@@ -342,16 +342,16 @@ install_packages() {
 
         if [ $? -ne 0 ]; then
             $recover 2>&1 # recover install    
-            if [ ! -f "$ERROR_LOG" ]; then # append to error log
-                echo "$TIMESTAMP-install failed: $pkg" >> "$ERROR_LOG"
-                "${PM[@]}" "$pkg" 2>&1 | tee -a "$ERROR_LOG" > /dev/null
-            fi
+            #if [ ! -f "$ERROR_LOG" ]; then # append to error log
+            echo "$TIMESTAMP-install failed: $pkg" >> "$ERROR_LOG"
+        	"${PM[@]}" "$pkg" 2>&1 | tee -a "$ERROR_LOG" > /dev/null
+            #fi
             printf '\r%-*s' "$COLUMNS" " -> Installation FAILED: $pkg"
             ret=1
         else
-            if [ ! -f "$SUCCESS_LOG" ]; then
+            #if [ ! -f "$SUCCESS_LOG" ]; then
                 echo "$TIMESTAMP-install OK: $pkg" >> "$SUCCESS_LOG"
-            fi
+            #fi
         fi
     done
 
