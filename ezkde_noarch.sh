@@ -360,31 +360,21 @@ install_packages() {
     fi
 }
 
-disable_dms() {
-    case "$DISTRO" in
-        arch|debian|fedora) # disable common display managers
-            systemctl disable gdm gdm3 lightdm lxdm xdm &>/dev/null || true
-            ;;
-        opensuse) # use yast to set the DM to none
-			if command -v yast2 >/dev/null 2>&1; then
-            	yast2 displaymanager set default=none &>/dev/null || true
-        	else
-            	yast --modules 'System/DisplayManager' set_display_manager none &>/dev/null || true
-			fi
-            ;;
-    esac
-}
-
 enable_wayland() {
-	disable_dms
-	case "$DISTRO" in
-        arch|debian|fedora)
-			systemctl enable sddm &>/dev/null || true
-			;;
-		opensuse)
-			systemctl enable sddm.service -f &>/dev/null || true
-			;;
-	esac
+	dm_name=$(systemctl status display-manager 2>/dev/null | grep "Loaded:" | grep -oP 'loaded \K[^ ;]+' | sed 's/.*\///g' | sed 's/.service//g')
+    if [ -n "$dm_name" ]; then
+        systemctl disable "$dm_name".service
+    fi
+	if ! command -v sddm >/dev/null 2>&1; then
+		fatal " 'sddm' binary not found. Please install it first."
+	else
+		systemctl enable sddm.service -f &>/dev/null
+	fi
+	if [ $? -eq 0 ]; then
+		end_install
+	else
+    	fatal " failed to enable SDDM."
+	fi	
 }
 
 upd_bootloader() {
@@ -500,7 +490,6 @@ main() {
     	printf " Nothing to do – All packages are up to date.\n\n"
 		remove_swap
 		enable_wayland
-		end_install
 	fi
 
     # array installation loop
@@ -517,7 +506,6 @@ main() {
 	remove_swap
     enable_wayland
     printf "\n\n eZkde for %s installation successful.\n\n" "$DISTRO"
-    end_install
     deinit-term
 }
 
