@@ -67,13 +67,13 @@ case "$DISTRO" in
 	;;
     fedora)
     UPDATE=(dnf mc -q)
-    PM=(dnf in -y)
-    LIST_CMD=(dnf in --assumeno)
+    PM=(dnf install -y)
+    LIST_CMD=(dnf install --assumeno)
 	;;
     opensuse)
     UPDATE=(zypper ref)
-    PM=(zypper in -y)
-    LIST_CMD=(zypper in -y --dry-run)
+    PM=(zypper install -y)
+    LIST_CMD=(zypper install -y --dry-run)
 	;;
     *)
 	fatal " no supported linux distribution found (arch, debian, fedora, opensuse). Exiting."
