@@ -484,7 +484,7 @@ main() {
                 *kscreen* \
                 *sddm* \
                 *dolphin* \
-                | sed -E 's/-(0|1):.*$//; s/(-x11|-devel|-qt5)$//'
+                | sed -E 's/-(0|1):.*$//; s/(-x11|-devel|-qt5)$//' | sort -u
         	)
                 #"${LIST_CMD[@]}" "${pkg_names[@]}" 2>&1 |
                 #awk '!/(^$|^=|---|^Package |^Arch |^Version |^Repository |^Size |After|Installing|Updating|replacing|Transaction|Operation|Repositories|Total|KDE)/ {print $1}' | sort -u
