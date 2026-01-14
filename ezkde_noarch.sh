@@ -82,7 +82,7 @@ esac
 declare -A KDE_GROUP # map each distro to its native KDE (meta) packages
 KDE_GROUP[arch]="plasma-meta dolphin konsole pipewire"
 KDE_GROUP[debian]="plasma-workspace dolphin konsole pipewire sddm"
-KDE_GROUP[fedora]="@kde-desktop"
+KDE_GROUP[fedora]="@kde-desktop sddm"
 #KDE_GROUP[fedora]="plasma-desktop plasma-settings plasma-nm sddm-wayland-plasma kde-baseapps konsole kscreen sddm startplasma-wayland dolphin"
 KDE_GROUP[opensuse]="discover6 sddm patterns-kde-kde_plasma" #plasma6-desktop dolphin sddm sddm-config-wayland
 
