@@ -200,7 +200,7 @@ case "$DISTRO" in
 		"${PM[@]}" expac  >/dev/null 2>&1
 	;;
 	fedora)
-		dnf rm -y -q gpgme #bug fix for akonadi-server
+		dnf rm -y -q gpgme  >/dev/null 2>&1 #bug fix for akonadi-server
 	;;
 esac
 
