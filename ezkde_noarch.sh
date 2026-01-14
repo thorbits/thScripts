@@ -42,7 +42,8 @@ usage() {
 EOF
 }
 
-fatal() { # critical error message
+# critical error message
+fatal() {
     printf "\n\n [WARNING] %s\n\n" "$*" >&2
     exit 1
 }
@@ -362,7 +363,7 @@ install_packages() {
 }
 
 enable_wayland() {
-	dm_name=$(systemctl status display-manager 2>/dev/null | grep "Loaded:" | grep -oP 'loaded \K[^ ;]+' | sed 's/.*\///g' | sed 's/.service//g')
+	dm_name=$(systemctl show -p Id --value display-manager 2>/dev/null | cut -d. -f1)
     if [ -n "$dm_name" ]; then
         systemctl disable "$dm_name".service
     fi
@@ -487,10 +488,11 @@ main() {
     esac
 	
 	total=${#packages[@]}
-    
-	if (( total == 0 )); then
-    	printf " Nothing to do – All packages are up to date.\n\n"
-		remove_swap
+    if (( total == 0 )); then
+		    if [ "$USE_SWAP" = true ]; then
+				remove_swap
+			fi
+		printf " Nothing to do – All packages are up to date.\n\n"
 		enable_wayland
 	fi
 
@@ -505,7 +507,9 @@ main() {
         progress-bar "$current" "$total"
     done
 
-	remove_swap
+    if [ "$USE_SWAP" = true ]; then
+		remove_swap
+	fi
     enable_wayland
     printf "\n\n eZkde for %s installation successful.\n\n" "$DISTRO"
     deinit-term
