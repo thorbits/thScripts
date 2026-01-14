@@ -323,41 +323,42 @@ recover_rpm() {
 
 install_packages() {
     local pkg
-    local ret=0
-    local recover=""
-    local LOG_DIR="/var/log/install-scripts"
-    local TIMESTAMP=$(date +%Y%m%d)
-    mkdir -p "$LOG_DIR"
-    local SUCCESS_LOG="$LOG_DIR/$TIMESTAMP-install.log"
-    local ERROR_LOG="$LOG_DIR/$TIMESTAMP-error.log"
+    #local ret=0
+    #local recover=""
+    #local LOG_DIR="/var/log/install-scripts"
+    #local TIMESTAMP=$(date +%Y%m%d)
+    #mkdir -p "$LOG_DIR"
+    #local SUCCESS_LOG="$LOG_DIR/$TIMESTAMP-install.log"
+    #local ERROR_LOG="$LOG_DIR/$TIMESTAMP-error.log"
 
-    case "$DISTRO" in
-        arch)            recover="recover_pacman" ;;
-        debian)          recover="recover_dpkg" ;;
-        fedora|opensuse) recover="recover_rpm" ;;
-    esac
+    #case "$DISTRO" in
+    #    arch)            recover="recover_pacman" ;;
+    #    debian)          recover="recover_dpkg" ;;
+    #    fedora|opensuse) recover="recover_rpm" ;;
+    #esac
 
     for pkg in "$@"; do
         printf '\r%-*s' "$COLUMNS" " -> Now downloading and installing: $pkg"
         "${PM[@]}" "$pkg" >/dev/null 2>&1
 
-        if [ $? -ne 0 ]; then
+    #    if [ $? -ne 0 ]; then
             #if [ ! -f "$ERROR_LOG" ]; then # append to error log
-            echo "$(date +%Y%m%d-%H%M%S)-install failed: $pkg" >> "$ERROR_LOG"
+    #        echo "$(date +%Y%m%d-%H%M%S)-install failed: $pkg" >> "$ERROR_LOG"
         	#"${PM[@]}" "$pkg" 2>&1 | tee -a "$ERROR_LOG" > /dev/null
             #fi
             #printf '\r%-*s' "$COLUMNS" " -> Installation FAILED: $pkg"
-            ret=1
-        else
+    #        ret=1
+    #    else
             #if [ ! -f "$SUCCESS_LOG" ]; then
-                echo "$(date +%Y%m%d-%H%M%S)-install OK: $pkg" >> "$SUCCESS_LOG"
+    #            echo "$(date +%Y%m%d-%H%M%S)-install OK: $pkg" >> "$SUCCESS_LOG"
             #fi
-        fi
+    #    fi
     done
 
     #if [ $ret -ne 0 ]; then
     #    $recover
     #fi
+	#return $ret
 }
 
 enable_wayland() {
