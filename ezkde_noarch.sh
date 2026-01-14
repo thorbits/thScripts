@@ -365,12 +365,12 @@ install_packages() {
 enable_wayland() {
 	dm_name=$(systemctl show -p Id --value display-manager 2>/dev/null | cut -d. -f1)
     if [ -n "$dm_name" ]; then
-        systemctl disable "$dm_name".service
+        systemctl disable "$dm_name".service &>/dev/null
     fi
 	if ! command -v sddm >/dev/null 2>&1; then
 		fatal " 'sddm' binary not found. Please install it first."
 	else
-		systemctl enable sddm.service -f &>/dev/null
+		systemctl enable sddm.service &>/dev/null
 	fi
 	if [ $? -eq 0 ]; then
 		end_install
