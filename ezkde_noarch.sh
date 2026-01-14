@@ -229,19 +229,19 @@ printf "\n\n Preparing KDE packages for %s...\n\n" "$DISTRO"
 create_swap() {
     local swap_file="/var/tmp/ezkde_swap"
     if ! dd if=/dev/zero of="$swap_file" bs=1M count=1024 status=none 2>/dev/null; then # create 1GB file
-        fatal "cannot write to $swap_file."
+        fatal " cannot write to $swap_file."
     fi
     if ! chmod 600 "$swap_file"; then
 		rm -f "$swap_file"
-        fatal "failed to set permissions for $swap_file."
+        fatal " failed to set permissions for $swap_file."
     fi
     if ! mkswap "$swap_file" >/dev/null 2>&1; then
 		rm -f "$swap_file"
-        fatal "failed to format $swap_file as swap."
+        fatal " failed to format $swap_file as swap."
     fi
     if ! swapon "$swap_file" -p 100 >/dev/null 2>&1; then # force the kernel to use swap file
 		rm -f "$swap_file"
-        fatal "failed to enable $swap_file."
+        fatal " failed to enable $swap_file."
     fi
     sysctl -w vm.swappiness=80 >/dev/null 2>&1 # force the system to use swap sooner
     return 0
