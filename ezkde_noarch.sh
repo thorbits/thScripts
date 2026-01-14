@@ -462,7 +462,7 @@ main() {
 			# )
 			# <<<<<<<<
             mapfile -t packages < <(
-				expac -S '%D' "${pkg_names[@]}" | tr -s ' ' '\n' | sort -u | comm -13 <(pacman -Qq | sort) - || true
+				expac -S '%D' "${pkg_names[@]}" | tr -s ' ' '\n' | sed -e 's/\.so=.*$//' -e 's/=1.*$//' | sort -u | comm -13 <(pacman -Qq | sort) - || true
             )
             ;;
         debian)
