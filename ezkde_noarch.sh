@@ -366,7 +366,7 @@ disable_dms() {
             systemctl disable kdm &>/dev/null || true
             ;;
         opensuse) # use yast to set the DM to none first
-            yast --quiet --modules 'System/DisplayManager' set_display_manager none &>/dev/null
+            yast --quiet --modules 'System/DisplayManager' set_display_manager none &>/dev/null || true
             ;;
     esac
 }
@@ -375,10 +375,10 @@ enable_wayland() {
 	disable_dms
 	case "$DISTRO" in
         arch|debian|fedora)
-			systemctl enable sddm &>/dev/null
+			systemctl enable sddm &>/dev/null || true
 			;;
 		opensuse)
-			systemctl enable sddm.service -f &>/dev/null
+			systemctl enable sddm.service -f &>/dev/null || true
 			;;
 	esac
 }
