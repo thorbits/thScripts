@@ -56,7 +56,7 @@ DISTRO=$(os_release)
 
 case "$DISTRO" in
     arch)
-    UPDATE=(pacman -Syu --noconfirm)
+    UPDATE=(pacman -Sy --noconfirm)
     PM=(pacman -S --needed --noconfirm)
     LIST_CMD=(pacman -Sp --print-format '%n')
 	;;
