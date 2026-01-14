@@ -375,10 +375,10 @@ enable_wayland() {
 	if ! command -v sddm >/dev/null 2>&1; then
 		fatal " 'sddm' binary not found. Please install it first."
 	fi
-	systemctl enable sddm.service &>/dev/null
-    if [[ $? -ne 0 ]]; then
-        fatal " failed to enable SDDM."
-    fi
+	systemctl enable sddm.service &>/dev/null || fatal " failed to enable SDDM."
+    #if [[ $? -ne 0 ]]; then
+    #    fatal " failed to enable SDDM."
+    #fi
 }
 
 upd_bootloader() {
