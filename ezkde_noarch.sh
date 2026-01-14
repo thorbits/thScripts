@@ -379,9 +379,9 @@ enable_wayland() {
 
 upd_bootloader() {
     local cmd cfg
-    if cmd=$(command -v update-grub 2>/dev/null); then
+    if cmd=$(command -v update-grub 2>/dev/null); then # update-grub (debian)
         "$cmd" >/dev/null
-    elif cmd=$(command -v grub-mkconfig 2>/dev/null); then
+    elif cmd=$(command -v grub-mkconfig 2>/dev/null); then # grub-mkconfig (arch/fedora/opensuse)
         if cfg=$(grub2-editenv --boot-directory 2>/dev/null | cut -d= -f2); then
             cfg="$cfg/grub.cfg"
         else
@@ -404,6 +404,7 @@ end_install() {
             printf "\r\033[2K Reboot (r) or start KDE now (k)? [r/k]: "
         fi
 		read -n1 -s -r choice
+		
         # check if Ctrl+C
         if (( $? != 0 )); then
             exit 1
