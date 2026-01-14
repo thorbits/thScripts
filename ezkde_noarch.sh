@@ -66,7 +66,7 @@ case "$DISTRO" in
 	;;
     fedora)
     UPDATE=(dnf makecache)
-    PM=(dnf install -y --best)
+    PM=(dnf install -y)
     LIST_CMD=(dnf install --assumeno)
 	;;
     opensuse)
@@ -341,12 +341,11 @@ install_packages() {
         "${PM[@]}" "$pkg" >/dev/null 2>&1
 
         if [ $? -ne 0 ]; then
-            $recover 2>&1 # recover install    
             #if [ ! -f "$ERROR_LOG" ]; then # append to error log
             echo "$TIMESTAMP-install failed: $pkg" >> "$ERROR_LOG"
         	"${PM[@]}" "$pkg" 2>&1 | tee -a "$ERROR_LOG" > /dev/null
             #fi
-            printf '\r%-*s' "$COLUMNS" " -> Installation FAILED: $pkg"
+            #printf '\r%-*s' "$COLUMNS" " -> Installation FAILED: $pkg"
             ret=1
         else
             #if [ ! -f "$SUCCESS_LOG" ]; then
@@ -355,7 +354,9 @@ install_packages() {
         fi
     done
 
-    return $ret
+    if [ $ret -ne 0 ]; then
+        $recover
+    fi
 }
 
 disable_dms() {
