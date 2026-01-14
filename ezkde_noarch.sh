@@ -361,12 +361,14 @@ install_packages() {
 disable_dms() {
     case "$DISTRO" in
         arch|debian|fedora) # disable common display managers
-            systemctl disable gdm &>/dev/null || true
-            systemctl disable lightdm &>/dev/null || true
-            systemctl disable kdm &>/dev/null || true
+            systemctl disable gdm gdm3 lightdm lxdm xdm &>/dev/null || true
             ;;
-        opensuse) # use yast to set the DM to none first
-            yast --quiet --modules 'System/DisplayManager' set_display_manager none &>/dev/null || true
+        opensuse) # use yast to set the DM to none
+			if command -v yast2 >/dev/null 2>&1; then
+            	yast2 displaymanager set default=none &>/dev/null || true
+        	else
+            	yast --modules 'System/DisplayManager' set_display_manager none &>/dev/null || true
+			fi
             ;;
     esac
 }
