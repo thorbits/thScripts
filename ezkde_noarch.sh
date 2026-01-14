@@ -355,9 +355,9 @@ install_packages() {
         fi
     done
 
-    if [ $ret -ne 0 ]; then
-        $recover
-    fi
+    #if [ $ret -ne 0 ]; then
+    #    $recover
+    #fi
 }
 
 enable_wayland() {
