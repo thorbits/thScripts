@@ -198,10 +198,10 @@ done
 case "$DISTRO" in
     arch)
 		#"${PM[@]}" pacman-contrib  >/dev/null 2>&1 # use pactree instead of expac
-		"${PM[@]}" pacman expac  >/dev/null 2>&1
+		"${PM[@]}" expac pacman >/dev/null 2>&1 # pacman is included as expac rely on its latest version
 	;;
 	fedora)
-		dnf rm -y -q gpgme  >/dev/null 2>&1 #bug fix for akonadi-server
+		dnf rm -y -q gpgme >/dev/null 2>&1 # bug fix for akonadi-server ?
 	;;
 esac
 
