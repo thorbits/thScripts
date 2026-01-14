@@ -199,7 +199,7 @@ case "$DISTRO" in
 		#"${PM[@]}" pacman-contrib  >/dev/null 2>&1 # use pactree instead of expac
 		"${PM[@]}" expac  >/dev/null 2>&1
 	;;
-	Fedora)
+	fedora)
 		dnf rm -y -q gpgme #bug fix for akonadi-server
 	;;
 esac
