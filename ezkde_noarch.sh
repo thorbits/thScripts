@@ -66,7 +66,7 @@ case "$DISTRO" in
     LIST_CMD=(apt-get install --dry-run -qq)
 	;;
     fedora)
-    UPDATE=(dnf mc)
+    UPDATE=(dnf mc -q)
     PM=(dnf in -y)
     LIST_CMD=(dnf in --assumeno)
 	;;
