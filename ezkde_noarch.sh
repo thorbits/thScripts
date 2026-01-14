@@ -355,7 +355,6 @@ install_packages() {
             #fi
     #    fi
     done
-	printf '\r%-*s\n' "$COLUMNS" '' # clear the line
     #if [ $ret -ne 0 ]; then
     #    $recover
     #fi
@@ -514,6 +513,7 @@ main() {
 		remove_swap
 	fi
     enable_wayland
+	printf '\r%-*s\n\n' "$COLUMNS" '' # clear the line
     printf "eZkde for %s installation successful.\n\n" "$DISTRO"
 	end_install
     deinit-term
