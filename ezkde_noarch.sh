@@ -355,7 +355,7 @@ install_packages() {
             #fi
     #    fi
     done
-
+	printf '\r%-*s' "$COLUMNS" '' # clear the line
     #if [ $ret -ne 0 ]; then
     #    $recover
     #fi
@@ -363,20 +363,22 @@ install_packages() {
 }
 
 enable_wayland() {
-	dm_name=$(systemctl show -p Id --value display-manager 2>/dev/null | cut -d. -f1)
-    if [ -n "$dm_name" ]; then
-        systemctl disable "$dm_name".service &>/dev/null
+	local dm_unit status
+	dm_unit=$(systemctl show -p Id --value display-manager 2>/dev/null)
+    if [[ -n "$dm_unit" ]]; then
+        systemctl disable "$dm_unit" 2>/dev/null
+        status=$?
+        if [[ $status -ne 0 && $status -ne 5 ]]; then
+            echo "WARNING: $dm_unit (exit $status)." >&2
+        fi
     fi
 	if ! command -v sddm >/dev/null 2>&1; then
 		fatal " 'sddm' binary not found. Please install it first."
-	else
-		systemctl enable sddm.service &>/dev/null
 	fi
-	if [ $? -eq 0 ]; then
-		end_install
-	else
-    	fatal " failed to enable SDDM."
-	fi	
+	systemctl enable sddm.service &>/dev/null
+    if [[ $? -ne 0 ]]; then
+        fatal " failed to enable SDDM."
+    fi
 }
 
 upd_bootloader() {
@@ -494,6 +496,7 @@ main() {
 			fi
 		printf " Nothing to do – All packages are up to date.\n\n"
 		enable_wayland
+		end_install
 	fi
 
     # array installation loop
@@ -511,7 +514,8 @@ main() {
 		remove_swap
 	fi
     enable_wayland
-    printf "\n\n eZkde for %s installation successful.\n\n" "$DISTRO"
+    printf "eZkde for %s installation successful.\n\n" "$DISTRO"
+	end_install
     deinit-term
 }
 
