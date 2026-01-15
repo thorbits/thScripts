@@ -462,8 +462,8 @@ main() {
 			# )
 			# <<<<<<<<
             mapfile -t packages < <(
-				expac -S '%D' "${pkg_names[@]}" | tr -s ' ' '\n' | sed -e 's/\.so=.*$//' -e 's/=1.*$//' -e 's/-[0-9].*//' -e '/(libglib|libncursesw|libreadline|libudev|spectacle)/d' | sort -u | comm -13 <(pacman -Qq | sort) -  || true
-				#expac -S '%D' "${pkg_names[@]}" | tr -s ' ' '\n' | sed -e 's/\.so=.*$//' -e 's/=1.*$//' -e 's/-[0-9].*//' -e '/\blibglib\b/d' -e '/\libncursesw\b/d' -e '/\libreadline\b/d' -e '/\libudev\b/d' | sort -u | comm -13 <(pacman -Qq | sort) - || true
+				#expac -S '%D' "${pkg_names[@]}" | tr -s ' ' '\n' | sed -e 's/\.so=.*$//' -e 's/=1.*$//' -e 's/-[0-9].*//' -e '/(libglib|libncursesw|libreadline|libudev|spectacle)/d' | sort -u | comm -13 <(pacman -Qq | sort) -  || true
+				expac -S '%D' "${pkg_names[@]}" | tr -s ' ' '\n' | sed -e 's/\.so=.*$//' -e 's/=1.*$//' -e 's/-[0-9].*//' -e '/\blibglib\b/d' -e '/\blibncursesw\b/d' -e '/\blibreadline\b/d' -e '/\blibudev\b/d' -e '/\bspectacle\b/d' | sort -u | comm -13 <(pacman -Qq | sort) -
             )
             ;;
         debian)
