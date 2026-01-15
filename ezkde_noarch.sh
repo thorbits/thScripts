@@ -42,9 +42,8 @@ usage() {
 EOF
 }
 
-# critical error message
 fatal() {
-    printf "\n\n [WARNING] %s\n\n" "$*" >&2
+    printf "\n\n [WARNING] %s\n\n" "$*" >&2 # critical error message
     exit 1
 }
 
@@ -243,6 +242,7 @@ create_swap() {
     sysctl -w vm.swappiness=80 >/dev/null 2>&1 # force the system to use swap sooner
     return 0
 }
+
 remove_swap() {
     local swap_file="/var/tmp/ezkde_swap"
     if [[ -f "$swap_file" ]]; then
@@ -321,62 +321,62 @@ recover_rpm() {
 
 install_packages() {
     local pkg
-    #local ret=0
-    #local recover=""
-    #local LOG_DIR="/var/log/install-scripts"
-    #local TIMESTAMP=$(date +%Y%m%d)
-    #mkdir -p "$LOG_DIR"
-    #local SUCCESS_LOG="$LOG_DIR/$TIMESTAMP-install.log"
-    #local ERROR_LOG="$LOG_DIR/$TIMESTAMP-error.log"
+#    local ret=0
+#    local recover=""
+#    #local LOG_DIR="/var/log/install-scripts"
+#    #local TIMESTAMP=$(date +%Y%m%d)
+#    mkdir -p "$LOG_DIR"
+#    local SUCCESS_LOG="$LOG_DIR/$TIMESTAMP-install.log"
+#    local ERROR_LOG="$LOG_DIR/$TIMESTAMP-error.log"
 
-    #case "$DISTRO" in
-    #    arch)            recover="recover_pacman" ;;
-    #    debian)          recover="recover_dpkg" ;;
-    #    fedora|opensuse) recover="recover_rpm" ;;
-    #esac
+#    case "$DISTRO" in
+#        arch)            recover="recover_pacman" ;;
+#        debian)          recover="recover_dpkg" ;;
+#        fedora|opensuse) recover="recover_rpm" ;;
+#    esac
 
     for pkg in "$@"; do
         printf '\r%-*s' "$COLUMNS" " -> Now downloading and installing: $pkg"
         "${PM[@]}" "$pkg" >/dev/null 2>&1
 
-    #    if [ $? -ne 0 ]; then
-            #if [ ! -f "$ERROR_LOG" ]; then # append to error log
-    #        echo "$(date +%Y%m%d-%H%M%S)-install failed: $pkg" >> "$ERROR_LOG"
-        	#"${PM[@]}" "$pkg" 2>&1 | tee -a "$ERROR_LOG" > /dev/null
-            #fi
-            #printf '\r%-*s' "$COLUMNS" " -> Installation FAILED: $pkg"
-    #        ret=1
-    #    else
-            #if [ ! -f "$SUCCESS_LOG" ]; then
-    #            echo "$(date +%Y%m%d-%H%M%S)-install OK: $pkg" >> "$SUCCESS_LOG"
-            #fi
-    #    fi
+#        if [ $? -ne 0 ]; then
+#            if [ ! -f "$ERROR_LOG" ]; then # append to error log
+#            echo "$(date +%Y%m%d-%H%M%S)-install failed: $pkg" >> "$ERROR_LOG"
+#        	"${PM[@]}" "$pkg" 2>&1 | tee -a "$ERROR_LOG" > /dev/null
+#            fi
+#            printf '\r%-*s' "$COLUMNS" " -> Installation FAILED: $pkg"
+#            ret=1
+#        else
+#            if [ ! -f "$SUCCESS_LOG" ]; then
+#                echo "$(date +%Y%m%d-%H%M%S)-install OK: $pkg" >> "$SUCCESS_LOG"
+#            fi
+#        fi
     done
-    #if [ $ret -ne 0 ]; then
-    #    $recover
-    #fi
-	#return $ret
+#    if [ $ret -ne 0 ]; then
+#        $recover
+#    fi
+#	return $ret
 }
 
 enable_wayland() {
-	local dm_unit
-	dm_unit=$(systemctl show -p Id --value display-manager 2>/dev/null)
+#	local dm_unit
+#	dm_unit=$(systemctl show -p Id --value display-manager 2>/dev/null)
     # no real DM is configured (server), just enable sddm
-	if [[ "$dm_unit" == "display-manager.service" ]]; then
-    	if command -v sddm >/dev/null 2>&1; then
+#	if [[ "$dm_unit" == "display-manager.service" ]]; then
+#   	if command -v sddm >/dev/null 2>&1; then
         	enable sddm.service >/dev/null 2>&1
-    	else
-        	fatal " sddm binary not found. Please install it first."
-    	fi
+#    	else
+#        	fatal " sddm binary not found. Please install it first."
+#    	fi
 	# a specific DM unit is present
-	elif [[ -n "$dm_unit" ]]; then
-    	if command -v sddm >/dev/null 2>&1; then
-        	disable "$dm_unit"
-        	enable sddm.service >/dev/null 2>&1
-    	else
-        	fatal " sddm binary not found. Please install it first."
-    	fi
-	fi
+#	elif [[ -n "$dm_unit" ]]; then
+#    	if command -v sddm >/dev/null 2>&1; then
+#        	disable "$dm_unit"
+#        	enable sddm.service >/dev/null 2>&1
+#    	else
+#        	fatal " sddm binary not found. Please install it first."
+#    	fi
+#	fi
 }
 
 upd_bootloader() {
@@ -478,8 +478,8 @@ main() {
                 *dolphin* \
                 | sed -E 's/-(0|1):.*$//; s/(-x11|-devel|-qt5)$//' | sort -u
         	)
-                #"${LIST_CMD[@]}" "${pkg_names[@]}" 2>&1 |
-                #awk '!/(^$|^=|---|^Package |^Arch |^Version |^Repository |^Size |After|Installing|Updating|replacing|Transaction|Operation|Repositories|Total|KDE)/ {print $1}' | sort -u
+#                "${LIST_CMD[@]}" "${pkg_names[@]}" 2>&1 |
+#                awk '!/(^$|^=|---|^Package |^Arch |^Version |^Repository |^Size |After|Installing|Updating|replacing|Transaction|Operation|Repositories|Total|KDE)/ {print $1}' | sort -u
             ;;
         opensuse)
             mapfile -t packages < <(
@@ -510,9 +510,9 @@ main() {
         progress-bar "$current" "$total"
     done
 
-    #if [ "$USE_SWAP" = true ]; then
-	#	remove_swap
-	#fi
+#   if [ "$USE_SWAP" = true ]; then
+#		remove_swap
+#	fi
     enable_wayland
 	printf '\r%-*s\n\n' "$COLUMNS" '' # clear the line
     printf "eZkde for %s installation successful.\n\n" "$DISTRO"
@@ -520,5 +520,4 @@ main() {
     deinit-term
 }
 
-# run only when executed, not sourced
-[[ ${BASH_SOURCE[0]} == "$0" ]] && main "$@"
+[[ ${BASH_SOURCE[0]} == "$0" ]] && main "$@" # run only when executed, not sourced
