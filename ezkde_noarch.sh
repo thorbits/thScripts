@@ -338,7 +338,8 @@ install_packages() {
     for pkg in "$@"; do
         printf '\r%-*s' "$COLUMNS" " -> Now downloading and installing: $pkg"
         "${PM[@]}" "$pkg" >/dev/null 2>&1
-
+	done
+}
 #        if [ $? -ne 0 ]; then
 #            if [ ! -f "$ERROR_LOG" ]; then # append to error log
 #            echo "$(date +%Y%m%d-%H%M%S)-install failed: $pkg" >> "$ERROR_LOG"
@@ -351,12 +352,12 @@ install_packages() {
 #                echo "$(date +%Y%m%d-%H%M%S)-install OK: $pkg" >> "$SUCCESS_LOG"
 #            fi
 #        fi
-    done
+#    done
 #    if [ $ret -ne 0 ]; then
 #        $recover
 #    fi
 #	return $ret
-}
+#}
 
 #enable_wayland() {
 #	local dm_unit
@@ -395,16 +396,16 @@ upd_bootloader() {
 }
 
 end_install() {
-    if [ "$nvidia_fix" = true ]; then
-        upd_bootloader
-    fi
+#    if [ "$nvidia_fix" = true ]; then
+#        upd_bootloader
+#    fi
 
     while true; do
-        if [ "$nvidia_fix" = true ]; then
-            printf "\r\033[2K Press (r) to reboot: "
-        else
+#        if [ "$nvidia_fix" = true ]; then
+#            printf "\r\033[2K Press (r) to reboot: "
+#        else
             printf "\r\033[2K Reboot (r) or start KDE now (k)? [r/k]: "
-        fi
+#        fi
 		read -n1 -s -r choice
 		
         # check if Ctrl+C
