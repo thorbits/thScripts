@@ -72,7 +72,7 @@ case "$DISTRO" in
     opensuse)
     UPDATE=(zypper ref)
     PM=(zypper install -y)
-    LIST_CMD=(zypper install -y --dry-run)
+    LIST_CMD=(zypper in -y -D)
 	;;
     *)
 	fatal " no supported linux distribution found (arch, debian, fedora, opensuse). Exiting."
@@ -82,9 +82,10 @@ esac
 declare -A KDE_GROUP # map each distro to its native KDE (meta) packages
 KDE_GROUP[arch]="plasma-meta dolphin konsole"
 KDE_GROUP[debian]="plasma-workspace dolphin konsole pipewire sddm"
-KDE_GROUP[fedora]="@kde-desktop sddm gpgme"
+KDE_GROUP[fedora]="@kde-desktop sddm gpgme" # bug: gpgme required ?
+KDE_GROUP[fedora]="patterns-kde-kde_plasma konsole dolphin pipewire sddm"
 #KDE_GROUP[fedora]="plasma-desktop plasma-settings plasma-nm sddm-wayland-plasma kde-baseapps konsole kscreen sddm startplasma-wayland dolphin discover"
-KDE_GROUP[opensuse]="discover6 sddm patterns-kde-kde_plasma" #plasma6-desktop dolphin sddm sddm-config-wayland
+#KDE_GROUP[opensuse]="discover6 sddm patterns-kde-kde_plasma" #plasma6-desktop dolphin sddm sddm-config-wayland
 
 # intro, DISTRO and UPDATE are set
 clear
@@ -359,26 +360,26 @@ install_packages() {
 #	return $ret
 #}
 
-#enable_wayland() {
-#	local dm_unit
-#	dm_unit=$(systemctl show -p Id --value display-manager 2>/dev/null)
-    # no real DM is configured (server), just enable sddm
-#	if [[ "$dm_unit" == "display-manager.service" ]]; then
-#   	if command -v sddm >/dev/null 2>&1; then
-#       	enable sddm.service >/dev/null 2>&1
-#    	else
-#        	fatal " sddm binary not found. Please install it first."
-#    	fi
+enable_wayland() {
+	local dm_unit
+	dm_unit=$(systemctl show -p Id --value display-manager 2>/dev/null)
+	# no real DM is configured (server), just enable sddm
+	if [[ "$dm_unit" == "display-manager.service" ]]; then
+   	if command -v sddm >/dev/null 2>&1; then
+       	systemctl enable sddm.service >/dev/null 2>&1
+    	else
+        	fatal " sddm binary not found. Please install it first."
+    	fi
 	# a specific DM unit is present
-#	elif [[ -n "$dm_unit" ]]; then
-#    	if command -v sddm >/dev/null 2>&1; then
-#        	disable "$dm_unit"
-#        	enable sddm.service >/dev/null 2>&1
-#    	else
-#        	fatal " sddm binary not found. Please install it first."
-#    	fi
-#	fi
-#}
+	elif [[ -n "$dm_unit" ]]; then
+    	if command -v sddm >/dev/null 2>&1; then
+        	systemctl disable "$dm_unit"
+        	systemctl enable sddm.service >/dev/null 2>&1
+    	else
+        	fatal " sddm binary not found. Please install it first."
+    	fi
+	fi
+}
 
 upd_bootloader() {
     local cmd cfg
@@ -484,8 +485,9 @@ main() {
             ;;
         opensuse)
             mapfile -t packages < <(
-				zypper in -y -D patterns-kde-kde_plasma konsole dolphin pipewire sddm | head -n -18 | tail -n +9 | xargs -n 1
+				"${LIST_CMD[@]}" "${pkg_names[@]}" | head -n -18 | tail -n +9 | xargs -n 1
 			)
+#				zypper in -y -D patterns-kde-kde_plasma konsole dolphin pipewire sddm | head -n -18 | tail -n +9 | xargs -n 1
 #				zypper se --requires kde konsole dolphin pipewire sddm | sed '/pattern$/d'
 #                "${LIST_CMD[@]}" "${pkg_names[@]}" 2>&1 |
 #                awk '/new/ {for(i=1;i<=NF;i++) if ($i ~ /^[a-zA-Z0-9.-]+$/) print $i}' | grep -v "Mozilla" | grep -v "vlc" | grep -v "x11" | grep -v "xorg" | head -n -5 
@@ -498,7 +500,8 @@ main() {
 				remove_swap
 			fi
 		printf " Nothing to do – All packages are up to date.\n\n"
-		enable_wayland
+		systemctl enable sddm.service >/dev/null 2>&1
+#		enable_wayland
 		end_install
 	fi
 
@@ -518,8 +521,8 @@ main() {
 #	fi
 
 #	enable_wayland
-	enable sddm.service >/dev/null 2>&1
-#	printf '\r%-*s\n\n' "$COLUMNS" '' # clear the line
+	systemctl enable sddm.service >/dev/null 2>&1
+	printf '\r%-*s\n\n' "$COLUMNS" '' # clear the line
     printf "eZkde for %s installation successful.\n\n" "$DISTRO"
 	end_install
     deinit-term
