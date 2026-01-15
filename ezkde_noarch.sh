@@ -429,7 +429,7 @@ main() {
             e) EMPTY_CHAR=$OPTARG;;
 			s) USE_SWAP=true ;;
 			h) usage; exit 0 ;;
-            \?) echo "Unknown option: -$OPTARG" >&2; usage; exit 1 ;;
+#            \?) echo "Unknown option: -$OPTARG" >&2; usage; exit 1 ;;
         esac
     done
 
