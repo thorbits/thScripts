@@ -376,7 +376,7 @@ enable_wayland() {
 
     # handle specific display managers
     elif [[ -n "$dm_unit" ]]; then
-        systemctl disable "$dm_unit"
+        systemctl disable "$dm_unit" >/dev/null 2>&1
         systemctl enable sddm.service >/dev/null 2>&1
     fi
 }
