@@ -196,10 +196,6 @@ done
 
 "${UPDATE[@]}" >/dev/null 2>&1 || fatal " no internet connection detected. Exiting."
 #case "$DISTRO" in
-#    arch)
-#		#"${PM[@]}" pacman-contrib  >/dev/null 2>&1 # use pactree instead of expac
-#		"${PM[@]}" expac pacman >/dev/null 2>&1 # pacman is included as expac rely on its latest version
-#	;;
 #	fedora)
 #		#dnf rm -y -q gpgme >/dev/null 2>&1 # bug fix for akonadi-server ?
 #		#dnf in -yq dnf-plugins-core >/dev/null 2>&1
@@ -455,18 +451,10 @@ main() {
 
     case "$DISTRO" in
         arch)
-			# use pactree instead of expac >>>>>>>>
-			# all_dep=$(pactree -l -s plasma-meta | sort -u && pactree -l -s dolphin | sort -u && pactree -l -s konsole | sort -u)
-			# mapfile -t packages < <(
-			# echo "$all_dep" | sort -u | comm -13 <(pacman -Qq) -
-			# )
-			# <<<<<<<<
             mapfile -t packages < <(
 				"${LIST_CMD[@]}" "${pkg_names[@]}"
 			)
-				#expac -S '%D' "${pkg_names[@]}" | tr -s ' ' '\n' | sed -e 's/\.so=.*$//' -e 's/=1.*$//' -e 's/-[0-9].*//' -e '/(libglib|libncursesw|libreadline|libsystemd|libudev|spectacle|sh|xdg-desktop-portal-kde)/d' | sort -u | comm -13 <(pacman -Qq | sort) -  || true
-				#expac -S '%D' "${pkg_names[@]}" | tr -s ' ' '\n' | sed -e 's/\.so=.*$//' -e 's/=1.*$//' -e 's/-[0-9].*//' -e '/\blibglib\b/d' -e '/\blibncursesw\b/d' -e '/\blibreadline\b/d' -e '/\blibsystemd\b/d' -e '/\blibudev\b/d' -e '/\bspectacle\b/d' -e '/\bsh\b/d' -e '/\bxdg-desktop-portal-kde\b/d' | sort -u | comm -13 <(pacman -Qq | sort) -
-            ;;
+			;;
         debian)
             # inherit the current locale for install
             current_locale=${LC_ALL:-${LANG:-C.UTF-8}}
@@ -522,9 +510,9 @@ main() {
         progress-bar "$current" "$total"
     done
 
-    if [ "$USE_SWAP" = true ]; then
-		remove_swap
-	fi
+    #if [ "$USE_SWAP" = true ]; then
+	#	remove_swap
+	#fi
     enable_wayland
 	printf '\r%-*s\n\n' "$COLUMNS" '' # clear the line
     printf "eZkde for %s installation successful.\n\n" "$DISTRO"
