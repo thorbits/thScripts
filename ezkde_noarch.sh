@@ -361,24 +361,22 @@ install_packages() {
 #}
 
 enable_wayland() {
-	local dm_unit
-	dm_unit=$(systemctl show -p Id --value display-manager 2>/dev/null)
-	# no real DM is configured (server), just enable sddm
-	if [[ "$dm_unit" == "display-manager.service" ]]; then
-   	if command -v sddm >/dev/null 2>&1; then
-       	systemctl enable sddm.service >/dev/null 2>&1
-    	else
-        	fatal " sddm binary not found. Please install it first."
-    	fi
-	# a specific DM unit is present
-	elif [[ -n "$dm_unit" ]]; then
-    	if command -v sddm >/dev/null 2>&1; then
-        	systemctl disable "$dm_unit"
-        	systemctl enable sddm.service >/dev/null 2>&1
-    	else
-        	fatal " sddm binary not found. Please install it first."
-    	fi
-	fi
+    if ! command -v sddm >/dev/null 2>&1; then
+        fatal " sddm binary not found. Please install it first."
+    fi
+
+    local dm_unit
+    dm_unit=$(systemctl show -p Id --value display-manager 2>/dev/null)
+
+    # handle generic or legacy display managers
+    if [[ "$dm_unit" == "display-manager.service" ]] || [[ "$dm_unit" == "display-manager-legacy.service" ]]; then
+        systemctl enable sddm.service >/dev/null 2>&1
+
+    # handle specific display managers
+    elif [[ -n "$dm_unit" ]]; then
+        systemctl disable "$dm_unit"
+        systemctl enable sddm.service >/dev/null 2>&1
+    fi
 }
 
 upd_bootloader() {
@@ -520,9 +518,9 @@ main() {
 #		remove_swap
 #	fi
 
-#	enable_wayland
-	systemctl enable sddm.service >/dev/null 2>&1
-	printf '\r%-*s\n\n' "$COLUMNS" '' # clear the line
+	enable_wayland
+#	systemctl enable sddm.service >/dev/null 2>&1
+	printf '\r%-*s\n\n' "$COLUMNS" '' # clear the installation line
     printf "eZkde for %s installation successful.\n\n" "$DISTRO"
 	end_install
     deinit-term
