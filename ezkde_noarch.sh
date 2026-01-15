@@ -483,7 +483,7 @@ main() {
             ;;
         opensuse)
             mapfile -t packages < <(
-				zypper in -y -D konsole dolphin pipewire sddm | head -n -18 | tail -n +9 | xargs -n 1
+				zypper in -y -D patterns-kde-kde_plasma konsole dolphin pipewire sddm | head -n -18 | tail -n +9 | xargs -n 1
 			)
 #				zypper se --requires kde konsole dolphin pipewire sddm | sed '/pattern$/d'
 #                "${LIST_CMD[@]}" "${pkg_names[@]}" 2>&1 |
