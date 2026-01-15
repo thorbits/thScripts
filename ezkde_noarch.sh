@@ -519,7 +519,7 @@ main() {
 
 #	enable_wayland
 	enable sddm.service >/dev/null 2>&1
-	printf '\r%-*s\n\n' "$COLUMNS" '' # clear the line
+#	printf '\r%-*s\n\n' "$COLUMNS" '' # clear the line
     printf "eZkde for %s installation successful.\n\n" "$DISTRO"
 	end_install
     deinit-term
