@@ -500,8 +500,8 @@ main() {
 				remove_swap
 			fi
 		printf " Nothing to do – All packages are up to date.\n\n"
-		systemctl enable sddm.service >/dev/null 2>&1
-#		enable_wayland
+#		systemctl enable sddm.service >/dev/null 2>&1
+		enable_wayland
 		end_install
 	fi
 
