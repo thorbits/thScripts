@@ -364,7 +364,7 @@ enable_wayland() {
     # no real DM is configured (server), just enable sddm
 #	if [[ "$dm_unit" == "display-manager.service" ]]; then
 #   	if command -v sddm >/dev/null 2>&1; then
-        	enable sddm.service >/dev/null 2>&1
+#       	enable sddm.service >/dev/null 2>&1
 #    	else
 #        	fatal " sddm binary not found. Please install it first."
 #    	fi
@@ -510,10 +510,12 @@ main() {
         progress-bar "$current" "$total"
     done
 
-#   if [ "$USE_SWAP" = true ]; then
+#	if [ "$USE_SWAP" = true ]; then
 #		remove_swap
 #	fi
-    enable_wayland
+
+#	enable_wayland
+	enable sddm.service >/dev/null 2>&1
 	printf '\r%-*s\n\n' "$COLUMNS" '' # clear the line
     printf "eZkde for %s installation successful.\n\n" "$DISTRO"
 	end_install
