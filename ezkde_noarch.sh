@@ -483,8 +483,8 @@ main() {
             ;;
         opensuse)
             mapfile -t packages < <(
-				zypper in -y -D konsole dolphin pipewire sddm | head -n -19 | tail -n +9 
-            )
+				zypper in -y -D konsole dolphin pipewire sddm | head -n -18 | tail -n +9 | xargs -n 1
+			)
 #				zypper se --requires kde konsole dolphin pipewire sddm | sed '/pattern$/d'
 #                "${LIST_CMD[@]}" "${pkg_names[@]}" 2>&1 |
 #                awk '/new/ {for(i=1;i<=NF;i++) if ($i ~ /^[a-zA-Z0-9.-]+$/) print $i}' | grep -v "Mozilla" | grep -v "vlc" | grep -v "x11" | grep -v "xorg" | head -n -5 
