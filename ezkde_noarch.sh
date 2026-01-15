@@ -81,7 +81,7 @@ case "$DISTRO" in
 esac
 
 declare -A KDE_GROUP # map each distro to its native KDE (meta) packages
-KDE_GROUP[arch]="plasma-meta dolphin konsole pipewire"
+KDE_GROUP[arch]="plasma-meta dolphin konsole"
 KDE_GROUP[debian]="plasma-workspace dolphin konsole pipewire sddm"
 KDE_GROUP[fedora]="@kde-desktop sddm gpgme"
 #KDE_GROUP[fedora]="plasma-desktop plasma-settings plasma-nm sddm-wayland-plasma kde-baseapps konsole kscreen sddm startplasma-wayland dolphin discover"
@@ -463,9 +463,9 @@ main() {
 			# <<<<<<<<
             mapfile -t packages < <(
 				"${LIST_CMD[@]}" "${pkg_names[@]}"
+			)
 				#expac -S '%D' "${pkg_names[@]}" | tr -s ' ' '\n' | sed -e 's/\.so=.*$//' -e 's/=1.*$//' -e 's/-[0-9].*//' -e '/(libglib|libncursesw|libreadline|libsystemd|libudev|spectacle|sh|xdg-desktop-portal-kde)/d' | sort -u | comm -13 <(pacman -Qq | sort) -  || true
 				#expac -S '%D' "${pkg_names[@]}" | tr -s ' ' '\n' | sed -e 's/\.so=.*$//' -e 's/=1.*$//' -e 's/-[0-9].*//' -e '/\blibglib\b/d' -e '/\blibncursesw\b/d' -e '/\blibreadline\b/d' -e '/\blibsystemd\b/d' -e '/\blibudev\b/d' -e '/\bspectacle\b/d' -e '/\bsh\b/d' -e '/\bxdg-desktop-portal-kde\b/d' | sort -u | comm -13 <(pacman -Qq | sort) -
-            )
             ;;
         debian)
             # inherit the current locale for install
