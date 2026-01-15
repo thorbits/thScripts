@@ -358,7 +358,7 @@ install_packages() {
 #	return $ret
 }
 
-enable_wayland() {
+#enable_wayland() {
 #	local dm_unit
 #	dm_unit=$(systemctl show -p Id --value display-manager 2>/dev/null)
     # no real DM is configured (server), just enable sddm
@@ -377,7 +377,7 @@ enable_wayland() {
 #        	fatal " sddm binary not found. Please install it first."
 #    	fi
 #	fi
-}
+#}
 
 upd_bootloader() {
     local cmd cfg
