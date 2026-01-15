@@ -462,7 +462,7 @@ main() {
 			# )
 			# <<<<<<<<
             mapfile -t packages < <(
-				expac -S '%D' "${pkg_names[@]}" | tr -s ' ' '\n' | sed -e 's/\.so=.*$//' -e 's/=1.*$//' -e 's/-[0-9].*//' -e '/(blibglib|libncursesw|libreadline|libudev|spectacle)/d' | sort -u | comm -13 <(pacman -Qq | sort) -
+				expac -S '%D' "${pkg_names[@]}" | tr -s ' ' '\n' | sed -e 's/\.so=.*$//' -e 's/=1.*$//' -e 's/-[0-9].*//' -e '/(libglib|libncursesw|libreadline|libudev|spectacle)/d' | sort -u | comm -13 <(pacman -Qq | sort) -
 				#expac -S '%D' "${pkg_names[@]}" | tr -s ' ' '\n' | sed -e 's/\.so=.*$//' -e 's/=1.*$//' -e 's/-[0-9].*//' -e '/\blibglib\b/d' -e '/\libncursesw\b/d' -e '/\libreadline\b/d' -e '/\libudev\b/d' | sort -u | comm -13 <(pacman -Qq | sort) - || true
             )
             ;;
