@@ -179,7 +179,7 @@ ART
         ;;
 esac
 
-printf "\n\n #%s#\n\n" "$(printf '%*s' "$(( $(tput cols) - 3 ))" '' | tr ' ' '-')"
+printf "\n\n #%s#\n\n" "$(printf '%*s' "$(( $(tput cols) - 4 ))" '' | tr ' ' '-')"
 printf " Welcome %s, to eZkde for %s.\n\n The latest version of KDE 6.5.x (Wayland session) will be installed with audio support (Pipewire) SDDM and a minimum of utilities.\n\n" "$USER" "$DISTRO"
 
 while true; do
