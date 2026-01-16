@@ -517,7 +517,7 @@ main() {
 	fi
 
 	enable_wayland
-	printf '\r%-*s\n' "$COLUMNS" '' # clear the installation line
+	printf '\r%-*s' "$COLUMNS" '' # clear the installation line
     printf " eZkde for %s installation successful.\n\n" "$DISTRO"
 	end_install
     deinit-term
