@@ -463,7 +463,7 @@ main() {
             export DEBIAN_FRONTEND=noninteractive
             
             mapfile -t packages < <(
-                "${LIST_CMD[@]}" "${pkg_names[@]}" | awk '/^Inst / {print $2}' | 
+                "${LIST_CMD[@]}" "${pkg_names[@]}" | awk '/^Inst / {print $2}'
             )
             ;;
         fedora)
