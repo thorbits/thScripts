@@ -66,8 +66,8 @@ case "$DISTRO" in
 	;;
     fedora)
     UPDATE=(dnf mc -q)
-    PM=(dnf install -y)
-    LIST_CMD=(dnf install --assumeno)
+    PM=(dnf -q install --skip-broken)
+    LIST_CMD=(dnf -q install --skip-broken --assumeno)
 	;;
     opensuse)
     UPDATE=(zypper ref)
