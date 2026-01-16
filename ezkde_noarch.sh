@@ -179,7 +179,7 @@ ART
         ;;
 esac
 
-printf "\n\n #%s#\n\n" "$(printf '%*s' "$(( $(tput cols) - 4 ))" '' | tr ' ' '-')"
+printf "\n\n #%s#\n\n" "$(printf '%*s' "$(( $(tput cols) - 2 ))" '' | tr ' ' '-')"
 printf " Welcome %s, to eZkde for %s.\n\n The latest version of KDE 6.5.x (Wayland session) will be installed with audio support (Pipewire) SDDM and a minimum of utilities.\n\n" "$USER" "$DISTRO"
 
 while true; do
@@ -276,7 +276,7 @@ progress-bar() {
     # calculate percentage and string length
     local perc_done=$((current * 100 / len))
     local suffix=" ($perc_done%)"
-    local length=$((COLUMNS - ${#suffix} - 4))
+    local length=$((COLUMNS - ${#suffix} - 2))
     local num_bars=$((perc_done * length / 100))
 
     # construct the bar string
@@ -517,8 +517,8 @@ main() {
 	fi
 
 	enable_wayland
-	printf '\r%-*s\n\n' "$COLUMNS" '' # clear the installation line
-    printf "eZkde for %s installation successful.\n\n" "$DISTRO"
+	printf '\r%-*s\n' "$COLUMNS" '' # clear the installation line
+    printf " eZkde for %s installation successful.\n\n" "$DISTRO"
 	end_install
     deinit-term
 }
