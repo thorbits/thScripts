@@ -83,7 +83,7 @@ declare -A KDE_GROUP # map each distro to its native KDE (meta) packages
 KDE_GROUP[arch]="plasma-meta dolphin konsole"
 KDE_GROUP[debian]="plasma-workspace dolphin konsole pipewire sddm"
 KDE_GROUP[fedora]="@kde-desktop sddm gpgme" # bug: gpgme required ?
-KDE_GROUP[fedora]="patterns-kde-kde_plasma konsole dolphin pipewire sddm"
+KDE_GROUP[opensuse]="patterns-kde-kde_plasma konsole dolphin pipewire sddm"
 #KDE_GROUP[fedora]="plasma-desktop plasma-settings plasma-nm sddm-wayland-plasma kde-baseapps konsole kscreen sddm startplasma-wayland dolphin discover"
 #KDE_GROUP[opensuse]="discover6 sddm patterns-kde-kde_plasma" #plasma6-desktop dolphin sddm sddm-config-wayland
 
@@ -179,9 +179,8 @@ ART
         ;;
 esac
 
-printf "\n\n #%s#\n\n" "$(printf '%*s' "$(( $(tput cols) - 3 ))" '' | tr ' ' '-')"
+printf "\n\n #%s#\n\n" "$(printf '%*s' "$(( $(tput cols) - 4 ))" '' | tr ' ' '-')"
 printf " Welcome %s, to eZkde for %s.\n\n The latest version of KDE 6.5.x (Wayland session) will be installed with audio support (Pipewire) SDDM and a minimum of utilities.\n\n" "$USER" "$DISTRO"
-#printf "\n\n #-------------------------------------------------#\n\n Welcome %s, to eZkde for %s.\n\n The latest version of KDE 6.5.x (Wayland session)\n will be installed with audio support (Pipewire)\n SDDM and a minimum of utilities.\n\n" "$USER" "$DISTRO"
 
 while true; do
     printf "\r\033[2K Press Enter to continue or Ctrl+C to cancel."
