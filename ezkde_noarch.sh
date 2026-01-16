@@ -82,7 +82,7 @@ esac
 declare -A KDE_GROUP # map each distro to its native KDE (meta) packages
 KDE_GROUP[arch]="plasma-meta dolphin konsole"
 KDE_GROUP[debian]="plasma-workspace dolphin konsole pipewire sddm"
-KDE_GROUP[fedora]="@kde-desktop sddm gpgme" # bug: gpgme required ?
+KDE_GROUP[fedora]="@kde-desktop"
 KDE_GROUP[opensuse]="patterns-kde-kde_plasma konsole dolphin pipewire sddm"
 #KDE_GROUP[fedora]="plasma-desktop plasma-settings plasma-nm sddm-wayland-plasma kde-baseapps konsole kscreen sddm startplasma-wayland dolphin discover"
 #KDE_GROUP[opensuse]="discover6 sddm patterns-kde-kde_plasma" #plasma6-desktop dolphin sddm sddm-config-wayland
@@ -463,21 +463,22 @@ main() {
             export DEBIAN_FRONTEND=noninteractive
             
             mapfile -t packages < <(
-                "${LIST_CMD[@]}" "${pkg_names[@]}" | awk '/^Inst / {print $2}'
+                "${LIST_CMD[@]}" "${pkg_names[@]}" | awk '/^Inst / {print $2}' | 
             )
             ;;
         fedora)
             mapfile -t packages < <(
-            dnf rq \
-                *plasma-* \
-                *kde-baseapps* \
-                *konsole* \
-                *kscreen* \
-                *sddm* \
-                *dolphin* \
-                | sed -E 's/-(0|1):.*$//; s/(-x11|-devel|-qt5)$//' | sort -u
+				"${LIST_CMD[@]}" "${pkg_names[@]}" | grep "^ " | awk '{print $1}' | head -n -4 | sort -u
         	)
-#                "${LIST_CMD[@]}" "${pkg_names[@]}" 2>&1 |
+#            	dnf rq \
+#				*plasma-* \
+#				*kde-baseapps* \
+#				*konsole* \
+#				*kscreen* \
+#				*sddm* \
+#				*dolphin* \
+#				| sed -E 's/-(0|1):.*$//; s/(-x11|-devel|-qt5)$//' | sort -u
+
 #                awk '!/(^$|^=|---|^Package |^Arch |^Version |^Repository |^Size |After|Installing|Updating|replacing|Transaction|Operation|Repositories|Total|KDE)/ {print $1}' | sort -u
             ;;
         opensuse)
