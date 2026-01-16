@@ -72,7 +72,7 @@ case "$DISTRO" in
     opensuse)
     UPDATE=(zypper ref)
     PM=(zypper install -y)
-    LIST_CMD=(zypper in -y -D)
+    LIST_CMD=(zypper in -y -D --force-resolution)
 	;;
     *)
 	fatal " no supported linux distribution found (arch, debian, fedora, opensuse). Exiting."
