@@ -185,12 +185,10 @@ printf " Welcome %s, to eZkde for %s.\n\n The latest version of KDE 6.5.x (Wayla
 while true; do
     printf "\r\033[2K Press Enter to continue or Ctrl+C to cancel."
     read -n1 -s -r
-    # check if Ctrl+C
-    if (( $? != 0 )); then
+    if (( $? != 0 )); then # check if Ctrl+C
         exit 1
     fi
-    # check if Enter (empty input)
-    if [[ -z "$REPLY" ]]; then
+    if [[ -z "$REPLY" ]]; then  # check if Enter (empty input)
         break
     fi
 done
@@ -203,8 +201,7 @@ done
 #	;;
 #esac
 
-# fix wayland on nvidia gpu
-nvidia_fix=false
+nvidia_fix=false # fix wayland on nvidia gpu
 nvidia_warning() {
 	    if lspci | grep -i nvidia >/dev/null; then
         printf "\n\n WARNING: NVIDIA GPU Detected. Checking for NVIDIA Wayland fix...\n\n"
@@ -231,15 +228,15 @@ create_swap() {
     fi
     if ! chmod 600 "$swap_file"; then
 		rm -f "$swap_file"
-        fatal " failed to set permissions for $swap_file."
+        fatal " failed to set permissions for $swap_file. Exiting"
     fi
     if ! mkswap "$swap_file" >/dev/null 2>&1; then
 		rm -f "$swap_file"
-        fatal " failed to format $swap_file as swap."
+        fatal " failed to format $swap_file as swap. Exiting"
     fi
     if ! swapon "$swap_file" -p 100 >/dev/null 2>&1; then # force the kernel to use swap file
 		rm -f "$swap_file"
-        fatal " failed to enable $swap_file."
+        fatal " failed to enable $swap_file. Exiting"
     fi
     sysctl -w vm.swappiness=80 >/dev/null 2>&1 # force the system to use swap sooner
     return 0
@@ -272,8 +269,7 @@ deinit-term() {
 
 progress-bar() {
     local current=$1 len=$2
-    # avoid division by zero
-    if (( len == 0 )); then
+    if (( len == 0 )); then  # avoid division by zero
         fatal " ."
         exit 1
     fi
@@ -363,7 +359,7 @@ install_packages() {
 
 enable_wayland() {
     if ! command -v sddm >/dev/null 2>&1; then
-        fatal " sddm binary not found. Please install it first."
+        fatal " sddm binary not found. Please install it first. Exiting"
     fi
 
     local dm_unit
@@ -382,16 +378,19 @@ enable_wayland() {
 
 upd_bootloader() {
     local cmd cfg
-    if cmd=$(command -v update-grub 2>/dev/null); then # update-grub (debian)
-        "$cmd" >/dev/null
-    elif cmd=$(command -v grub-mkconfig 2>/dev/null); then # grub-mkconfig (arch/fedora/opensuse)
-        if cfg=$(grub2-editenv --boot-directory 2>/dev/null | cut -d= -f2); then
-            cfg="$cfg/grub.cfg"
-        else
+    if cmd=$(command -v update-grub 2>/dev/null); then # debian
+        "$cmd"
+    elif cmd=$(command -v grub-mkconfig 2>/dev/null) || cmd=$(command -v grub2-mkconfig 2>/dev/null); then # arch/fedora/opensuse
+        if [[ -d /boot/grub2 ]]; then
+            cfg="/boot/grub2/grub.cfg"
+        elif [[ -d /boot/grub ]]; then
             cfg="/boot/grub/grub.cfg"
-            [[ -f /boot/grub2/grub.cfg ]] && cfg="/boot/grub2/grub.cfg"
         fi
-			"$cmd" -o "$cfg" >/dev/null
+        "$cmd" -o "$cfg" >/dev/null 2>&1
+    elif cmd=$(command -v bootctl 2>/dev/null); then # systemd-boot (arch/EFI)
+        if [[ -d /boot/loader ]]; then
+            "$cmd" update >/dev/null 2>&1
+        fi
     fi
 }
 
@@ -408,8 +407,7 @@ end_install() {
 #        fi
 		read -n1 -s -r choice
 		
-        # check if Ctrl+C
-        if (( $? != 0 )); then
+        if (( $? != 0 )); then # check if Ctrl+C
             exit 1
         fi
 
@@ -499,7 +497,6 @@ main() {
 				remove_swap
 			fi
 		printf " Nothing to do – All packages are up to date.\n\n"
-#		systemctl enable sddm.service >/dev/null 2>&1
 		enable_wayland
 		end_install
 	fi
@@ -515,12 +512,11 @@ main() {
         progress-bar "$current" "$total"
     done
 
-#	if [ "$USE_SWAP" = true ]; then
-#		remove_swap
-#	fi
+	if [ "$USE_SWAP" = true ]; then
+		remove_swap
+	fi
 
 	enable_wayland
-#	systemctl enable sddm.service >/dev/null 2>&1
 	printf '\r%-*s\n\n' "$COLUMNS" '' # clear the installation line
     printf "eZkde for %s installation successful.\n\n" "$DISTRO"
 	end_install
