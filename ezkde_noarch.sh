@@ -43,7 +43,7 @@ EOF
 }
 
 fatal() {
-    printf "\n\n [WARNING] %s\n\n" "$*" >&2 # critical error message
+    printf "\n [WARNING] %s Exiting...\n\n" "$*" >&2 # critical error message
     exit 1
 }
 
@@ -66,23 +66,23 @@ case "$DISTRO" in
 	;;
     fedora)
     UPDATE=(dnf mc -q)
-    PM=(dnf -yq install --skip-broken)
-    LIST_CMD=(dnf -q install --skip-broken --assumeno)
+    PM=(dnf in -yq --skip-broken)
+    LIST_CMD=(dnf in -yq --assumeno)
 	;;
     opensuse)
     UPDATE=(zypper ref)
-    PM=(zypper install -y)
+    PM=(zypper in -y)
     LIST_CMD=(zypper in -y -D --force-resolution)
 	;;
     *)
-	fatal " no supported linux distribution found (arch, debian, fedora, opensuse). Exiting."
+	fatal " no supported linux distribution found (arch, debian, fedora, opensuse)."
 	;;
 esac
 
 declare -A KDE_GROUP # map each distro to its native KDE (meta) packages
 KDE_GROUP[arch]="plasma-meta dolphin konsole"
 KDE_GROUP[debian]="plasma-workspace dolphin konsole pipewire sddm"
-KDE_GROUP[fedora]="@kde-desktop"
+KDE_GROUP[fedora]="@kde-desktop sddm"
 KDE_GROUP[opensuse]="patterns-kde-kde_plasma konsole dolphin pipewire sddm"
 #KDE_GROUP[fedora]="plasma-desktop plasma-settings plasma-nm sddm-wayland-plasma kde-baseapps konsole kscreen sddm startplasma-wayland dolphin discover"
 #KDE_GROUP[opensuse]="discover6 sddm patterns-kde-kde_plasma" #plasma6-desktop dolphin sddm sddm-config-wayland
@@ -193,7 +193,7 @@ while true; do
     fi
 done
 
-"${UPDATE[@]}" >/dev/null 2>&1 || fatal " no internet connection detected. Exiting."
+"${UPDATE[@]}" >/dev/null 2>&1 || fatal " no internet connection detected."
 #case "$DISTRO" in
 #	fedora)
 #		#dnf rm -y -q gpgme >/dev/null 2>&1 # bug fix for akonadi-server ?
@@ -228,15 +228,15 @@ create_swap() {
     fi
     if ! chmod 600 "$swap_file"; then
 		rm -f "$swap_file"
-        fatal " failed to set permissions for $swap_file. Exiting"
+        fatal " failed to set permissions for $swap_file."
     fi
     if ! mkswap "$swap_file" >/dev/null 2>&1; then
 		rm -f "$swap_file"
-        fatal " failed to format $swap_file as swap. Exiting"
+        fatal " failed to format $swap_file as swap."
     fi
     if ! swapon "$swap_file" -p 100 >/dev/null 2>&1; then # force the kernel to use swap file
 		rm -f "$swap_file"
-        fatal " failed to enable $swap_file. Exiting"
+        fatal " failed to enable $swap_file."
     fi
     sysctl -w vm.swappiness=80 >/dev/null 2>&1 # force the system to use swap sooner
     return 0
@@ -270,7 +270,7 @@ deinit-term() {
 progress-bar() {
     local current=$1 len=$2
     if (( len == 0 )); then  # avoid division by zero
-        fatal " ."
+        fatal ""
         exit 1
     fi
     # calculate percentage and string length
@@ -359,7 +359,7 @@ install_packages() {
 
 enable_wayland() {
     if ! command -v sddm >/dev/null 2>&1; then
-        fatal " sddm binary not found. Please install it first. Exiting"
+        fatal " sddm binary not found. Please install it first."
     fi
 
     local dm_unit
@@ -468,7 +468,7 @@ main() {
             ;;
         fedora)
             mapfile -t packages < <(
-				"${LIST_CMD[@]}" "${pkg_names[@]}" | grep "^ " | awk '{print $1}' | head -n -4 | sort -u
+				"${LIST_CMD[@]}" "${pkg_names[@]}" 2>&1 | grep "^ " | awk '{print $1}' | head -n -4 | sort -u
         	)
 #            	dnf rq \
 #				*plasma-* \
