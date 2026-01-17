@@ -55,7 +55,7 @@ DISTRO=$(os_release)
 
 case "$DISTRO" in
     arch)
-    UPDATE=(pacman -Sy --noconfirm)
+    UPDATE=(pacman -Sy)
     PM=(pacman -S --needed --noconfirm)
     LIST_CMD=(pacman -Sp --print-format '%n')
 	;;
@@ -357,7 +357,7 @@ install_packages() {
 #	return $ret
 #}
 
-enable_wayland() {
+enable_dm() {
     if ! command -v sddm >/dev/null 2>&1; then
         fatal " sddm binary not found. Please install it first."
     fi
@@ -368,11 +368,17 @@ enable_wayland() {
     # handle generic or legacy display managers
     if [[ "$dm_unit" == "display-manager.service" ]] || [[ "$dm_unit" == "display-manager-legacy.service" ]]; then
         systemctl enable sddm.service >/dev/null 2>&1
+        if [[ $(systemctl get-default) == "multi-user.target" ]]; then
+            systemctl set-default graphical.target 2>&1
+        fi
 
     # handle specific display managers
     elif [[ -n "$dm_unit" ]]; then
         systemctl disable "$dm_unit" >/dev/null 2>&1
         systemctl enable sddm.service >/dev/null 2>&1
+        if [[ $(systemctl get-default) == "multi-user.target" ]]; then
+            systemctl set-default graphical.target 2>&1
+        fi
     fi
 }
 
@@ -498,7 +504,7 @@ main() {
 				remove_swap
 			fi
 		printf " Nothing to do – All packages are up to date.\n\n"
-		enable_wayland
+		enable_dm
 		end_install
 	fi
 
@@ -517,7 +523,7 @@ main() {
 		remove_swap
 	fi
 
-	enable_wayland
+	enable_dm
 	printf '\r%-*s' "$COLUMNS" '' # clear the installation line
     printf " eZkde for %s installation successful.\n\n" "$DISTRO"
 	end_install
