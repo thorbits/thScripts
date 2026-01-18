@@ -208,18 +208,62 @@ done
 #	;;
 #esac
 
-nvidia_fix=false # fix wayland on nvidia gpu
+nvidia_fix=false 
+# fix wayland on nvidia gpu
+fix_nvidia_modeset() {
+    local conf_file="/etc/modprobe.d/nvidia.conf"
+    local required_line="options nvidia_drm modeset=1"
+
+    # ensure the config directory exists
+    mkdir -p "$(dirname "$conf_file")"
+    # add the configuration line if it's missing
+    if ! grep -q "$required_line" "$conf_file" 2>/dev/null; then
+        echo "$required_line" >> "$conf_file"
+    fi
+
+    # update Initramfs - required for the change to work at boot
+    case "$DISTRO" in
+        arch) # note: ensure 'nvidia' and 'nvidia_drm' are in /etc/mkinitcpio.conf MODULES array
+            if command -v mkinitcpio >/dev/null 2>&1; then
+                mkinitcpio -P >/dev/null
+            fi
+            ;;
+        debian)
+            if command -v update-initramfs >/dev/null 2>&1; then
+                update-initramfs -u -k all >/dev/null
+            fi
+            ;;
+        fedora|opensuse)
+            if command -v dracut >/dev/null 2>&1; then
+                dracut --regenerate-all --force >/dev/null
+            fi
+            ;;
+	esac
+}
+
 nvidia_warning() {
-	    if lspci | grep -i nvidia >/dev/null; then
-        printf "\n\n WARNING: NVIDIA GPU Detected. Checking for NVIDIA Wayland fix...\n\n"
-		sleep 2
-        if grep -q "nvidia-drm.modeset=1" /etc/default/grub; then
-			printf " Fix already present in GRUB config. Proceeding with KDE installation..."
-			nvidia_fix=true
-        else
-            sed -i 's/^GRUB_CMDLINE_LINUX_DEFAULT="\(.*\)"/GRUB_CMDLINE_LINUX_DEFAULT="\1 nvidia-drm.modeset=1"/' /etc/default/grub
-			printf " NVIDIA Wayland fix applied. You will need to reboot your system !\n Proceeding with KDE installation..."
-            nvidia_fix=true
+    if lspci -nnk 2>/dev/null | grep -iA3 "VGA" | grep -iq "nvidia"; then
+        printf " INFO: NVIDIA GPU detected, checking DRM modeset configuration..."
+        
+        local modeset_status="0"
+        local conf_file="/etc/modprobe.d/nvidia.conf"
+
+        # Check the current running kernel module (if loaded)
+        if [[ -f /sys/module/nvidia_drm/parameters/modeset ]]; then
+            modeset_status=$(cat /sys/module/nvidia_drm/parameters/modeset)
+        # If not loaded, check the config file
+        elif [[ -f "$conf_file" ]]; then
+            if grep -q "options nvidia_drm modeset=1" "$conf_file"; then
+                modeset_status="Y"
+            fi
+        fi
+
+        # If modeset is disabled (N), 0, or not found, run the fix
+        if [[ "$modeset_status" != "Y" && "$modeset_status" != "1" ]]; then
+            fix_nvidia_modeset
+			printf " NVIDIA Wayland fix applied. You will need to reboot your system.\n Proceeding with KDE installation..."
+		else
+			printf " $conf_file is already correct.\n Proceeding with KDE installation..."
         fi
     fi
 }
