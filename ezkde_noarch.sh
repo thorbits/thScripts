@@ -2,7 +2,14 @@
 
 #	_______
 #	\_   _/
-#	  |_|horbits 
+#	  |_|horbits presents
+#			______
+#       	|___  /
+#	_____    /  / __  __  _____  _____
+# 	|  __|  /  /  | |/ / | ___ \ |  __|
+# 	|  _|  /  /__ | | \  | |_| | |  _| 
+#	| |__ /______||_|\_\ |_____/ | |__
+#	|____|_______________________|____|
 #
 #    eZkde for Arch / Debian / Fedora / OpenSuse
 #    Automated KDE installation script
@@ -252,19 +259,19 @@ remove_swap() {
 }
 
 init-term() {
-    printf '\n' # ensure we have space for the scrollbar
-    printf '\e7' # save the cursor location
+    printf '\n'		# ensure we have space for the scrollbar
+    printf '\e7'	# save the cursor location
     printf '\e[%d;%dr' 0 "$((LINES - 1))" # set the scrollable region (margin)
-    printf '\e8' # restore the cursor location
-    printf '\e[1A' # move cursor up
+    printf '\e8'	# restore the cursor location
+    printf '\e[1A'	# move cursor up
 }
 
 deinit-term() {
-    printf '\e7' # save the cursor location
+    printf '\e7'		# save the cursor location
     printf '\e[%d;%dr' 0 "$LINES" # reset the scrollable region (margin)
     printf '\e[%d;%dH' "$LINES" 0 # move cursor to the bottom line
-    printf '\e[0K' # clear the line
-    printf '\e8' # reset the cursor location
+    printf '\e[0K'		# clear the line
+    printf '\e8'		# reset the cursor location
 }
 
 progress-bar() {
@@ -291,11 +298,11 @@ progress-bar() {
     s+=']'
     s+=$suffix
 
-    printf '\e7' # save the cursor location
+    printf '\e7'		# save the cursor location
     printf '\e[%d;%dH' "$LINES" 0 # move cursor to the bottom line
-    printf '\e[0K' # clear the line
-    printf '%s' "$s" # print the progress bar
-    printf '\e8' # restore the cursor location
+    printf '\e[0K'		# clear the line
+    printf '%s' "$s"	# print the progress bar
+    printf '\e8'		# restore the cursor location
 }
 
 recover_pacman() {
@@ -318,7 +325,18 @@ recover_rpm() {
 }
 
 install_packages() {
-    local pkg
+    (
+        saved=$(stty -g) || exit 0		# non‑TTY → just exit the sub‑shell
+        trap 'stty "$saved"' EXIT INT	# always restore when we leave
+
+		stty -echo -icanon min 0 time 0	# no keyboard interaction
+
+        for pkg in "$@"; do
+            printf '\r%-*s' "$COLUMNS" " -> Now downloading and installing: $pkg"
+            "${PM[@]}" "$pkg" >/dev/null 2>&1
+        done
+    )
+}
 #    local ret=0
 #    local recover=""
 #    #local LOG_DIR="/var/log/install-scripts"
@@ -333,11 +351,7 @@ install_packages() {
 #        fedora|opensuse) recover="recover_rpm" ;;
 #    esac
 
-    for pkg in "$@"; do
-        printf '\r%-*s' "$COLUMNS" " -> Now downloading and installing: $pkg"
-        "${PM[@]}" "$pkg" >/dev/null 2>&1
-	done
-}
+
 #        if [ $? -ne 0 ]; then
 #            if [ ! -f "$ERROR_LOG" ]; then # append to error log
 #            echo "$(date +%Y%m%d-%H%M%S)-install failed: $pkg" >> "$ERROR_LOG"
@@ -371,8 +385,7 @@ enable_dm() {
         if [[ $(systemctl get-default) == "multi-user.target" ]]; then
             systemctl set-default graphical.target 2>&1
         fi
-
-    # handle specific display managers
+	# handle specific display managers
     elif [[ -n "$dm_unit" ]]; then
         systemctl disable "$dm_unit" >/dev/null 2>&1
         systemctl enable sddm.service >/dev/null 2>&1
