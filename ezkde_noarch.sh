@@ -275,11 +275,12 @@ deinit-term() {
 }
 
 progress-bar() {
-    local current=$1 len=$2
-    if (( len == 0 )); then  # avoid division by zero
-        fatal ""
-        exit 1
-    fi
+    local current=$1 # len=$2
+#    if (( len == 0 )); then  # avoid division by zero
+#        fatal ""
+#        exit 1
+#    fi
+
     # calculate percentage and string length
     local perc_done=$((current * 100 / len))
     local suffix=" ($perc_done%)"
