@@ -13,10 +13,10 @@
 #
 #    eZkde for Arch / Debian / Fedora / OpenSuse
 #    Automated KDE installation script
-# ----------------------------------------------------------------
-#    Install latest KDE 6.5.x (Wayland session) with audio support
-#    (PipeWire) and a minimum of utilities.
-# ----------------------------------------------------------------
+#    ----------------------------------------------------------#
+#    Install the latest KDE 6.5.x / 6.6 beta (Wayland session)
+#	 along with with PipeWire audio and a minimum of utilities.
+#    ----------------------------------------------------------#
 
 if [[ "$(id -u)" -ne 0 ]]; then
     printf " This script must be run as root. Use sudo.\n"
