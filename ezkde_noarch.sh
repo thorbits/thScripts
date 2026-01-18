@@ -275,21 +275,16 @@ deinit-term() {
 }
 
 progress-bar() {
-    local current=$1 # len=$2
-#    if (( len == 0 )); then  # avoid division by zero
-#        fatal ""
-#        exit 1
-#    fi
-
+    local current=$1 len=$2
     # calculate percentage and string length
     local perc_done=$((current * 100 / len))
     local suffix=" ($perc_done%)"
     local length=$((COLUMNS - ${#suffix} - 4))
     local num_bars=$((perc_done * length / 100))
-
     # construct the bar string
     local i
     local s='['
+	
     for ((i = 0; i < num_bars; i++)); do
         s+=$BAR_CHAR
     done
