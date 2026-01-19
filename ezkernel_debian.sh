@@ -12,7 +12,7 @@
 # ----------------------------------------------------------------#
 
 if [[ "$(id -u)" -ne 0 ]]; then
-    printf " This script must be run as root. Use sudo.\n"
+    printf "\n This script must be run as root. Use sudo.\n"
     exit 1
 fi
 
@@ -29,11 +29,17 @@ DISTRO=$(os_release)
 
 case "$DISTRO" in
     debian)
-    UPDATE=(apt-get update -qq)
-    PM=(apt-get install -y --no-install-recommends)
-    LIST_CMD=(apt-get install --dry-run -qq)
+    	UPDATE=(apt-get update -qq)
+    	PM=(apt-get install -y --no-install-recommends)
+    	LIST_CMD=(apt-get install --dry-run -qq)
 	;;
+    *)
+        fatal " unsupported distribution: $DISTRO."
+    ;;
 esac
+
+declare -A KRNL_GROUP # map each distro to its required compilation dependencies
+KRNL_GROUP[debian]="build-essential libdw-dev libelf-dev zlib1g-dev libncurses-dev libssl-dev bison bc flex rsync debhelper python3 wget"
 
 clear
 echo
@@ -147,6 +153,7 @@ make menuconfig && (
 } && reboot_system || (
     fatal " WARNING: compilation or installation error. Exiting.\n\n"
 )
+
 
 
 
