@@ -389,6 +389,7 @@ install_packages() {
         done
     )
 }
+
 #    local ret=0
 #    local recover=""
 #    #local LOG_DIR="/var/log/install-scripts"
@@ -428,16 +429,21 @@ enable_dm() {
         fatal " sddm binary not found. Please install it first."
     fi
     local dm_unit
-    # openSUSE has no display-manager.service symlink, pick the real unit
     dm_unit=$(systemctl list-unit-files --state=enabled \
               | awk '$1 ~ /display-manager/ {print $1; exit}')
     # handle generic or legacy display managers
-    if [[ "$dm_unit" == "display-manager.service" ]] || [[ "$dm_unit" == "display-manager-legacy.service" ]]; then
+    if [[ "$dm_unit" == "display-manager.service" ]]; then
         systemctl enable sddm.service >/dev/null 2>&1
         if [[ $(systemctl get-default) == "multi-user.target" ]]; then
             systemctl set-default graphical.target >/dev/null 2>&1
         fi
-# handle specific display managers
+    elif [[ "$dm_unit" == "display-manager-legacy.service" ]]; then
+        systemctl disable "$dm_unit" >/dev/null 2>&1
+        systemctl enable sddm.service >/dev/null 2>&1
+        if [[ $(systemctl get-default) == "multi-user.target" ]]; then
+            systemctl set-default graphical.target >/dev/null 2>&1
+        fi
+    # handle specific display managers
     elif [[ -n "$dm_unit" ]]; then
         systemctl disable "$dm_unit" >/dev/null 2>&1
         systemctl enable sddm.service >/dev/null 2>&1
@@ -447,23 +453,23 @@ enable_dm() {
     fi
 }
 
-upd_bootloader() {
-    local cmd cfg
-    if cmd=$(command -v update-grub 2>/dev/null); then # debian
-        "$cmd"
-    elif cmd=$(command -v grub-mkconfig 2>/dev/null) || cmd=$(command -v grub2-mkconfig 2>/dev/null); then # arch/fedora/opensuse
-        if [[ -d /boot/grub2 ]]; then
-            cfg="/boot/grub2/grub.cfg"
-        elif [[ -d /boot/grub ]]; then
-            cfg="/boot/grub/grub.cfg"
-        fi
-        "$cmd" -o "$cfg" >/dev/null 2>&1
-    elif cmd=$(command -v bootctl 2>/dev/null); then # systemd-boot (arch/EFI)
-        if [[ -d /boot/loader ]]; then
-            "$cmd" update >/dev/null 2>&1
-        fi
-    fi
-}
+#upd_bootloader() {
+#    local cmd cfg
+#    if cmd=$(command -v update-grub 2>/dev/null); then # debian
+#        "$cmd"
+#    elif cmd=$(command -v grub-mkconfig 2>/dev/null) || cmd=$(command -v grub2-mkconfig 2>/dev/null); then # arch/fedora/opensuse
+#        if [[ -d /boot/grub2 ]]; then
+#            cfg="/boot/grub2/grub.cfg"
+#        elif [[ -d /boot/grub ]]; then
+#            cfg="/boot/grub/grub.cfg"
+#        fi
+#        "$cmd" -o "$cfg" >/dev/null 2>&1
+#    elif cmd=$(command -v bootctl 2>/dev/null); then # systemd-boot (arch/EFI)
+#        if [[ -d /boot/loader ]]; then
+#            "$cmd" update >/dev/null 2>&1
+#        fi
+#    fi
+#}
 
 end_install() {
 #    if [ "$nvidia_fix" = true ]; then
@@ -541,16 +547,6 @@ main() {
             mapfile -t packages < <(
 				"${LIST_CMD[@]}" "${pkg_names[@]}" 2>&1 | grep "^ " | awk '{print $1}' | head -n -4 | sort -u
         	)
-#            	dnf rq \
-#				*plasma-* \
-#				*kde-baseapps* \
-#				*konsole* \
-#				*kscreen* \
-#				*sddm* \
-#				*dolphin* \
-#				| sed -E 's/-(0|1):.*$//; s/(-x11|-devel|-qt5)$//' | sort -u
-
-#                awk '!/(^$|^=|---|^Package |^Arch |^Version |^Repository |^Size |After|Installing|Updating|replacing|Transaction|Operation|Repositories|Total|KDE)/ {print $1}' | sort -u
             ;;
         opensuse)
             mapfile -t packages < <(
@@ -559,9 +555,6 @@ main() {
 			)
 #				zypper in -y -D patterns-kde-kde_plasma konsole dolphin pipewire sddm | head -n -18 | tail -n +9 | xargs -n 1
 #				zypper se --requires kde konsole dolphin pipewire sddm | sed '/pattern$/d'
-
-#               head -n -18 | tail -n +9 | xargs -n 1
-
 #               awk '/new/ {for(i=1;i<=NF;i++) if ($i ~ /^[a-zA-Z0-9.-]+$/) print $i}' | grep -v "Mozilla" | grep -v "vlc" | grep -v "x11" | grep -v "xorg" | head -n -5 
             ;;
     esac
@@ -591,8 +584,8 @@ main() {
 		remove_swap
 	fi
 
-	enable_dm
 	printf '\r%-*s' "$COLUMNS" '' # clear the installation line
+	enable_dm
     printf " eZkde for %s installation successful.\n\n" "$DISTRO"
 	end_install
     deinit-term
