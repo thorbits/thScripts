@@ -6,10 +6,10 @@
 #
 #    eZkernel for Debian
 #    Interactive Linux kernel compilation and installation script
-# ----------------------------------------------------------------
-#    Installs the latest mainline Linux kernel from www.kernel.org.
+# ----------------------------------------------------------------#
+#    Installs the latest mainline Linux kernel from www.kernel.org
 # 
-# ----------------------------------------------------------------
+# ----------------------------------------------------------------#
 
 if [[ "$(id -u)" -ne 0 ]]; then
     printf " This script must be run as root. Use sudo.\n"
@@ -21,9 +21,11 @@ fatal() {
     exit 1
 }
 
-if command -v apt-get &>/dev/null; then
-    DISTRO=Debian
-fi
+os_release() {
+    awk -F= '/^ID=/{gsub(/"/,""); print tolower($2)}' /etc/os-release | cut -d- -f1
+}
+
+DISTRO=$(os_release)
 
 clear
 echo
@@ -77,7 +79,7 @@ while true; do
         break
     fi
 done
-# user pressed Enter, continue.
+
 printf '\n\n Checking compilation dependencies...\n\n'
 
 pkgs=(
@@ -142,6 +144,7 @@ make menuconfig && (
 } && reboot_system || (
     fatal " WARNING: compilation or installation error. Exiting.\n\n"
 )
+
 
 
 
