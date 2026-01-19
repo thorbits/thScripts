@@ -40,8 +40,8 @@ case "$DISTRO" in
     ;;
 esac
 
-declare -A KRNL_GROUP # map each distro to its required compilation dependencies
-KRNL_GROUP[debian]="build-essential libdw-dev libelf-dev zlib1g-dev libncurses-dev libssl-dev bison bc flex rsync debhelper python3 wget"
+declare -A KRNL_GROUP # map each distro to its required kernel compilation dependencies
+KRNL_GROUP[debian]="build-essential libdw-dev libelf-dev zlib1g-dev libncurses-dev libssl-dev bison bc flex rsync debhelper python3"
 
 clear
 echo
@@ -74,8 +74,8 @@ printf " Checking kernels versions... please wait"
 
 "${UPDATE[@]}" >/dev/null 2>&1 || fatal " no internet connection detected."
 
-if ! command -v curl >/dev/null 2>&1; then
-    "${PM[@]}" curl curl >/dev/null 2>&1
+if ! command -v curl >/dev/null 2>&1 || ! command -v wget >/dev/null 2>&1; then
+    "${PM[@]}" curl wget >/dev/null 2>&1
 fi
 
 KVER=$(curl -s https://www.kernel.org/finger_banner | sed -n '2s/^[^6]*//p')
@@ -91,34 +91,67 @@ while true; do
     [[ -z "$REPLY" ]] && break # break if Enter was pressed
 done
 
-printf "\n\n Checking compilation dependencies...\n\n"
+#printf "\n\n Checking compilation dependencies...\n\n"
+#
+#pkgs=(
+#    build-essential libdw-dev libelf-dev zlib1g-dev libncurses-dev
+#    libssl-dev bison bc flex rsync debhelper python3 wget
+#)
+#
+#sum=${#pkgs[@]}
+#pkg_len=0
+#
+#for q in "${pkgs[@]}"; do
+#    (( ${#q} > pkg_len )) && pkg_len=${#q}
+#done
+#
+#i=0 ok=0
+#for p in "${pkgs[@]}"; do
+#    ((i++))
+#    dpkg -s "$p" &>/dev/null || {
+#        apt-get install -y --no-install-recommends "$p" &>/dev/null && ((ok++))
+#    }
+#    printf "\rProgress: %3d%% [%-40s] %-*s" \
+#           $((i*100/sum)) \
+#           "$(printf '|%.0s' $(seq 1 $((i*40/sum))))" \
+#           "$pkg_len" "$p"
+#done
 
-pkgs=(
-    build-essential libdw-dev libelf-dev zlib1g-dev libncurses-dev
-    libssl-dev bison bc flex rsync debhelper python3 wget
-)
+install_deps() {
+    # apply terminal protection from keyboard input
+    local saved_tty
+    saved_tty=$(stty -g 2>/dev/null) || saved_tty=""
+    if [[ -n "$saved_tty" ]]; then
+        trap 'stty "$saved_tty" 2>/dev/null; trap - EXIT INT' EXIT INT
+        stty -echo -icanon min 0 time 0 2>/dev/null
+    fi
+	
+    printf "\n\n Checking compilation dependencies...\n\n"
+    local packages=(${KRNL_GROUP[$DISTRO]})
+    # progress bar and installation logic
+    local sum=$total pkg_len=0 i=0 ok=0
+    for q in "${packages[@]}"; do
+        (( ${#q} > pkg_len )) && pkg_len=${#q}
+    done
+	
+	local pkg
+    for pkg in "${packages[@]}"; do
+        ((i++))
+        dpkg -s "$pkg" &>/dev/null || {
+            "${PM[@]}" "$pkg" &>/dev/null && ((ok++))
+        }
+		printf "\rProgress: %3d%% [%-40s] %-*s" $((i*100/sum)) "$(printf '|%.0s' $(seq 1 $((i*40/sum))))" "$pkg_len" "$pkg"
+    done
+	
+    # restore terminal settings
+    if [[ -n "$saved_tty" ]]; then
+        stty "$saved_tty" 2>/dev/null
+        trap - EXIT INT
+    fi
+    printf "\r Progress: 100%% [%-40s] Installed %d new package(s).\n\n" "$(printf '|%.0s' $(seq 1 40))" "$ok"
+}
 
-sum=${#pkgs[@]}
-pkg_len=0
-
-for q in "${pkgs[@]}"; do
-    (( ${#q} > pkg_len )) && pkg_len=${#q}
-done
-
-i=0 ok=0
-for p in "${pkgs[@]}"; do
-    ((i++))
-    dpkg -s "$p" &>/dev/null || {
-        apt-get install -y --no-install-recommends "$p" &>/dev/null && ((ok++))
-    }
-    printf "\rProgress: %3d%% [%-40s] %-*s" \
-           $((i*100/sum)) \
-           "$(printf '|%.0s' $(seq 1 $((i*40/sum))))" \
-           "$pkg_len" "$p"
-done
-
-printf "\r Progress: 100%% [%-40s] Installed %d new package(s).\n\n" \
-       "$(printf '|%.0s' $(seq 1 40))" "$ok"
+install_deps
 
 printf ' Downloading kernel sources...\n\n'
 mkdir -p "kernel/linux-upstream-$KVER"
@@ -129,47 +162,46 @@ printf ' Extracting kernel sources...\n\n'
 tar -zxf *.gz --strip-components=1
 rm  *.gz
 
+# kernel comppilation
 yes '' | make localmodconfig
 make menuconfig && (
     time make -j"$(nproc)" bindeb-pkg &&
     dpkg -i ~/kernel/*.deb &&
     printf "\n\n eZkernel compilation successful for version: %s\n" "$KVER"
-) && reboot_system(){
-    printf '\n System will reboot now.\n\n'
+)  || fatal " compilation or installation error."
+
+reboot_system(){
+	printf "\n\n System will reboot now.\n\n"
     while true; do
     printf '\r\033[2K'
     read -n1 -s -r -p ' Press Enter to continue or Ctrl+C to cancel.'
-    # check if User pressed Ctrl+C
-    if (( $? != 0 )); then
+
+    if (( $? != 0 )); then # exit if Ctrl+C was pressed
         exit 1
     fi
-    # check if user pressed Enter (empty input)
-    if [[ -z "$REPLY" ]]; then
+    if [[ -z "$REPLY" ]]; then # break if Enter was pressed
         break
     fi
     done
-    cd && rm -rf ~/kernel && {
-        sed -i 's/^GRUB_TIMEOUT=[0-9]\+/GRUB_TIMEOUT=1/' /etc/default/grub ||
+	
+    cd ~
+    rm -rf ~/kernel
+
+    if grep -q '^GRUB_TIMEOUT=' /etc/default/grub; then
+        sed -i 's/^GRUB_TIMEOUT=[0-9]\+/GRUB_TIMEOUT=1/' /etc/default/grub
+    else
         echo "GRUB_TIMEOUT=1" >> /etc/default/grub
-    } && update-grub >/dev/null 2>&1 && reboot
-} && reboot_system || (
-    fatal " WARNING: compilation or installation error. Exiting.\n\n"
-)
+    fi
+    
+    update-grub >/dev/null 2>&1 || fatal " failed to update grub."
+    reboot
+}
+#    cd && rm -rf ~/kernel && {
+#        sed -i 's/^GRUB_TIMEOUT=[0-9]\+/GRUB_TIMEOUT=1/' /etc/default/grub ||
+#        echo "GRUB_TIMEOUT=1" >> /etc/default/grub
+#    } && update-grub >/dev/null 2>&1 && reboot
+#}
 
+reboot_system
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+[[ ${BASH_SOURCE[0]} == "$0" ]] && install_deps "$@" # run only when executed, not sourced
