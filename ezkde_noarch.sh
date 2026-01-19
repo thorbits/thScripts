@@ -62,27 +62,27 @@ DISTRO=$(os_release)
 
 case "$DISTRO" in
     arch)
-    UPDATE=(pacman -Sy)
-    PM=(pacman -S --needed --noconfirm)
-    LIST_CMD=(pacman -Sp --print-format '%n')
+    	UPDATE=(pacman -Sy)
+    	PM=(pacman -S --needed --noconfirm)
+    	LIST_CMD=(pacman -Sp --print-format '%n')
 	;;
     debian)
-    UPDATE=(apt-get update)
-    PM=(apt-get install -y -o Dpkg::Options::="--force-confdef")
-    LIST_CMD=(apt-get install --dry-run -qq)
+    	UPDATE=(apt-get update)
+    	PM=(apt-get install -y -o Dpkg::Options::="--force-confdef")
+    	LIST_CMD=(apt-get install --dry-run -qq)
 	;;
     fedora)
-    UPDATE=(dnf up -yq)
-    PM=(dnf in -yq)
-    LIST_CMD=(dnf in -yq --assumeno)
+    	UPDATE=(dnf up -yq)
+    	PM=(dnf in -yq)
+    	LIST_CMD=(dnf in -yq --assumeno)
 	;;
     opensuse)
-    UPDATE=(zypper ref)
-    PM=(zypper in -y)
-    LIST_CMD=(zypper in -y -D --force-resolution)
+    	UPDATE=(zypper ref)
+    	PM=(zypper in -y)
+    	LIST_CMD=(zypper in -y -D --force-resolution)
 	;;
     *)
-	fatal " no supported linux distribution found (arch, debian, fedora, opensuse)."
+		fatal " unsupported distribution: $DISTRO"
 	;;
 esac
 
