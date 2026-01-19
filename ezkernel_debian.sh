@@ -11,14 +11,13 @@
 # 
 # ----------------------------------------------------------------
 
-# must be run as root
 if [[ "$(id -u)" -ne 0 ]]; then
     printf " This script must be run as root. Use sudo.\n"
     exit 1
 fi
 
 fatal() {
-    printf '[FATAL] %s\n\n' "$*" >&2
+    printf "\n [WARNING] %s Exiting...\n\n" "$*" >&2 # critical error message
     exit 1
 }
 
@@ -143,6 +142,7 @@ make menuconfig && (
 } && reboot_system || (
     fatal " WARNING: compilation or installation error. Exiting.\n\n"
 )
+
 
 
 
