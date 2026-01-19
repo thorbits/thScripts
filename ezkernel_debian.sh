@@ -156,7 +156,7 @@ install_deps
 printf ' Downloading kernel sources...\n\n'
 mkdir -p "kernel/linux-upstream-$KVER"
 cd "$_"
-wget https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-master.tar.gz
+wget https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-master.tar.gz || fatal " failed to download kernel sources."
 
 printf ' Extracting kernel sources...\n\n'
 tar -zxf *.gz --strip-components=1
@@ -205,3 +205,4 @@ reboot_system(){
 reboot_system
 
 [[ ${BASH_SOURCE[0]} == "$0" ]] && install_deps "$@" # run only when executed, not sourced
+
