@@ -90,7 +90,7 @@ declare -A KDE_GROUP # map each distro to its native KDE (meta) packages
 KDE_GROUP[arch]="plasma-meta dolphin konsole"
 KDE_GROUP[debian]="plasma-workspace dolphin konsole pipewire sddm"
 KDE_GROUP[fedora]="@kde-desktop sddm"
-KDE_GROUP[opensuse]="patterns-kde-kde_plasma konsole dolphin pipewire sddm"
+KDE_GROUP[opensuse]="patterns-kde-kde_plasma konsole discover dolphin pipewire sddm"
 #KDE_GROUP[fedora]="plasma-desktop plasma-settings plasma-nm sddm-wayland-plasma kde-baseapps konsole kscreen sddm startplasma-wayland dolphin discover"
 #KDE_GROUP[opensuse]="discover6 sddm patterns-kde-kde_plasma" #plasma6-desktop dolphin sddm sddm-config-wayland
 
@@ -553,12 +553,15 @@ main() {
             ;;
         opensuse)
             mapfile -t packages < <(
-				"${LIST_CMD[@]}" "${pkg_names[@]}" | head -n -18 | tail -n +9 | xargs -n 1
+				"${LIST_CMD[@]}" "${pkg_names[@]}" 2>&1 |
+				awk '/new/ {for(i=1;i<=NF;i++) if ($i ~ /^[a-zA-Z0-9.-]+$/) print $i}' | grep -v "Mozilla" | grep -v "vlc" | grep -v "x11" | grep -v "xorg" | head -n -5
 			)
 #				zypper in -y -D patterns-kde-kde_plasma konsole dolphin pipewire sddm | head -n -18 | tail -n +9 | xargs -n 1
 #				zypper se --requires kde konsole dolphin pipewire sddm | sed '/pattern$/d'
-#                "${LIST_CMD[@]}" "${pkg_names[@]}" 2>&1 |
-#                awk '/new/ {for(i=1;i<=NF;i++) if ($i ~ /^[a-zA-Z0-9.-]+$/) print $i}' | grep -v "Mozilla" | grep -v "vlc" | grep -v "x11" | grep -v "xorg" | head -n -5 
+
+#               head -n -18 | tail -n +9 | xargs -n 1
+
+#               awk '/new/ {for(i=1;i<=NF;i++) if ($i ~ /^[a-zA-Z0-9.-]+$/) print $i}' | grep -v "Mozilla" | grep -v "vlc" | grep -v "x11" | grep -v "xorg" | head -n -5 
             ;;
     esac
 	
