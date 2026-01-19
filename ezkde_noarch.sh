@@ -72,8 +72,8 @@ case "$DISTRO" in
     LIST_CMD=(apt-get install --dry-run -qq)
 	;;
     fedora)
-    UPDATE=(dnf mc -q)
-    PM=(dnf in -yq --skip-broken)
+    UPDATE=(dnf up -yq)
+    PM=(dnf in -yq)
     LIST_CMD=(dnf in -yq --assumeno)
 	;;
     opensuse)
