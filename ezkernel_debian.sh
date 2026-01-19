@@ -27,6 +27,14 @@ os_release() {
 
 DISTRO=$(os_release)
 
+case "$DISTRO" in
+    debian)
+    UPDATE=(apt-get update -qq)
+    PM=(apt-get install -y --no-install-recommends)
+    LIST_CMD=(apt-get install --dry-run -qq)
+	;;
+esac
+
 clear
 echo
 case "$DISTRO" in
@@ -53,34 +61,29 @@ ART
         ;;
 esac
 
-printf '\n\n Welcome %s, to eZkernel for Debian.\n\n" "$USER'
-printf ' The latest mainline Linux kernel from www.kernel.org will be compiled and installed.\n\n'
-printf ' Checking kernels versions... please wait'
-apt-get update -qq || fatal " ERROR: no internet connection detected. Exiting."
-}
-apt-get install -y curl > /dev/null 2>&1
+printf " Welcome %s, to eZkernel for %s.\n\n The latest mainline Linux kernel from www.kernel.org will be compiled and installed.\n\n" "$USER" "$DISTRO"
+printf " Checking kernels versions... please wait"
+
+"${UPDATE[@]}" >/dev/null 2>&1 || fatal " no internet connection detected."
+
+if ! command -v curl >/dev/null 2>&1; then
+    "${PM[@]}" curl curl >/dev/null 2>&1
+fi
 
 KVER=$(curl -s https://www.kernel.org/finger_banner | sed -n '2s/^[^6]*//p')
 max_len=80
-printf '\r%-*s\n\n" "$max_len" "Checking kernels versions... done.'
+printf "\r%-*s\n\n" "$max_len" " Checking kernels versions... done."
 
-printf ' Current kernel version: %s\nIt will be updated to:  %s\n\n' \
-       "$(uname -r)" "$KVER"
+printf " Current kernel version: %s\nIt will be updated to:  %s\n\n" "$(uname -r)" "$KVER"
 
 while true; do
-    printf '\r\033[2K Press Enter to continue or Ctrl+C to cancel.'
+    printf "\r\033[2K Press Enter to continue or Ctrl+C to cancel."
     read -n1 -s -r
-    # check if User pressed Ctrl+C
-    if (( $? != 0 )); then
-        exit 1
-    fi
-    # check if user pressed Enter (empty input)
-    if [[ -z "$REPLY" ]]; then
-        break
-    fi
+    (( $? != 0 )) && exit 1 # exit if Ctrl+C was pressed
+    [[ -z "$REPLY" ]] && break # break if Enter was pressed
 done
 
-printf '\n\n Checking compilation dependencies...\n\n'
+printf "\n\n Checking compilation dependencies...\n\n"
 
 pkgs=(
     build-essential libdw-dev libelf-dev zlib1g-dev libncurses-dev
@@ -144,6 +147,7 @@ make menuconfig && (
 } && reboot_system || (
     fatal " WARNING: compilation or installation error. Exiting.\n\n"
 )
+
 
 
 
