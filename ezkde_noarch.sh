@@ -19,7 +19,7 @@
 #    ----------------------------------------------------------#
 
 if [[ "$(id -u)" -ne 0 ]]; then
-    printf " This script must be run as root. Use sudo.\n"
+    printf "\n This script must be run as root. Use sudo.\n"
     exit 1
 fi
 
