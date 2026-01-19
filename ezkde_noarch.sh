@@ -201,12 +201,6 @@ while true; do
 done
 
 "${UPDATE[@]}" >/dev/null 2>&1 || fatal " no internet connection detected."
-#case "$DISTRO" in
-#	fedora)
-#		#dnf rm -y -q gpgme >/dev/null 2>&1 # bug fix for akonadi-server ?
-#		#dnf in -yq dnf-plugins-core >/dev/null 2>&1
-#	;;
-#esac
 
 nvidia_fix=false 
 # fix wayland on nvidia gpu
