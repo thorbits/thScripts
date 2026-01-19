@@ -356,24 +356,24 @@ progress-bar() {
     printf '\e8'		# restore the cursor location
 }
 
-recover_pacman() {
-    rm -f /var/lib/pacman/db.lck >/dev/null 2>&1
-    pacman -Sy --noconfirm >/dev/null 2>&1 || true
-}
-
-recover_dpkg() {
-    rm -f /var/lib/dpkg/lock-frontend /var/lib/dpkg/lock /var/cache/apt/archives/lock  >/dev/null 2>&1
-    dpkg --configure -a >/dev/null 2>&1
-    DEBIAN_FRONTEND=noninteractive apt-get install -f -y 2>/dev/null || true
-}
-
-recover_rpm() {
-    rm -f /var/lib/rpm/.rpm.lock /var/lib/rpm/__db.* 2>/dev/null
-    rpm --rebuilddb 2>/dev/null || true
-    if [[ "$DISTRO" == "OpenSuse" ]]; then
-        zypper verify --no-refresh 2>/dev/null || true
-    fi
-}
+#recover_pacman() {
+#    rm -f /var/lib/pacman/db.lck >/dev/null 2>&1
+#    pacman -Sy --noconfirm >/dev/null 2>&1 || true
+#}
+#
+#recover_dpkg() {
+#    rm -f /var/lib/dpkg/lock-frontend /var/lib/dpkg/lock /var/cache/apt/archives/lock  >/dev/null 2>&1
+#    dpkg --configure -a >/dev/null 2>&1
+#    DEBIAN_FRONTEND=noninteractive apt-get install -f -y 2>/dev/null || true
+#}
+#
+#recover_rpm() {
+#    rm -f /var/lib/rpm/.rpm.lock /var/lib/rpm/__db.* 2>/dev/null
+#    rpm --rebuilddb 2>/dev/null || true
+#    if [[ "$DISTRO" == "OpenSuse" ]]; then
+#        zypper verify --no-refresh 2>/dev/null || true
+#    fi
+#}
 
 install_packages() {
     (
@@ -385,6 +385,7 @@ install_packages() {
         for pkg in "$@"; do
             printf '\r%-*s' "$COLUMNS" " -> Now downloading and installing: $pkg"
             "${PM[@]}" "$pkg" >/dev/null 2>&1
+			sleep .2
         done
     )
 }
@@ -426,17 +427,17 @@ enable_dm() {
     if ! command -v sddm >/dev/null 2>&1; then
         fatal " sddm binary not found. Please install it first."
     fi
-
     local dm_unit
-    dm_unit=$(systemctl show -p Id --value display-manager 2>/dev/null)
-
+    # openSUSE has no display-manager.service symlink, pick the real unit
+    dm_unit=$(systemctl list-unit-files --state=enabled \
+              | awk '$1 ~ /display-manager/ {print $1; exit}')
     # handle generic or legacy display managers
     if [[ "$dm_unit" == "display-manager.service" ]] || [[ "$dm_unit" == "display-manager-legacy.service" ]]; then
         systemctl enable sddm.service >/dev/null 2>&1
         if [[ $(systemctl get-default) == "multi-user.target" ]]; then
             systemctl set-default graphical.target >/dev/null 2>&1
         fi
-	# handle specific display managers
+# handle specific display managers
     elif [[ -n "$dm_unit" ]]; then
         systemctl disable "$dm_unit" >/dev/null 2>&1
         systemctl enable sddm.service >/dev/null 2>&1
