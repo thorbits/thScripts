@@ -223,7 +223,17 @@ fix_nvidia_modeset() {
 
     # update Initramfs - required for the change to work at boot
     case "$DISTRO" in
-        arch) # note: ensure 'nvidia' and 'nvidia_drm' are in /etc/mkinitcpio.conf MODULES array
+        arch)
+            local mkinitconf="/etc/mkinitcpio.conf"
+            # ensure 'nvidia' and 'nvidia_drm' are in the MODULES array
+            if [[ -f "$mkinitconf" ]]; then
+                # check if 'nvidia' is already present to avoid adding duplicates
+                if ! grep -q "^MODULES=(.*nvidia" "$mkinitconf"; then
+                    # append modules inside the parentheses
+                    # this regex finds the closing ')' on the MODULES line and inserts before it
+                    sed -i '/^MODULES=/ s/)/ nvidia nvidia_drm)/' "$mkinitconf"
+                fi
+            fi
             if command -v mkinitcpio >/dev/null 2>&1; then
                 mkinitcpio -P >/dev/null
             fi
@@ -253,7 +263,7 @@ nvidia_warning() {
             modeset_status=$(cat /sys/module/nvidia_drm/parameters/modeset)
         # If not loaded, check the config file
         elif [[ -f "$conf_file" ]]; then
-            if grep -q "options nvidia_drm modeset=1" "$conf_file"; then
+            if grep -qF "options nvidia_drm modeset=1" "$conf_file"; then
                 modeset_status="Y"
             fi
         fi
@@ -261,9 +271,10 @@ nvidia_warning() {
         # If modeset is disabled (N), 0, or not found, run the fix
         if [[ "$modeset_status" != "Y" && "$modeset_status" != "1" ]]; then
             fix_nvidia_modeset
+			nvidia_fix=true
 			printf " NVIDIA Wayland fix applied. You will need to reboot your system.\n Proceeding with KDE installation..."
 		else
-			printf " $conf_file is already correct.\n Proceeding with KDE installation..."
+			printf " %s is already correct.\n Proceeding with KDE installation..." "$conf_file"
         fi
     fi
 }
@@ -459,11 +470,11 @@ end_install() {
 #    fi
 
     while true; do
-#        if [ "$nvidia_fix" = true ]; then
-#            printf "\r\033[2K Press (r) to reboot: "
-#        else
+        if [ "$nvidia_fix" = true ]; then
+            printf "\r\033[2K Press (r) to reboot: "
+        else
             printf "\r\033[2K Reboot (r) or start KDE now (k)? [r/k]: "
-#        fi
+        fi
 		read -n1 -s -r choice
 		
         if (( $? != 0 )); then # check if Ctrl+C
