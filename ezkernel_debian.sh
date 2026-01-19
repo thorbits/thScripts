@@ -16,6 +16,8 @@ if [[ "$(id -u)" -ne 0 ]]; then
     exit 1
 fi
 
+set -euo pipefail
+
 fatal() {
     printf "\n [WARNING] %s Exiting...\n\n" "$*" >&2 # critical error message
     exit 1
@@ -153,6 +155,7 @@ make menuconfig && (
 } && reboot_system || (
     fatal " WARNING: compilation or installation error. Exiting.\n\n"
 )
+
 
 
 
