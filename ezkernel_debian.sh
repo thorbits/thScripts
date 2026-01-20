@@ -118,13 +118,14 @@ done
 #done
 
 install_deps() {
-    # apply terminal protection from keyboard input
-    local saved_tty
-    saved_tty=$(stty -g 2>/dev/null) || saved_tty=""
-    if [[ -n "$saved_tty" ]]; then
-        trap 'stty "$saved_tty" 2>/dev/null; trap - EXIT INT' EXIT INT
-        stty -echo -icanon min 0 time 0 2>/dev/null
-    fi
+
+#    # apply terminal protection from keyboard input
+#    local saved_tty
+#    saved_tty=$(stty -g 2>/dev/null) || saved_tty=""
+#    if [[ -n "$saved_tty" ]]; then
+#        trap 'stty "$saved_tty" 2>/dev/null; trap - EXIT INT' EXIT INT
+#        stty -echo -icanon min 0 time 0 2>/dev/null
+#    fi
 	
     printf "\n\n Checking compilation dependencies...\n\n"
     local packages=(${KRNL_GROUP[$DISTRO]})
@@ -143,11 +144,11 @@ install_deps() {
 		printf "\rProgress: %3d%% [%-40s] %-*s" $((i*100/sum)) "$(printf '|%.0s' $(seq 1 $((i*40/sum))))" "$pkg_len" "$pkg"
     done
 	
-    # restore terminal settings
-    if [[ -n "$saved_tty" ]]; then
-        stty "$saved_tty" 2>/dev/null
-        trap - EXIT INT
-    fi
+#    # restore terminal settings
+#    if [[ -n "$saved_tty" ]]; then
+#        stty "$saved_tty" 2>/dev/null
+#        trap - EXIT INT
+#    fi
     printf "\r Progress: 100%% [%-40s] Installed %d new package(s).\n\n" "$(printf '|%.0s' $(seq 1 40))" "$ok"
 }
 
@@ -205,8 +206,3 @@ reboot_system(){
 reboot_system
 
 #[[ ${BASH_SOURCE[0]} == "$0" ]] && install_deps "$@" # run only when executed, not sourced
-
-
-
-
-
