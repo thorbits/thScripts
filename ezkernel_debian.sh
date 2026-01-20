@@ -188,28 +188,28 @@ make menuconfig
 if ! time { \
         make -j"$JOBS" bindeb-pkg && \
         dpkg -i "${WORKDIR}"/*.deb; \
+		printf "\n\n eZkernel compilation successful for version: %s\n\n" "$KVER"
     }; then
     fatal "kernel compilation or package installation failed."
-else
-	printf "\n\n eZkernel compilation successful for version: %s\n" "$KVER"
 fi
 
-reboot_system(){
-	printf "\n\n System will reboot now.\n\n"
-    while true; do
-    printf '\r\033[2K'
-    read -n1 -s -r -p ' Press Enter to continue or Ctrl+C to cancel.'
+abort() {
+    fatal "aborted by user – no reboot performed."
+}
+trap abort SIGINT SIGTERM
 
-    if (( $? != 0 )); then # exit if Ctrl+C was pressed
-        exit 1
-    fi
-    if [[ -z "$REPLY" ]]; then # break if Enter was pressed
+reboot_system(){
+	printf " System will reboot now.\n\n"
+	while : ; do
+    read -r -s -n1 -p $' Press Enter to continue or Ctrl+C to cancel.' REPLY
+    printf '\r\033[2K' # clear the prompt line
+    if [[ -z "$REPLY" ]]; then # Enter only,no other key
         break
     fi
-    done
+	done
 	
     cd ~
-    rm -rf ~/kernel
+    rm -rf "${WORKDIR}"
 
     if grep -q '^GRUB_TIMEOUT=' /etc/default/grub; then
         sed -i 's/^GRUB_TIMEOUT=[0-9]\+/GRUB_TIMEOUT=1/' /etc/default/grub
@@ -218,8 +218,26 @@ reboot_system(){
     fi
 
     update-grub >/dev/null 2>&1 || fatal "failed to update grub."
-    reboot
+	
+	for i in {5..1}; do
+    	printf "\r\033[2KRebooting in %d second%s..." "$i" $([ "$i" -eq 1 ] && echo "" || echo "s")
+    	sleep 1
+	done
+	
+    /sbin/reboot
 }
+
+#    while true; do
+#    printf '\r\033[2K'
+#    read -n1 -s -r -p ' Press Enter to continue or Ctrl+C to cancel.'
+#
+#    if (( $? != 0 )); then # exit if Ctrl+C was pressed
+#        exit 1
+#    fi
+#    if [[ -z "$REPLY" ]]; then # break if Enter was pressed
+#        break
+#    fi
+#    done
 
 #    cd && rm -rf ~/kernel && {
 #        sed -i 's/^GRUB_TIMEOUT=[0-9]\+/GRUB_TIMEOUT=1/' /etc/default/grub ||
@@ -228,7 +246,3 @@ reboot_system(){
 #}
 
 reboot_system
-
-
-
-
