@@ -11,12 +11,9 @@
 # 
 # ----------------------------------------------------------------#
 
-if [[ "$(id -u)" -ne 0 ]]; then
-    printf "\n This script must be run as root. Use sudo.\n"
-    exit 1
-fi
+[[ $EUID -eq 0 ]] || { echo " This script must be run as root (or sudo)" >&2; exit 1; }
 
-set -euo pipefail
+#set -euo pipefail
 
 fatal() {
     printf "\n [WARNING] %s Exiting...\n\n" "$*" >&2 # critical error message
@@ -202,6 +199,7 @@ reboot_system(){
 reboot_system
 
 #[[ ${BASH_SOURCE[0]} == "$0" ]] && install_deps "$@" # run only when executed, not sourced
+
 
 
 
