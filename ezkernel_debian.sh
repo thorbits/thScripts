@@ -91,33 +91,30 @@ while true; do
     [[ -z "$REPLY" ]] && break # break if Enter was pressed
 done
 
-#printf "\n\n Checking compilation dependencies...\n\n"
-#
-#pkgs=(
-#    build-essential libdw-dev libelf-dev zlib1g-dev libncurses-dev
-#    libssl-dev bison bc flex rsync debhelper python3 wget
-#)
-#
-#sum=${#pkgs[@]}
-#pkg_len=0
-#
-#for q in "${pkgs[@]}"; do
-#    (( ${#q} > pkg_len )) && pkg_len=${#q}
-#done
-#
-#i=0 ok=0
-#for p in "${pkgs[@]}"; do
-#    ((i++))
-#    dpkg -s "$p" &>/dev/null || {
-#        apt-get install -y --no-install-recommends "$p" &>/dev/null && ((ok++))
-#    }
-#    printf "\rProgress: %3d%% [%-40s] %-*s" \
-#           $((i*100/sum)) \
-#           "$(printf '|%.0s' $(seq 1 $((i*40/sum))))" \
-#           "$pkg_len" "$p"
-#done
+printf "\n\n Checking compilation dependencies...\n\n"
 
-install_deps() {
+pkgs=(build-essential libdw-dev libelf-dev zlib1g-dev libncurses-dev libssl-dev bison bc flex rsync debhelper python3)
+
+sum=${#pkgs[@]}
+pkg_len=0
+
+for q in "${pkgs[@]}"; do
+    (( ${#q} > pkg_len )) && pkg_len=${#q}
+done
+
+i=0 ok=0
+for p in "${pkgs[@]}"; do
+    ((i++))
+    dpkg -s "$p" &>/dev/null || {
+        apt-get install -y --no-install-recommends "$p" &>/dev/null && ((ok++))
+    }
+    printf "\rProgress: %3d%% [%-40s] %-*s" \
+           $((i*100/sum)) \
+           "$(printf '|%.0s' $(seq 1 $((i*40/sum))))" \
+           "$pkg_len" "$p"
+done
+
+#install_deps() {
 
 #    # apply terminal protection from keyboard input
 #    local saved_tty
@@ -127,19 +124,19 @@ install_deps() {
 #        stty -echo -icanon min 0 time 0 2>/dev/null
 #    fi
 
-    printf "\n\n Checking compilation dependencies...\n\n"
-    IFS=' ' read -r -a packages <<< "${KRNL_GROUP[$DISTRO]}"
-    local sum=${#packages[@]} pkg_len=0 i=0 ok=0
-    for q in "${packages[@]}"; do
-        (( ${#q} > pkg_len )) && pkg_len=${#q}
-    done
-    for p in "${packages[@]}"; do
-        ((i++))
-        dpkg -s "$p" &>/dev/null || {
-            "${PM[@]}" install -y "$p" &>/dev/null && ((ok++))
-        }
-		printf "\rProgress: %3d%% [%-40s] %-*s" $((i*100/sum)) "$(printf '|%.0s' $(seq 1 $((i*40/sum))))" "$pkg_len" "$p"
-    done
+#    printf "\n\n Checking compilation dependencies...\n\n"
+#    IFS=' ' read -r -a packages <<< "${KRNL_GROUP[$DISTRO]}"
+#    local sum=${#packages[@]} pkg_len=0 i=0 ok=0
+#    for q in "${packages[@]}"; do
+#        (( ${#q} > pkg_len )) && pkg_len=${#q}
+#    done
+#    for p in "${packages[@]}"; do
+#        ((i++))
+#        dpkg -s "$p" &>/dev/null || {
+#            "${PM[@]}" install -y "$p" &>/dev/null && ((ok++))
+#        }
+#		printf "\rProgress: %3d%% [%-40s] %-*s" $((i*100/sum)) "$(printf '|%.0s' $(seq 1 $((i*40/sum))))" "$pkg_len" "$p"
+#    done
 
 #    # restore terminal settings
 #    if [[ -n "$saved_tty" ]]; then
@@ -148,9 +145,9 @@ install_deps() {
 #    fi
 
     printf "\r Progress: 100%% [%-40s] Installed %d new package(s).\n\n" "$(printf '|%.0s' $(seq 1 40))" "$ok"
-}
+#}
 
-install_deps
+#install_deps
 
 printf " Downloading kernel sources...\n\n"
 mkdir -p "kernel/linux-upstream-$KVER"
@@ -205,6 +202,7 @@ reboot_system(){
 reboot_system
 
 #[[ ${BASH_SOURCE[0]} == "$0" ]] && install_deps "$@" # run only when executed, not sourced
+
 
 
 
