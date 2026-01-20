@@ -130,18 +130,18 @@ install_deps() {
     printf "\n\n Checking compilation dependencies...\n\n"
     local packages=(${KRNL_GROUP[$DISTRO]})
     # progress bar and installation logic
-    local sum=$total pkg_len=0 i=0 ok=0
+    local sum=${#packages[@]} pkg_len=0
     for q in "${packages[@]}"; do
         (( ${#q} > pkg_len )) && pkg_len=${#q}
     done
 
-	local pkg
-    for pkg in "${packages[@]}"; do
+	local i=0 ok=0
+    for p in "${packages[@]}"; do
         ((i++))
-        dpkg -s "$pkg" &>/dev/null || {
-            "${PM[@]}" "$pkg" &>/dev/null && ((ok++))
+        dpkg -s "$p" &>/dev/null || {
+            "${PM[@]}" "$p" &>/dev/null && ((ok++))
         }
-		printf "\rProgress: %3d%% [%-40s] %-*s" $((i*100/sum)) "$(printf '|%.0s' $(seq 1 $((i*40/sum))))" "$pkg_len" "$pkg"
+		printf "\rProgress: %3d%% [%-40s] %-*s" $((i*100/sum)) "$(printf '|%.0s' $(seq 1 $((i*40/sum))))" "$pkg_len" "$p"
     done
 
 #    # restore terminal settings
@@ -208,5 +208,6 @@ reboot_system(){
 reboot_system
 
 #[[ ${BASH_SOURCE[0]} == "$0" ]] && install_deps "$@" # run only when executed, not sourced
+
 
 
