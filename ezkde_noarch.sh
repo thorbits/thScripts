@@ -370,18 +370,18 @@ progress-bar() {
 #}
 
 install_packages() {
-    (
-        saved=$(stty -g) || exit 0		# non‑TTY → just exit the sub‑shell
-        trap 'stty "$saved"' EXIT INT	# always restore when we leave
-
-		stty -echo -icanon min 0 time 0	# no keyboard interaction
-
+#    (
+#        saved=$(stty -g) || exit 0		# non‑TTY → just exit the sub‑shell
+#        trap 'stty "$saved"' EXIT INT	# always restore when we leave
+#
+#		stty -echo -icanon min 0 time 0	# no keyboard interaction
+#
         for pkg in "$@"; do
             printf '\r%-*s' "$COLUMNS" " -> Now downloading and installing: $pkg"
-            "${PM[@]}" "$pkg" >/dev/null 2>&1
+            "${PM[@]}" "$pkg" </dev/null >/dev/null 2>&1
 			sleep .2
         done
-    )
+ #   )
 }
 
 #    local ret=0
