@@ -220,7 +220,7 @@ reboot_system(){
     update-grub >/dev/null 2>&1 || fatal "failed to update grub."
 	
 	for i in {5..1}; do
-    	printf "\r\033[2KRebooting in %d second%s..." "$i" $([ "$i" -eq 1 ] && echo "" || echo "s")
+    	printf "\r\033[2K Rebooting in %d second%s..." "$i" $([ "$i" -eq 1 ] && echo "" || echo "s")
     	sleep 1
 	done
 	
@@ -246,4 +246,5 @@ reboot_system(){
 #}
 
 reboot_system
+
 
