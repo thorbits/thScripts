@@ -104,7 +104,7 @@ done
 
 printf "\n\n Checking compilation dependencies...\n\n"
 
-pkgs=(build-essential libdw-dev libelf-dev zlib1g-dev libncurses-dev libssl-dev bison bc flex rsync debhelper python3)
+pkgs=(build-essential libdw-dev libelf-dev zlib1g-dev libncurses-dev libssl-dev bison bc flex make rsync debhelper python3)
 sum=${#pkgs[@]}
 pkg_len=0
 for q in "${pkgs[@]}"; do
@@ -248,5 +248,6 @@ reboot_system(){
 #}
 
 reboot_system
+
 
 
