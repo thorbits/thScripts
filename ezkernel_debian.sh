@@ -126,7 +126,7 @@ install_deps() {
 #        trap 'stty "$saved_tty" 2>/dev/null; trap - EXIT INT' EXIT INT
 #        stty -echo -icanon min 0 time 0 2>/dev/null
 #    fi
-	
+
     printf "\n\n Checking compilation dependencies...\n\n"
     local packages=(${KRNL_GROUP[$DISTRO]})
     # progress bar and installation logic
@@ -134,7 +134,7 @@ install_deps() {
     for q in "${packages[@]}"; do
         (( ${#q} > pkg_len )) && pkg_len=${#q}
     done
-	
+
 	local pkg
     for pkg in "${packages[@]}"; do
         ((i++))
@@ -143,23 +143,24 @@ install_deps() {
         }
 		printf "\rProgress: %3d%% [%-40s] %-*s" $((i*100/sum)) "$(printf '|%.0s' $(seq 1 $((i*40/sum))))" "$pkg_len" "$pkg"
     done
-	
+
 #    # restore terminal settings
 #    if [[ -n "$saved_tty" ]]; then
 #        stty "$saved_tty" 2>/dev/null
 #        trap - EXIT INT
 #    fi
+
     printf "\r Progress: 100%% [%-40s] Installed %d new package(s).\n\n" "$(printf '|%.0s' $(seq 1 40))" "$ok"
 }
 
 install_deps
 
-printf ' Downloading kernel sources...\n\n'
+printf " Downloading kernel sources...\n\n"
 mkdir -p "kernel/linux-upstream-$KVER"
 cd "$_"
 wget https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-master.tar.gz || fatal " failed to download kernel sources."
 
-printf ' Extracting kernel sources...\n\n'
+printf " Extracting kernel sources...\n\n"
 tar -zxf *.gz --strip-components=1
 rm  *.gz
 
@@ -193,10 +194,11 @@ reboot_system(){
     else
         echo "GRUB_TIMEOUT=1" >> /etc/default/grub
     fi
-    
+
     update-grub >/dev/null 2>&1 || fatal " failed to update grub."
     reboot
 }
+
 #    cd && rm -rf ~/kernel && {
 #        sed -i 's/^GRUB_TIMEOUT=[0-9]\+/GRUB_TIMEOUT=1/' /etc/default/grub ||
 #        echo "GRUB_TIMEOUT=1" >> /etc/default/grub
@@ -206,4 +208,5 @@ reboot_system(){
 reboot_system
 
 #[[ ${BASH_SOURCE[0]} == "$0" ]] && install_deps "$@" # run only when executed, not sourced
+
 
