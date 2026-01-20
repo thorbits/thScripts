@@ -202,8 +202,8 @@ done
 
 "${UPDATE[@]}" >/dev/null 2>&1 || fatal " no internet connection detected."
 
-nvidia_fix=false 
 # fix wayland on nvidia gpu
+nvidia_fix=false 
 fix_nvidia_modeset() {
     local conf_file="/etc/modprobe.d/nvidia.conf"
     local required_line="options nvidia_drm modeset=1"
