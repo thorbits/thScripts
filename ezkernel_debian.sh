@@ -166,12 +166,12 @@ printf "\r Progress: 100%% [%-40s] Installed %d new package(s).\n\n" "$(printf '
 
 mkdir -p "${SRCDIR}"
 cd "${SRCDIR}"
-info "downloading latest upstream kernel snapshot…"
+printf  " Downloading latest upstream kernel snapshot…"
 if ! wget -q --show-progress -O "${TARBALL}" \
         "https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-master.tar.gz"; then
     fatal "failed to download kernel source."
 fi
-info "extracting kernel sources…"
+printf  " Extracting kernel sources…\n\n"
 tar -xzf "${TARBALL}" --strip-components=1
 rm -f "${TARBALL}"
 
@@ -183,7 +183,7 @@ rm -f "${TARBALL}"
 #    printf "\n\n eZkernel compilation successful for version: %s\n" "$KVER"
 #)  || fatal "compilation or installation error."
 
-make localmodconfig
+make -s localmodconfig
 make menuconfig
 if ! time { \
         make -j"$JOBS" bindeb-pkg && \
@@ -228,5 +228,6 @@ reboot_system(){
 #}
 
 reboot_system
+
 
 
