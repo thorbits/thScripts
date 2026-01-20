@@ -419,12 +419,18 @@ install_packages() {
 #}
 
 enable_dm() {
+	local dm_unit
+    case "$DISTRO" in
+        arch|debian|fedora)
+			dm_unit=(systemctl show -p Id --value display-manager 2>/dev/null)
+		;;
+		opensuse)
+			dm_unit=$(systemctl list-unit-files --state=enabled | awk '$1 ~ /display-manager/ {print $1}')	
+		;;
+	esac
     if ! command -v sddm >/dev/null 2>&1; then
         fatal " sddm binary not found. Please install it first."
     fi
-    local dm_unit
-    dm_unit=$(systemctl list-unit-files --state=enabled \
-              | awk '$1 ~ /display-manager/ {print $1; exit}')
     # handle generic or legacy display managers
     if [[ "$dm_unit" == "display-manager.service" ]]; then
         systemctl enable sddm.service >/dev/null 2>&1
