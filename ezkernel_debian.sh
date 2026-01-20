@@ -70,7 +70,7 @@ ART
         ;;
 esac
 
-printf "\n\n Welcome %s, to eZkernel for %s.\n\n The latest mainline Linux kernel from www.kernel.org will be will be downloaded (sources), compiled and installed.\n\n" "$USER" "$DISTRO"
+printf "\n\n Welcome %s, to eZkernel for %s.\n\n The latest mainline Linux kernel from www.kernel.org will be will be sourced, compiled and installed.\n\n" "$USER" "$DISTRO"
 printf " Checking kernels versions... please wait"
 
 "${UPDATE[@]}" >/dev/null 2>&1 || fatal " no internet connection detected."
@@ -246,3 +246,4 @@ reboot_system(){
 #}
 
 reboot_system
+
