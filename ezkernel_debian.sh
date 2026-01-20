@@ -46,7 +46,7 @@ KRNL_GROUP[debian]="build-essential libdw-dev libelf-dev zlib1g-dev libncurses-d
 clear
 echo
 case "$DISTRO" in
-        Debian)
+        debian)
             cat << 'ART'
                _,met$$$$$gg.
             ,g$$$$$$$$$$$$$$$P.
@@ -205,6 +205,7 @@ reboot_system(){
 reboot_system
 
 #[[ ${BASH_SOURCE[0]} == "$0" ]] && install_deps "$@" # run only when executed, not sourced
+
 
 
 
