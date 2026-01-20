@@ -189,6 +189,7 @@ rm -f "${TARBALL}"
 # kernel comppilation
 #make -B localmodconfig
 #make menuconfig
+
 yes '' | make localmodconfig && make menuconfig
 if ! time { \
         make -j"$JOBS" bindeb-pkg && \
@@ -252,6 +253,7 @@ reboot_system(){
 #}
 
 reboot_system
+
 
 
 
