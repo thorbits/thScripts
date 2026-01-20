@@ -185,7 +185,7 @@ rm -f "${TARBALL}"
 #    printf "\n\n eZkernel compilation successful for version: %s\n" "$KVER"
 #)  || fatal "compilation or installation error."
 
-make -s localmodconfig
+make -q localmodconfig
 make menuconfig
 if ! time { \
         make -j"$JOBS" bindeb-pkg && \
@@ -248,6 +248,7 @@ reboot_system(){
 #}
 
 reboot_system
+
 
 
 
