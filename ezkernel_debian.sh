@@ -82,7 +82,7 @@ KVER=$(curl -s https://www.kernel.org/finger_banner | sed -n '2s/^[^6]*//p')
 max_len=80
 printf "\r%-*s\n\n" "$max_len" " Checking kernels versions... done."
 
-printf " Current kernel version: %s\nIt will be updated to:  %s\n\n" "$(uname -r)" "$KVER"
+printf " Current kernel version: %s\n It will be updated to:  %s\n\n" "$(uname -r)" "$KVER"
 
 while true; do
     printf "\r\033[2K Press Enter to continue or Ctrl+C to cancel."
@@ -208,6 +208,7 @@ reboot_system(){
 reboot_system
 
 #[[ ${BASH_SOURCE[0]} == "$0" ]] && install_deps "$@" # run only when executed, not sourced
+
 
 
 
