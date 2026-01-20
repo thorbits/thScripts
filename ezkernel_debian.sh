@@ -16,8 +16,12 @@
 #set -euo pipefail
 
 fatal() {
-    printf "\n [WARNING] %s Exiting...\n\n" "$*" >&2 # critical error message
+    printf '\n\e[31m [WARNING]\e[0m %s\n\n' "$*" >&2
     exit 1
+}
+
+info() {
+    printf '\n\e[32m [INFO]\e[0m %s\n\n' "$*"
 }
 
 os_release() {
@@ -76,6 +80,11 @@ if ! command -v curl >/dev/null 2>&1 || ! command -v wget >/dev/null 2>&1; then
 fi
 
 KVER=$(curl -s https://www.kernel.org/finger_banner | sed -n '2s/^[^6]*//p')
+WORKDIR="${HOME:-/root}/kernel"
+SRCDIR="${WORKDIR}/linux-upstream-${KVER}"
+TARBALL="${SRCDIR}/linux-master.tar.gz"
+
+
 max_len=80
 printf "\r%-*s\n\n" "$max_len" " Checking kernels versions... done."
 
@@ -144,22 +153,34 @@ done
 
 printf "\r Progress: 100%% [%-40s] Installed %d new package(s).\n\n" "$(printf '|%.0s' $(seq 1 40))" "$ok"
 
-printf " Downloading kernel sources...\n\n"
-mkdir -p "kernel/linux-upstream-$KVER"
-cd "$_"
-wget https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-master.tar.gz || fatal " failed to download kernel sources."
+#printf " Downloading kernel sources...\n\n"
+#mkdir -p "kernel/linux-upstream-$KVER"
+#cd "$_"
+#wget https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-master.tar.gz || fatal " failed to download kernel sources."
 
-printf " Extracting kernel sources...\n\n"
-tar -zxf *.gz --strip-components=1
-rm  *.gz
+#printf " Extracting kernel sources...\n\n"
+#tar -zxf *.gz --strip-components=1
+#rm  *.gz
+
+mkdir -p "${SRCDIR}"
+cd "${SRCDIR}"
+info "downloading latest upstream kernel snapshot…"
+if ! wget -q --show-progress -O "${TARBALL}" \
+        "https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-master.tar.gz"; then
+    fatal "failed to download kernel source."
+fi
+info "extracting kernel sources…"
+tar -xzf "${TARBALL}" --strip-components=1
+rm -f "${TARBALL}"
 
 # kernel comppilation
 yes '' | make localmodconfig
+
 make menuconfig && (
     time make -j"$(nproc)" bindeb-pkg &&
     dpkg -i ~/kernel/*.deb &&
     printf "\n\n eZkernel compilation successful for version: %s\n" "$KVER"
-)  || fatal " compilation or installation error."
+)  || fatal "compilation or installation error."
 
 reboot_system(){
 	printf "\n\n System will reboot now.\n\n"
@@ -184,7 +205,7 @@ reboot_system(){
         echo "GRUB_TIMEOUT=1" >> /etc/default/grub
     fi
 
-    update-grub >/dev/null 2>&1 || fatal " failed to update grub."
+    update-grub >/dev/null 2>&1 || fatal "failed to update grub."
     reboot
 }
 
@@ -195,3 +216,4 @@ reboot_system(){
 #}
 
 reboot_system
+
