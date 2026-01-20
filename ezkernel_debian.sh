@@ -234,6 +234,7 @@ reboot_system(){
     /sbin/reboot
 }
 
+reboot_system
 #    while true; do
 #    printf '\r\033[2K'
 #    read -n1 -s -r -p ' Press Enter to continue or Ctrl+C to cancel.'
@@ -251,13 +252,3 @@ reboot_system(){
 #        echo "GRUB_TIMEOUT=1" >> /etc/default/grub
 #    } && update-grub >/dev/null 2>&1 && reboot
 #}
-
-reboot_system
-
-
-
-
-
-
-
-
