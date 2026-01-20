@@ -370,53 +370,27 @@ progress-bar() {
 #}
 
 install_packages() {
-#    (
-#        saved=$(stty -g) || exit 0		# non‑TTY → just exit the sub‑shell
-#        trap 'stty "$saved"' EXIT INT	# always restore when we leave
-#
-#		stty -echo -icanon min 0 time 0	# no keyboard interaction
-#
-        for pkg in "$@"; do
-            printf '\r%-*s' "$COLUMNS" " -> Now downloading and installing: $pkg"
+    (
+        if tty >/dev/null 2>&1 && saved=$(stty -g 2>/dev/null); then
+            tty_active=1
+            # disable *all* special characters and echo
+            stty -echo -icanon min 0 time 0 \
+                 intr '' quit '' susp '' stop '' start '' 2>/dev/null
+            # always restore, even on SIGINT
+            trap 'stty "$saved"' EXIT INT
+        else
+            tty_active=0
+        fi
+
+        for pkg; do
+            if (( tty_active )); then
+                printf '\r%-*s' "$COLUMNS" " -> Installing: $pkg" >&9
+            fi
             "${PM[@]}" "$pkg" </dev/null >/dev/null 2>&1
-			sleep .2
+            sleep .2
         done
- #   )
+	) 9>&1
 }
-
-#    local ret=0
-#    local recover=""
-#    #local LOG_DIR="/var/log/install-scripts"
-#    #local TIMESTAMP=$(date +%Y%m%d)
-#    mkdir -p "$LOG_DIR"
-#    local SUCCESS_LOG="$LOG_DIR/$TIMESTAMP-install.log"
-#    local ERROR_LOG="$LOG_DIR/$TIMESTAMP-error.log"
-
-#    case "$DISTRO" in
-#        arch)            recover="recover_pacman" ;;
-#        debian)          recover="recover_dpkg" ;;
-#        fedora|opensuse) recover="recover_rpm" ;;
-#    esac
-
-
-#        if [ $? -ne 0 ]; then
-#            if [ ! -f "$ERROR_LOG" ]; then # append to error log
-#            echo "$(date +%Y%m%d-%H%M%S)-install failed: $pkg" >> "$ERROR_LOG"
-#        	"${PM[@]}" "$pkg" 2>&1 | tee -a "$ERROR_LOG" > /dev/null
-#            fi
-#            printf '\r%-*s' "$COLUMNS" " -> Installation FAILED: $pkg"
-#            ret=1
-#        else
-#            if [ ! -f "$SUCCESS_LOG" ]; then
-#                echo "$(date +%Y%m%d-%H%M%S)-install OK: $pkg" >> "$SUCCESS_LOG"
-#            fi
-#        fi
-#    done
-#    if [ $ret -ne 0 ]; then
-#        $recover
-#    fi
-#	return $ret
-#}
 
 manage_dm(){
     systemctl disable "$dm_unit" >/dev/null 2>&1
