@@ -48,6 +48,7 @@ KRNL_GROUP[debian]="build-essential libdw-dev libelf-dev zlib1g-dev libncurses-d
 
 clear
 echo
+
 case "$DISTRO" in
         debian)
             cat << 'ART'
@@ -120,51 +121,7 @@ for p in "${pkgs[@]}"; do
 	printf "\r Progress: %3d%% [%-40s] %-*s" $((i*100/sum)) "$(printf '|%.0s' $(seq 1 $((i*40/sum))))" "$pkg_len" "$p"
 done
 
-#install_deps() {
-
-#    # apply terminal protection from keyboard input
-#    local saved_tty
-#    saved_tty=$(stty -g 2>/dev/null) || saved_tty=""
-#    if [[ -n "$saved_tty" ]]; then
-#        trap 'stty "$saved_tty" 2>/dev/null; trap - EXIT INT' EXIT INT
-#        stty -echo -icanon min 0 time 0 2>/dev/null
-#    fi
-
-#    printf "\n\n Checking compilation dependencies...\n\n"
-#    IFS=' ' read -r -a packages <<< "${KRNL_GROUP[$DISTRO]}"
-#    local sum=${#packages[@]} pkg_len=0 i=0 ok=0
-#    for q in "${packages[@]}"; do
-#        (( ${#q} > pkg_len )) && pkg_len=${#q}
-#    done
-#    for p in "${packages[@]}"; do
-#        ((i++))
-#        dpkg -s "$p" &>/dev/null || {
-#            "${PM[@]}" "$p" &>/dev/null && ((ok++))
-#        }
-#		printf "\rProgress: %3d%% [%-40s] %-*s" $((i*100/sum)) "$(printf '|%.0s' $(seq 1 $((i*40/sum))))" "$pkg_len" "$p"
-#    done
-
-#    # restore terminal settings
-#    if [[ -n "$saved_tty" ]]; then
-#        stty "$saved_tty" 2>/dev/null
-#        trap - EXIT INT
-#    fi
-
-#    printf "\r Progress: 100%% [%-40s] Installed %d new package(s).\n\n" "$(printf '|%.0s' $(seq 1 40))" "$ok"
-#}
-
-#install_deps
-
 printf "\r Progress: 100%% [%-40s] Installed %d new package(s).\n\n" "$(printf '|%.0s' $(seq 1 40))" "$ok"
-
-#printf " Downloading kernel sources...\n\n"
-#mkdir -p "kernel/linux-upstream-$KVER"
-#cd "$_"
-#wget https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-master.tar.gz || fatal " failed to download kernel sources."
-
-#printf " Extracting kernel sources...\n\n"
-#tar -zxf *.gz --strip-components=1
-#rm  *.gz
 
 mkdir -p "${SRCDIR}"
 cd "${SRCDIR}"
@@ -179,17 +136,6 @@ printf "\n Extracting kernel sources…\n\n"
 tar -xzf "${TARBALL}" --strip-components=1
 rm -f "${TARBALL}"
 
-#yes '' | make localmodconfig
-#make menuconfig && (
-#    time make -j"$(nproc)" bindeb-pkg &&
-#    dpkg -i ~/kernel/*.deb &&
-#    printf "\n\n eZkernel compilation successful for version: %s\n" "$KVER"
-#)  || fatal "compilation or installation error."
-
-# kernel comppilation
-#make -B localmodconfig
-#make menuconfig
-
 yes '' | make localmodconfig && make menuconfig
 if ! time { \
         make -j"$JOBS" bindeb-pkg && \
@@ -199,7 +145,10 @@ if ! time { \
     fatal "kernel compilation or package installation failed."
 fi
 
-# cleanup and final message
+# cleanup and reboot
+cd ~
+rm -rf "${WORKDIR}"
+
 abort() {
     fatal "aborted by user – no reboot performed."
 }
@@ -209,14 +158,10 @@ reboot_system(){
 	printf "\n System will reboot now.\n\n"
 	while : ; do
     read -r -s -n1 -p $' Press Enter to continue or Ctrl+C to cancel.' REPLY
-#    printf '\r\033[2K' # clear the prompt line
     if [[ -z "$REPLY" ]]; then # Enter only, no other key
         break
     fi
 	done
-	
-    cd ~
-    rm -rf "${WORKDIR}"
 
     if grep -q '^GRUB_TIMEOUT=' /etc/default/grub; then
         sed -i 's/^GRUB_TIMEOUT=[0-9]\+/GRUB_TIMEOUT=1/' /etc/default/grub
@@ -225,31 +170,13 @@ reboot_system(){
     fi
 
     update-grub >/dev/null 2>&1 || fatal "failed to update grub."
-	
+
+	printf"\n"
 	for i in {5..1}; do
     	printf "\r\033[2K Rebooting in %d second%s..." "$i" $([ "$i" -eq 1 ] && echo "" || echo "s")
     	sleep 1
 	done
-	
+
     /sbin/reboot
 }
-
 reboot_system
-#    while true; do
-#    printf '\r\033[2K'
-#    read -n1 -s -r -p ' Press Enter to continue or Ctrl+C to cancel.'
-#
-#    if (( $? != 0 )); then # exit if Ctrl+C was pressed
-#        exit 1
-#    fi
-#    if [[ -z "$REPLY" ]]; then # break if Enter was pressed
-#        break
-#    fi
-#    done
-
-#    cd && rm -rf ~/kernel && {
-#        sed -i 's/^GRUB_TIMEOUT=[0-9]\+/GRUB_TIMEOUT=1/' /etc/default/grub ||
-#        echo "GRUB_TIMEOUT=1" >> /etc/default/grub
-#    } && update-grub >/dev/null 2>&1 && reboot
-#}
-
