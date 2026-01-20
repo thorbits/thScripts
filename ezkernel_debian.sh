@@ -138,9 +138,11 @@ install_deps() {
 	local i=0 ok=0
     for p in "${packages[@]}"; do
         ((i++))
-        dpkg -s "$p" &>/dev/null || {
-            "${PM[@]}" "$p" &>/dev/null && ((ok++))
-        }
+        if ! dpkg -s "$p" &>/dev/null; then
+            if "${PM[@]}" install -y "$p" &>/dev/null; then
+                ((ok++))
+            fi
+        fi
 		printf "\rProgress: %3d%% [%-40s] %-*s" $((i*100/sum)) "$(printf '|%.0s' $(seq 1 $((i*40/sum))))" "$pkg_len" "$p"
     done
 
@@ -208,6 +210,7 @@ reboot_system(){
 reboot_system
 
 #[[ ${BASH_SOURCE[0]} == "$0" ]] && install_deps "$@" # run only when executed, not sourced
+
 
 
 
