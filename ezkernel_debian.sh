@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-#	_______
-#   \_   _/
-#     |_|horbits
+#   _______
+#   |__ __|
+#     ||horbits
 #
 #    eZkernel for Debian
 #    Interactive Linux kernel compilation and installation script
@@ -253,6 +253,7 @@ reboot_system(){
 #}
 
 reboot_system
+
 
 
 
