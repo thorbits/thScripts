@@ -94,10 +94,8 @@ done
 printf "\n\n Checking compilation dependencies...\n\n"
 
 pkgs=(build-essential libdw-dev libelf-dev zlib1g-dev libncurses-dev libssl-dev bison bc flex rsync debhelper python3)
-
 sum=${#pkgs[@]}
 pkg_len=0
-
 for q in "${pkgs[@]}"; do
     (( ${#q} > pkg_len )) && pkg_len=${#q}
 done
@@ -148,6 +146,8 @@ done
 #}
 
 #install_deps
+
+printf "\r Progress: 100%% [%-40s] Installed %d new package(s).\n\n" "$(printf '|%.0s' $(seq 1 40))" "$ok"
 
 printf " Downloading kernel sources...\n\n"
 mkdir -p "kernel/linux-upstream-$KVER"
@@ -202,6 +202,7 @@ reboot_system(){
 reboot_system
 
 #[[ ${BASH_SOURCE[0]} == "$0" ]] && install_deps "$@" # run only when executed, not sourced
+
 
 
 
