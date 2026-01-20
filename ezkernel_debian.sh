@@ -194,23 +194,23 @@ yes '' | make localmodconfig && make menuconfig
 if ! time { \
         make -j"$JOBS" bindeb-pkg && \
         dpkg -i "${WORKDIR}"/*.deb; \
-		printf "\n\n eZkernel compilation successful for version: %s\n\n" "$KVER"
+		printf "\n\n eZkernel compilation successful for version: %s\n\n Compilation time :\n" "$KVER"
     }; then
     fatal "kernel compilation or package installation failed."
 fi
 
-# cleanup and end message
+# cleanup and final message
 abort() {
     fatal "aborted by user – no reboot performed."
 }
 trap abort SIGINT SIGTERM
 
 reboot_system(){
-	printf " System will reboot now.\n\n"
+	printf " \n\nSystem will reboot now.\n\n"
 	while : ; do
     read -r -s -n1 -p $' Press Enter to continue or Ctrl+C to cancel.' REPLY
-    printf '\r\033[2K' # clear the prompt line
-    if [[ -z "$REPLY" ]]; then # Enter only,no other key
+#    printf '\r\033[2K' # clear the prompt line
+    if [[ -z "$REPLY" ]]; then # Enter only, no other key
         break
     fi
 	done
@@ -252,4 +252,3 @@ reboot_system
 #        echo "GRUB_TIMEOUT=1" >> /etc/default/grub
 #    } && update-grub >/dev/null 2>&1 && reboot
 #}
-
