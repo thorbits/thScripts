@@ -101,12 +101,10 @@ i=0 ok=0
 for p in "${pkgs[@]}"; do
     ((i++))
     dpkg -s "$p" &>/dev/null || {
-        apt-get install -y --no-install-recommends "$p" &>/dev/null && ((ok++))
+        "${PM[@]}" "$p" &>/dev/null && ((ok++))
     }
-    printf "\rProgress: %3d%% [%-40s] %-*s" \
-           $((i*100/sum)) \
-           "$(printf '|%.0s' $(seq 1 $((i*40/sum))))" \
-           "$pkg_len" "$p"
+	printf "\r Progress: %3d%% [%-40s] %-*s" $((i*100/sum)) "$(printf '|%.0s' $(seq 1 $((i*40/sum))))" "$pkg_len" "$p"
+#    printf "\r Progress: %3d%% [%-40s] %-*s" $((i*100/sum)) "$(printf '|%.0s' $(seq 1 $((i*40/sum))))" "$pkg_len" "$p"
 done
 
 #install_deps() {
@@ -128,7 +126,7 @@ done
 #    for p in "${packages[@]}"; do
 #        ((i++))
 #        dpkg -s "$p" &>/dev/null || {
-#            "${PM[@]}" install -y "$p" &>/dev/null && ((ok++))
+#            "${PM[@]}" "$p" &>/dev/null && ((ok++))
 #        }
 #		printf "\rProgress: %3d%% [%-40s] %-*s" $((i*100/sum)) "$(printf '|%.0s' $(seq 1 $((i*40/sum))))" "$pkg_len" "$p"
 #    done
@@ -199,6 +197,7 @@ reboot_system(){
 reboot_system
 
 #[[ ${BASH_SOURCE[0]} == "$0" ]] && install_deps "$@" # run only when executed, not sourced
+
 
 
 
