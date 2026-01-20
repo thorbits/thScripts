@@ -110,8 +110,8 @@ pkg_len=0
 for q in "${pkgs[@]}"; do
     (( ${#q} > pkg_len )) && pkg_len=${#q}
 done
-
-i=0 ok=0
+i=0
+ok=0
 for p in "${pkgs[@]}"; do
     ((i++))
     dpkg -s "$p" &>/dev/null || {
@@ -169,7 +169,7 @@ printf "\r Progress: 100%% [%-40s] Installed %d new package(s).\n\n" "$(printf '
 mkdir -p "${SRCDIR}"
 cd "${SRCDIR}"
 
-printf " Downloading latest upstream kernel snapshot…\n"
+printf " Downloading latest upstream kernel snapshot…\n\n"
 if ! wget -q --show-progress -O "${TARBALL}" \
         "https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-master.tar.gz"; then
     fatal "failed to download kernel source."
@@ -252,3 +252,4 @@ reboot_system
 #        echo "GRUB_TIMEOUT=1" >> /etc/default/grub
 #    } && update-grub >/dev/null 2>&1 && reboot
 #}
+
