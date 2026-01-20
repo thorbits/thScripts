@@ -11,6 +11,8 @@
 # 
 # ----------------------------------------------------------------#
 
+(if (return 0 2>/dev/null); then return 0; fi)
+
 [[ $EUID -eq 0 ]] || { echo " This script must be run as root (or sudo)" >&2; exit 1; }
 
 #set -euo pipefail
@@ -246,5 +248,3 @@ reboot_system(){
 #}
 
 reboot_system
-
-
