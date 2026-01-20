@@ -128,7 +128,7 @@ install_deps() {
 #    fi
 
     printf "\n\n Checking compilation dependencies...\n\n"
-    local packages=(${KRNL_GROUP[$DISTRO]})
+    IFS=' ' read -r -a packages <<< "${KRNL_GROUP[$DISTRO]}"
     local sum=${#packages[@]} pkg_len=0 i=0 ok=0
     for q in "${packages[@]}"; do
         (( ${#q} > pkg_len )) && pkg_len=${#q}
@@ -205,6 +205,7 @@ reboot_system(){
 reboot_system
 
 #[[ ${BASH_SOURCE[0]} == "$0" ]] && install_deps "$@" # run only when executed, not sourced
+
 
 
 
