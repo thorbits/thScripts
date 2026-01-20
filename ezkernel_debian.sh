@@ -79,11 +79,14 @@ if ! command -v curl >/dev/null 2>&1 || ! command -v wget >/dev/null 2>&1; then
     "${PM[@]}" curl wget >/dev/null 2>&1
 fi
 
+# configurable variables
 KVER=$(curl -s https://www.kernel.org/finger_banner | sed -n '2s/^[^6]*//p')
 WORKDIR="${HOME:-/root}/kernel"
 SRCDIR="${WORKDIR}/linux-upstream-${KVER}"
 TARBALL="${SRCDIR}/linux-master.tar.gz"
-
+MAXJOBS=$(nproc) # MAXJOBS=8 limit cpu parallelism (avoid OOM on tiny VMs)
+JOBS=$(nproc)
+(( JOBS > MAXJOBS )) && JOBS=$MAXJOBS
 
 max_len=80
 printf "\r%-*s\n\n" "$max_len" " Checking kernels versions... done."
@@ -113,7 +116,6 @@ for p in "${pkgs[@]}"; do
         "${PM[@]}" "$p" &>/dev/null && ((ok++))
     }
 	printf "\r Progress: %3d%% [%-40s] %-*s" $((i*100/sum)) "$(printf '|%.0s' $(seq 1 $((i*40/sum))))" "$pkg_len" "$p"
-#    printf "\r Progress: %3d%% [%-40s] %-*s" $((i*100/sum)) "$(printf '|%.0s' $(seq 1 $((i*40/sum))))" "$pkg_len" "$p"
 done
 
 #install_deps() {
@@ -174,13 +176,23 @@ tar -xzf "${TARBALL}" --strip-components=1
 rm -f "${TARBALL}"
 
 # kernel comppilation
-yes '' | make localmodconfig
+#yes '' | make localmodconfig
+#make menuconfig && (
+#    time make -j"$(nproc)" bindeb-pkg &&
+#    dpkg -i ~/kernel/*.deb &&
+#    printf "\n\n eZkernel compilation successful for version: %s\n" "$KVER"
+#)  || fatal "compilation or installation error."
 
-make menuconfig && (
-    time make -j"$(nproc)" bindeb-pkg &&
-    dpkg -i ~/kernel/*.deb &&
-    printf "\n\n eZkernel compilation successful for version: %s\n" "$KVER"
-)  || fatal "compilation or installation error."
+make localmodconfig
+make menuconfig
+if ! time { \
+        make -j"$JOBS" bindeb-pkg && \
+        dpkg -i "${WORKDIR}"/*.deb; \
+    }; then
+    fatal "kernel compilation or package installation failed."
+else
+	printf "\n\n eZkernel compilation successful for version: %s\n" "$KVER"
+fi
 
 reboot_system(){
 	printf "\n\n System will reboot now.\n\n"
@@ -216,4 +228,5 @@ reboot_system(){
 #}
 
 reboot_system
+
 
