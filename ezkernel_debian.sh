@@ -187,9 +187,9 @@ rm -f "${TARBALL}"
 #)  || fatal "compilation or installation error."
 
 # kernel comppilation
-make -B localmodconfig
-make menuconfig
-
+#make -B localmodconfig
+#make menuconfig
+yes '' | make localmodconfig && make menuconfig
 if ! time { \
         make -j"$JOBS" bindeb-pkg && \
         dpkg -i "${WORKDIR}"/*.deb; \
@@ -252,6 +252,7 @@ reboot_system(){
 #}
 
 reboot_system
+
 
 
 
