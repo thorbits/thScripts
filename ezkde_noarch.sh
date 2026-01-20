@@ -418,8 +418,15 @@ install_packages() {
 #	return $ret
 #}
 
+manage_dm(){
+    systemctl disable "$dm_unit" >/dev/null 2>&1
+    systemctl enable sddm.service >/dev/null 2>&1
+        if [[ $(systemctl get-default) == "multi-user.target" ]]; then
+            systemctl set-default graphical.target >/dev/null 2>&1
+        fi
+}
 enable_dm() {
-	local dm_unit
+local dm_unit
     case "$DISTRO" in
         arch|debian|fedora)
             dm_unit=$(systemctl show -p Id --value display-manager 2>/dev/null)
@@ -438,18 +445,10 @@ enable_dm() {
             systemctl set-default graphical.target >/dev/null 2>&1
         fi
     elif [[ "$dm_unit" == "display-manager-legacy.service" ]]; then
-        systemctl disable "$dm_unit" >/dev/null 2>&1
-        systemctl enable sddm.service >/dev/null 2>&1
-        if [[ $(systemctl get-default) == "multi-user.target" ]]; then
-            systemctl set-default graphical.target >/dev/null 2>&1
-        fi
+        manage_dm
     # handle specific display managers
     elif [[ -n "$dm_unit" ]]; then
-        systemctl disable "$dm_unit" >/dev/null 2>&1
-        systemctl enable sddm.service >/dev/null 2>&1
-        if [[ $(systemctl get-default) == "multi-user.target" ]]; then
-            systemctl set-default graphical.target >/dev/null 2>&1
-        fi
+        manage_dm
     fi
 }
 
