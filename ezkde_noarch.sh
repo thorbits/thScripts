@@ -370,26 +370,11 @@ progress-bar() {
 #}
 
 install_packages() {
-    (
-        if tty >/dev/null 2>&1 && saved=$(stty -g 2>/dev/null); then
-            tty_active=1
-            # disable *all* special characters and echo
-            stty -echo -icanon min 0 time 0 \
-                 intr '' quit '' susp '' stop '' start '' 2>/dev/null
-            # always restore, even on SIGINT
-            trap 'stty "$saved"' EXIT INT
-        else
-            tty_active=0
-        fi
-
-        for pkg; do
-            if (( tty_active )); then
-                printf '\r%-*s' "$COLUMNS" " -> Installing: $pkg" >&9
-            fi
-            "${PM[@]}" "$pkg" </dev/null >/dev/null 2>&1
-            sleep .2
-        done
-	) 9>&1
+    for pkg in "$@"; do
+        printf '\r%-*s' "$COLUMNS" " -> Now downloading and installing: $pkg"
+        "${PM[@]}" "$pkg" </dev/null >/dev/null 2>&1
+		sleep .2
+    done
 }
 
 manage_dm(){
