@@ -91,6 +91,7 @@ MAXJOBS=$(nproc) # MAXJOBS=8 limit cpu parallelism (avoid OOM on tiny VMs)
 JOBS=$(nproc)
 (( JOBS > MAXJOBS )) && JOBS=$MAXJOBS
 
+# version check
 max_len=80
 printf "\r%-*s\n\n" "$max_len" " Checking kernels versions... done."
 
@@ -104,7 +105,7 @@ while true; do
 done
 
 printf "\n\n Checking compilation dependencies...\n\n"
-
+# packages install with progress bar
 pkgs=(build-essential libdw-dev libelf-dev zlib1g-dev libncurses-dev libssl-dev bison bc flex make rsync debhelper python3)
 sum=${#pkgs[@]}
 pkg_len=0
@@ -118,11 +119,12 @@ for p in "${pkgs[@]}"; do
     dpkg -s "$p" &>/dev/null || {
         "${PM[@]}" "$p" &>/dev/null && ((ok++))
     }
-	printf "\r Progress: %3d%% [%-40s] %-*s" $((i*100/sum)) "$(printf '|%.0s' $(seq 1 $((i*40/sum))))" "$pkg_len" "$p"
+	printf "\r Progress: %3d%% [%-30s] %-*s" $((i*100/sum)) "$(printf '|%.0s' $(seq 1 $((i*30/sum))))" "$pkg_len" "$p"
 done
 
-printf "\r Progress: 100%% [%-40s] Installed %d new package(s).\n\n" "$(printf '|%.0s' $(seq 1 40))" "$ok"
+printf "\r Progress: 100%% [%-30s] Installed %d new package(s).\n\n" "$(printf '|%.0s' $(seq 1 30))" "$ok"
 
+# prepare build env
 mkdir -p "${SRCDIR}"
 cd "${SRCDIR}"
 
@@ -136,6 +138,7 @@ printf "\n Extracting kernel sources…\n\n"
 tar -xzf "${TARBALL}" --strip-components=1
 rm -f "${TARBALL}"
 
+# kernel compilation
 yes '' | make localmodconfig && make menuconfig
 if ! time { \
         make -j"$JOBS" bindeb-pkg && \
@@ -171,7 +174,7 @@ reboot_system(){
 
     update-grub >/dev/null 2>&1 || fatal "failed to update grub."
 
-	printf"\n"
+	printf "\n"
 	for i in {5..1}; do
     	printf "\r\033[2K Rebooting in %d second%s..." "$i" $([ "$i" -eq 1 ] && echo "" || echo "s")
     	sleep 1
