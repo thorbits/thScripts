@@ -171,7 +171,7 @@ if ! wget -q --show-progress -O "${TARBALL}" \
         "https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-master.tar.gz"; then
     fatal "failed to download kernel source."
 fi
-printf  " Extracting kernel sources…\n\n"
+printf  "\n\n Extracting kernel sources…\n\n"
 tar -xzf "${TARBALL}" --strip-components=1
 rm -f "${TARBALL}"
 
@@ -228,6 +228,7 @@ reboot_system(){
 #}
 
 reboot_system
+
 
 
 
