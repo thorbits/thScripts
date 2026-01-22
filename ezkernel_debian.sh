@@ -271,18 +271,7 @@ reboot_system(){
     	printf "\r\033[2K Rebooting in %d second%s..." "$i" $([ "$i" -eq 1 ] && echo "" || echo "s")
     	sleep 1
 	done
-
     /sbin/reboot
 }
 
 reboot_system
-
-
-
-
-
-
-
-
-
-
