@@ -55,7 +55,7 @@ case "$DISTRO" in
 esac
 
 declare -A KRNL_GROUP # map each distro to its required kernel compilation dependencies
-KRNL_GROUP[debian]="build-essential libdw-dev libelf-dev zlib1g-dev libncurses-dev libssl-dev bison bc flex rsync debhelper python3"
+KRNL_GROUP[debian]="libdw-dev libelf-dev zlib1g-dev libncurses-dev libssl-dev bison bc flex rsync debhelper python3 build-essential"
 
 #intro
 clear
@@ -118,39 +118,40 @@ done
 
 # packages install with progress bar
 check_deps() {
-	printf "\n\n Checking compilation dependencies for %s …\n\n" "$DISTRO"
-	read -ra pkgs <<< "${KRNL_GROUP[$DISTRO]}"
-	local sum=${#pkgs[@]}
-	local pkg_len=0
-		for q in "${pkgs[@]}"; do
-    	(( ${#q} > pkg_len )) && pkg_len=${#q}
-		done
+    printf "\n\n Checking compilation dependencies for %s …\n\n" "$DISTRO"
 
-	local BAR_MAX=30 
-	local BAR_CHAR='|'
-    local bar; bar=$(printf "%*s" "$BAR_MAX" '' | tr ' ' "$BAR_CHAR")
-		
-	draw_bar() {
-    	local percent=$1
-    	local pkg=$2
-    	local filled=$(( percent * BAR_MAX / 100 ))
-        printf "\r Progress: %3d%% [%-${BAR_MAX}s] %-*s\e[0K" \
-               "$percent" "${bar:0:filled}" "$pkg_len" "$pkg"
-	}
+    read -ra pkgs <<< "${KRNL_GROUP[$DISTRO]}"
+    local -i total=${#pkgs[@]} ok=0 i=0 pct=-1 filled
+    local -i max_len=0
+    for q in "${pkgs[@]}"; do (( ${#q} > max_len )) && max_len=${#q}; done
+
+    local -r BAR_MAX=30 BAR_CHAR='|'
+    local -r bar_empty=$(printf "%${BAR_MAX}s" '' | tr ' ' "$BAR_CHAR")
+
     tput civis
-	i=0
-	ok=0
-    draw_bar 0 ""
-	for p in "${pkgs[@]}"; do
-    	((i++))
-    	if ! dpkg -s "$p" &>/dev/null; then
-        	"${PM[@]}" "$p" &>/dev/null && ((ok++))
-            draw_bar $(( i * 100 / total )) "$p"
-        else
-            draw_bar $(( i * 100 / total )) "$p"
-    	fi
-	done
-	printf "\r Progress: 100%% [%-${BAR_MAX}s] Installed %d new package(s).\n\n" "$bar" "$ok"
+    printf "\r Progress: ---%% [%-*s] %-*s" "$BAR_MAX" '' "$max_len" ''
+
+    for p in "${pkgs[@]}"; do
+        ((i++))
+        if ! dpkg -s "$p" &>/dev/null && "${PM[@]}" "$p" &>/dev/null; then
+            ((ok++))
+        fi
+
+        # refresh bar only when percentage changes
+        filled=$(( i * 100 / total ))
+        (( filled != pct )) && {
+            pct=$filled
+            printf "\r Progress: %3d%% [%-*.*s%-*s] %-*s" \
+                   "$pct" \
+                   "$BAR_MAX" "$(( pct*BAR_MAX/100 ))" "$bar_empty" \
+                   "$(( BAR_MAX - pct*BAR_MAX/100 ))" '' \
+                   "$max_len" "$p"
+        }
+    done
+
+    printf "\r Progress: 100%% [%-*s] Installed %d new package(s).\n\n" \
+           "$BAR_MAX" "$bar_empty" "$ok"
+    tput cnorm
 }
 check_deps
 
@@ -226,6 +227,7 @@ reboot_system(){
     /sbin/reboot
 }
 reboot_system
+
 
 
 
