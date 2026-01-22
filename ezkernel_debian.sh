@@ -184,7 +184,7 @@ check_deps() {
         pct=$filled
 
         # fixed-length bar
-        printf "\r Progress: %3d%% [%*s%s] Verifying: %-*s%*s" \
+        printf "\r Progress: %3d%% [%*s%s] Verifying/installing: %-*s%*s" \
                "$pct" \
                $(( filled*BAR_MAX/100 )) \
                "$(printf '%*s' $((filled*BAR_MAX/100)) '' | tr ' ' "$BAR_CHAR")" \
@@ -273,3 +273,4 @@ reboot_system(){
     /sbin/reboot
 }
 reboot_system
+
