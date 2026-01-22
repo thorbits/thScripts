@@ -119,14 +119,23 @@ done
 # packages install with progress bar
 check_deps() {
     printf "\n\n Checking compilation dependencies for %s …\n\n" "$DISTRO"
-
-    #read -ra pkgs <<< "${KRNL_GROUP[$DISTRO]}"
 	local -a pkgs
-	mapfile -t pkgs < <("${LIST_CMD[@]}" ${KRNL_GROUP[$DISTRO]} | awk '/^Inst / {print $2}')
+    case "$DISTRO" in
+        debian)
+            # inherit the current locale for install
+            current_locale=${LC_ALL:-${LANG:-C.UTF-8}}
+            current_locale=${current_locale%%.*}.UTF-8
+            echo "locales locales/default_environment_locale select $current_locale" | debconf-set-selections
+            echo "locales locales/locales_to_be_generated multiselect $current_locale UTF-8" | debconf-set-selections
+            export DEBIAN_FRONTEND=noninteractive
+            
+            mapfile -t pkgs < <("${LIST_CMD[@]}" ${KRNL_GROUP[$DISTRO]} | awk '/^Inst / {print $2}')
+            ;;
+	esac
 
-    if [[ ${#pkgs[@]} -eq 0 ]]; then
-        printf "All required packages are already installed.\n\n"
-        return 0
+	if [[ ${#pkgs[@]} -eq 0 ]]; then
+    	printf "\r Progress: 100%% [%-*s] all required packages are already installed.\n\n" \
+           "$BAR_MAX" "$bar" "$ok"	
     fi
 	
     local -i total=${#pkgs[@]} ok=0 i=0 pct=-1 filled
@@ -233,6 +242,7 @@ reboot_system(){
     /sbin/reboot
 }
 reboot_system
+
 
 
 
