@@ -122,7 +122,7 @@ check_deps() {
 
     #read -ra pkgs <<< "${KRNL_GROUP[$DISTRO]}"
 	local -a pkgs
-	mapfile -t pkgs < <("${LIST_CMD[@]}" "${KRNL_GROUP[$DISTRO]}" | awk '/^Inst / {print $2}')
+	mapfile -t pkgs < <("${LIST_CMD[@]}" ${KRNL_GROUP[$DISTRO]} | awk '/^Inst / {print $2}')
 
     if [[ ${#pkgs[@]} -eq 0 ]]; then
         printf "All required packages are already installed.\n\n"
@@ -233,6 +233,7 @@ reboot_system(){
     /sbin/reboot
 }
 reboot_system
+
 
 
 
