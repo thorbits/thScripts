@@ -104,8 +104,8 @@ while true; do
     [[ -z "$REPLY" ]] && break # break if Enter was pressed
 done
 
-printf "\n\n Checking compilation dependencies for %s …\n\n" "$distro"
-read -ra pkgs <<< "${KRNL_GROUP[$distro]}"
+printf "\n\n Checking compilation dependencies for %s …\n\n" "$DISTRO"
+read -ra pkgs <<< "${KRNL_GROUP[$DISTRO]}"
 sum=${#pkgs[@]}
 pkg_len=0
 for q in "${pkgs[@]}"; do
@@ -213,4 +213,5 @@ reboot_system(){
     /sbin/reboot
 }
 reboot_system
+
 
