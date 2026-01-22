@@ -46,6 +46,7 @@ esac
 declare -A KRNL_GROUP # map each distro to its required kernel compilation dependencies
 KRNL_GROUP[debian]="build-essential libdw-dev libelf-dev zlib1g-dev libncurses-dev libssl-dev bison bc flex rsync debhelper python3"
 
+#intro
 clear
 echo
 
@@ -91,7 +92,7 @@ MAXJOBS=$(nproc) # MAXJOBS=8 limit cpu parallelism (avoid OOM on tiny VMs)
 JOBS=$(nproc)
 (( JOBS > MAXJOBS )) && JOBS=$MAXJOBS
 
-# version check
+# kernel version check
 max_len=80
 printf "\r%-*s\n\n" "$max_len" " Checking kernels versions... done."
 
@@ -136,6 +137,7 @@ check_deps() {
 	printf "\r Progress: 100%% [%-${BAR_MAX}s] Installed %d new package(s).\n\n" "$(printf '%*s' "$BAR_MAX" '' | tr ' ' "$BAR_CHAR")" "$ok"
 }
 check_deps
+
 #printf "\n\n Checking compilation dependencies...\n\n"
 #pkgs=(build-essential libdw-dev libelf-dev zlib1g-dev libncurses-dev libssl-dev bison bc flex make rsync debhelper python3)
 #sum=${#pkgs[@]}
@@ -213,6 +215,7 @@ reboot_system(){
     /sbin/reboot
 }
 reboot_system
+
 
 
 
