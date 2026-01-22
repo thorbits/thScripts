@@ -96,6 +96,7 @@ esac
 
 # choice of kernel sources
 WORKDIR="${HOME:-/root}/kernel"
+KVER= URL= SRCDIR= TARBALL=	# initialise, so tu use later ouside function
 case "${DISTRO:-}" in
     debian)
         printf " Which kernel sources do you want to use:\n\n"
@@ -272,5 +273,6 @@ reboot_system(){
 }
 
 reboot_system
+
 
 
