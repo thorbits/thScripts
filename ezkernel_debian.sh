@@ -204,29 +204,33 @@ upstream	latest upstream kernel snapshot
 debian		latest Debian/sid kernel source
 EOF
 
-source_download(){
-    while IFS=' ' read -r key text; do
-        case $SRCDIR in
-        *"$key"*) printf " Downloading %s…\n\n" "$text"; return ;; # directory-independent message, see flavour map
-        esac
-    done <<<"$FLAVOUR_MAP"
+declare -A FLAVOUR_MAP=(
+    [upstream]="latest upstream kernel snapshot"
+    [debian]="latest Debian/sid kernel source"
+)
+
+download_source() {
+    local msg="" key
+    for key in "${!FLAVOUR_MAP[@]}"; do
+        if [[ $SRCDIR =~ $key ]]; then
+            msg=${FLAVOUR_MAP[$key]}
+            break
+        fi
+    done
+    printf " Downloading %s …\n\n" "$msg" # directory-independent message, see flavour map
+    mkdir -p "$SRCDIR"
+    cd "$SRCDIR"
+    wget -q --show-progress -O "$TARBALL" "$URL"
 }
 
-source_download
-
-mkdir -p "${SRCDIR}"
-cd "${SRCDIR}"
-
-if ! wget -q --show-progress "$URL" -O "${TARBALL}"; then
-    fatal "failed to download kernel source."
-fi
+download_source
 
 printf "\n Extracting kernel sources…\n\n"
-case "$URL" in
+case "$TARBALL" in
     *.tar.gz)  tar -xzf "${TARBALL}" --strip-components=1 ;;
     *.tar.xz)  tar -xJf "${TARBALL}" --strip-components=1 ;;
 esac
-rm -f "${TARBALL}"
+rm -f "$TARBALL"
 
 # cpu variables
 MAXJOBS=$(nproc) # use max cores, change to MAXJOBS=8 to limit cpu parallelism, avoid OOM on tiny VMs
@@ -274,3 +278,4 @@ reboot_system(){
     /sbin/reboot
 }
 reboot_system
+
