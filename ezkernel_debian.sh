@@ -204,21 +204,20 @@ check_deps() {
 check_deps
 
 # prepare build env
-
-# flavour map: substring<TAB>human text -----------------------------
 read -r -d '' FLAVOUR_MAP <<'EOF'
-upstream        latest upstream kernel snapshot
-debian          latest Debian sid kernel source
+upstream	latest upstream kernel snapshot
+debian		latest Debian sid kernel source
 EOF
 
 msg_downloading(){
     while read -r key text; do
         case $SRCDIR in
-        *"$key"*) printf 'Downloading %s…\n\n' "$text"; return ;;
+        *"$key"*) printf " Downloading %s…\n\n" "$text"; return ;;
         esac
     done <<<"$FLAVOUR_MAP"
 }
-msg_downloading
+
+msg_downloading  # directory-independent message, see flavour map
 
 mkdir -p "${SRCDIR}"
 cd "${SRCDIR}"
@@ -282,6 +281,7 @@ reboot_system(){
 }
 
 reboot_system
+
 
 
 
