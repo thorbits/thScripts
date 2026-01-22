@@ -204,7 +204,7 @@ upstream	latest upstream kernel snapshot
 debian		latest Debian sid kernel source
 EOF
 
-msg_downloading(){
+source_download(){
     while read -r key text; do
         case $SRCDIR in
         *"$key"*) printf " Downloading %s…\n\n" "$text"; return ;;
@@ -212,7 +212,7 @@ msg_downloading(){
     done <<<"$FLAVOUR_MAP"
 }
 
-msg_downloading  # directory-independent message, see flavour map
+source_download # directory-independent message, see flavour map
 
 mkdir -p "${SRCDIR}"
 cd "${SRCDIR}"
@@ -276,6 +276,7 @@ reboot_system(){
 }
 
 reboot_system
+
 
 
 
