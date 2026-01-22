@@ -85,16 +85,10 @@ ART
         ;;
 esac
 
-# cpu variables
-MAXJOBS=$(nproc) # use max cores, change to MAXJOBS=8 to limit cpu parallelism, avoid OOM on tiny VMs
-JOBS=$(nproc)
-(( JOBS > MAXJOBS )) && JOBS=$MAXJOBS
-
 printf "\n\n Welcome %s, to eZkernel for %s.\n\n The latest mainline Linux kernel from www.kernel.org will be will be sourced, compiled and installed.\n\n" "$USER" "$DISTRO"
 
 # choice of kernel sources
 WORKDIR="${HOME:-/root}/kernel"
-
 case "${DISTRO:-}" in
     debian)
         choose_source(){
@@ -222,6 +216,11 @@ case "$URL" in
 esac
 rm -f "${TARBALL}"
 
+# cpu variables
+MAXJOBS=$(nproc) # use max cores, change to MAXJOBS=8 to limit cpu parallelism, avoid OOM on tiny VMs
+JOBS=$(nproc)
+(( JOBS > MAXJOBS )) && JOBS=$MAXJOBS
+
 # kernel compilation
 yes '' | make localmodconfig && make menuconfig
 if ! time { \
@@ -263,5 +262,6 @@ reboot_system(){
 }
 
 reboot_system
+
 
 
