@@ -204,14 +204,21 @@ check_deps() {
 check_deps
 
 # prepare build env
-case "$SRCDIR" in
-    linux-upstream-*)
-        printf "Downloading latest upstream kernel snapshot…\n\n"
-        ;;
-    linux-debian-*)
-        printf "Downloading latest Debian sid kernel source…\n\n"
-        ;;
-esac
+
+# flavour map: substring<TAB>human text -----------------------------
+read -r -d '' FLAVOUR_MAP <<'EOF'
+upstream        latest upstream kernel snapshot
+debian          latest Debian sid kernel source
+EOF
+
+msg_downloading(){
+    while read -r key text; do
+        case $SRCDIR in
+        *"$key"*) printf 'Downloading %s…\n\n' "$text"; return ;;
+        esac
+    done <<<"$FLAVOUR_MAP"
+}
+msg_downloading
 
 mkdir -p "${SRCDIR}"
 cd "${SRCDIR}"
@@ -275,5 +282,6 @@ reboot_system(){
 }
 
 reboot_system
+
 
 
