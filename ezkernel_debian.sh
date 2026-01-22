@@ -91,10 +91,10 @@ printf "\n\n Welcome %s, to eZkernel for %s.\n\n The latest mainline Linux kerne
 WORKDIR="${HOME:-/root}/kernel"
 case "${DISTRO:-}" in
     debian)
-        printf " Which kernel sources do you want?\n\n"
+        printf " Which kernel sources do you want:\n\n"
         choose_source(){
     		while true; do
-        		printf "\r\033[2K upstream master snapshot (1) or latest in sid/debian (2): [1/2]: "
+        		printf "\r\033[2K upstream master snapshot (1) or latest in sid/debian (2) [1/2]: "
         		read -n1 -s -r choice
 	        case $choice in
             	1)  # Upstream master snapshot
@@ -266,6 +266,7 @@ reboot_system(){
 }
 
 reboot_system
+
 
 
 
