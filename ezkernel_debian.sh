@@ -92,29 +92,34 @@ WORKDIR="${HOME:-/root}/kernel"
 case "${DISTRO:-}" in
     debian)
         choose_source(){
-            printf " Which kernel sources do you want?\n\n"
-            select src in "Upstream master snapshot" "Debian sid (latest 6.x)"; do
-                case $src in
-                    "Upstream master snapshot")
-                        KVER=$(curl -s https://www.kernel.org/finger_banner | sed -n '2s/^[^6]*//p')
-                        URL='https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-master.tar.gz'
-                        SRCDIR="${WORKDIR}/linux-upstream-${KVER}"
-                        TARBALL="${SRCDIR}/linux-master.tar.gz"
-                        return
-                        ;;
-                    "Debian sid (latest 6.x)")
-                        KVER=$(curl -s "https://packages.debian.org/sid/kernel/" \
-                               | grep -oP '\d+\.\d+\.\d+-\d+' \
-                               | grep '^6\..*-1$' \
-                               | sort -V | tail -n1)
-                        URL="http://deb.debian.org/debian/pool/main/l/linux/linux_${KVER}.debian.tar.xz"
-                        SRCDIR="${WORKDIR}/linux-debian-${KVER}"
-                        TARBALL="${SRCDIR}/linux_${KVER}.debian.tar.xz"
-                        return
-                        ;;
-                esac
-            done
-        }
+    		while true; do
+        		printf " Which kernel sources do you want?\n\n"
+        		printf "\r\033[2K upstream master snapshot (1) or latest in sid/debian (2): [1/2]: "
+        		read -n1 -s -r choice
+	        case $choice in
+            	1)  # Upstream master snapshot
+                	KVER=$(curl -s https://www.kernel.org/finger_banner | sed -n '2s/^[^6]*//p')
+                	URL='https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-master.tar.gz'
+                	SRCDIR="${WORKDIR}/linux-upstream-${KVER}"
+                	TARBALL="${SRCDIR}/linux-master.tar.gz"
+                	printf "\n"           # newline after choice
+                	return
+                	;;
+            	2)  # Debian sid (latest 6.x)
+                	KVER=$(curl -s "https://packages.debian.org/sid/kernel/" \
+                       | grep -oP '\d+\.\d+\.\d+-\d+' \
+                       | grep '^6\..*-1$' \
+                       | sort -V | tail -n1)
+                	URL="http://deb.debian.org/debian/pool/main/l/linux/linux_${KVER}.debian.tar.xz"
+                	SRCDIR="${WORKDIR}/linux-debian-${KVER}"
+                	TARBALL="${SRCDIR}/linux_${KVER}.debian.tar.xz"
+                	printf "\n"           # newline after choice
+                	return
+                	;;
+            	*)  printf "\nInvalid key—try again.\n" ;;
+        	esac
+    		done
+		}
         ;;
     *)
         fatal "unsupported distribution: $DISTRO."
@@ -262,6 +267,7 @@ reboot_system(){
 }
 
 reboot_system
+
 
 
 
