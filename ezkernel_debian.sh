@@ -87,8 +87,7 @@ esac
 
 case "${DISTRO:-}" in
     debian)
-		printf "\n\n Welcome %s, to eZkernel for %s.\n\n The latest Linux kernel available in mainline (kernel.org) or sid (deb.debian.org), \
-		will be will be sourced, compiled and installed.\n\n" "$USER" "$DISTRO"
+		printf "\n\n Welcome %s, to eZkernel for %s.\n\n The latest Linux kernel available in mainline (kernel.org) or sid (deb.debian.org), will be will be sourced, compiled and installed.\n\n" "$USER" "$DISTRO"
 		;;
     *)
         fatal "unsupported distribution: $DISTRO."
@@ -277,6 +276,7 @@ reboot_system(){
 }
 
 reboot_system
+
 
 
 
