@@ -104,36 +104,38 @@ while true; do
     [[ -z "$REPLY" ]] && break # break if Enter was pressed
 done
 
-printf "\n\n Checking compilation dependencies for %s …\n\n" "$DISTRO"
-read -ra pkgs <<< "${KRNL_GROUP[$DISTRO]}"
-sum=${#pkgs[@]}
-pkg_len=0
-for q in "${pkgs[@]}"; do
-    (( ${#q} > pkg_len )) && pkg_len=${#q}
-done
+check_deps() {
+	printf "\n\n Checking compilation dependencies for %s …\n\n" "$DISTRO"
+	read -ra pkgs <<< "${KRNL_GROUP[$DISTRO]}"
+	sum=${#pkgs[@]}
+	pkg_len=0
+		for q in "${pkgs[@]}"; do
+    	(( ${#q} > pkg_len )) && pkg_len=${#q}
+		done
 
-BAR_MAX=30 
-BAR_CHAR='|'
-draw_bar() {
-    local percent=$1
-    local pkg=$2
-    local filled=$(( percent * BAR_MAX / 100 ))
-    local bar
-    bar=$(printf "%*s" "$filled" "" | tr ' ' "$BAR_CHAR")
-    printf "\r Progress: %3d%% [%-${BAR_MAX}s] %-*s" "$percent" "$bar" "$pkg_len" "$pkg"
-}
+	BAR_MAX=30 
+	BAR_CHAR='|'
+	draw_bar() {
+    	local percent=$1
+    	local pkg=$2
+    	local filled=$(( percent * BAR_MAX / 100 ))
+    	local bar
+    	bar=$(printf "%*s" "$filled" "" | tr ' ' "$BAR_CHAR")
+    	printf "\r Progress: %3d%% [%-${BAR_MAX}s] %-*s" "$percent" "$bar" "$pkg_len" "$pkg"
+	}
 
-i=0
-ok=0
-for p in "${pkgs[@]}"; do
-    ((i++))
-    if ! dpkg -s "$p" &>/dev/null; then
-        "${PM[@]}" "$p" &>/dev/null && ((ok++))
-    fi
+	i=0
+	ok=0
+	for p in "${pkgs[@]}"; do
+    	((i++))
+    	if ! dpkg -s "$p" &>/dev/null; then
+        	"${PM[@]}" "$p" &>/dev/null && ((ok++))
+    	fi
     draw_bar $(( i * 100 / sum )) "$p"
-done
-printf "\r Progress: 100%% [%-${BAR_MAX}s] Installed %d new package(s).\n\n" "$(printf '%*s' "$BAR_MAX" '' | tr ' ' "$BAR_CHAR")" "$ok"
-
+	done
+	printf "\r Progress: 100%% [%-${BAR_MAX}s] Installed %d new package(s).\n\n" "$(printf '%*s' "$BAR_MAX" '' | tr ' ' "$BAR_CHAR")" "$ok"
+}
+check_deps
 #printf "\n\n Checking compilation dependencies...\n\n"
 #pkgs=(build-essential libdw-dev libelf-dev zlib1g-dev libncurses-dev libssl-dev bison bc flex make rsync debhelper python3)
 #sum=${#pkgs[@]}
@@ -202,7 +204,7 @@ reboot_system(){
 
     update-grub >/dev/null 2>&1 || fatal "failed to update grub."
 
-	printf "\n"
+	printf "\n\n"
 	for i in {5..1}; do
     	printf "\r\033[2K Rebooting in %d second%s..." "$i" $([ "$i" -eq 1 ] && echo "" || echo "s")
     	sleep 1
@@ -211,6 +213,7 @@ reboot_system(){
     /sbin/reboot
 }
 reboot_system
+
 
 
 
