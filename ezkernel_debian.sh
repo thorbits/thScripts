@@ -43,6 +43,9 @@ os_release() {
 
 DISTRO=$(os_release)
 
+declare -A KRNL_GROUP # map each distro to its required kernel compilation dependencies
+KRNL_GROUP[debian]="build-essential libdw-dev libelf-dev zlib1g-dev libncurses-dev libssl-dev bison bc flex rsync debhelper python3"
+
 case "$DISTRO" in
     debian)
     	UPDATE=(apt-get update -qq)
@@ -53,9 +56,6 @@ case "$DISTRO" in
         fatal "unsupported distribution: $DISTRO."
     ;;
 esac
-
-declare -A KRNL_GROUP # map each distro to its required kernel compilation dependencies
-KRNL_GROUP[debian]="build-essential libdw-dev libelf-dev zlib1g-dev libncurses-dev libssl-dev bison bc flex rsync debhelper python3"
 
 #intro
 clear
@@ -178,7 +178,6 @@ check_deps() {
     local -r bar=$(printf "%${BAR_MAX}s" '' | tr ' ' "$BAR_CHAR")
 
 #    printf "\r Progress: ---%% [%-*s] %-*s" "$BAR_MAX" '' "$max_len" ''
-
     for p in "${pkgs[@]}"; do
         ((i++))
         if dpkg -s "$p" &>/dev/null; then
@@ -273,10 +272,3 @@ reboot_system(){
 }
 
 reboot_system
-
-
-
-
-
-
-
