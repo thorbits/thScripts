@@ -122,11 +122,14 @@ check_deps() {
     	local filled=$(( percent * BAR_MAX / 100 ))
     	local bar
     	bar=$(printf "%*s" "$filled" "" | tr ' ' "$BAR_CHAR")
-    	printf "\r Progress: %3d%% [%-${BAR_MAX}s] %-*s" "$percent" "$bar" "$pkg_len" "$pkg"
+#    	printf "\r Progress: %3d%% [%-${BAR_MAX}s] %-*s" "$percent" "$bar" "$pkg_len" "$pkg"
+        printf "\r Progress: %3d%% [%-${BAR_MAX}s] %-*s\e[0K" \
+               "$percent" "$bar" "$pkg_len" "$pkg"
 	}
 
 	i=0
 	ok=0
+    draw_bar 0 ""
 	for p in "${pkgs[@]}"; do
     	((i++))
     	if ! dpkg -s "$p" &>/dev/null; then
@@ -215,6 +218,7 @@ reboot_system(){
     /sbin/reboot
 }
 reboot_system
+
 
 
 
