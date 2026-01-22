@@ -104,16 +104,14 @@ JOBS=$(nproc)
 (( JOBS > MAXJOBS )) && JOBS=$MAXJOBS
 
 # kernel version check
-max_len=80
-printf "\r%-*s\n\n" "$max_len" " Checking kernels versions... done."
-
+printf "\r%-*s\n\n" "$COLUMNS" " Checking kernels versions... done."
 printf " Current kernel version: %s\n It will be updated to:  %s\n\n" "$(uname -r)" "$KVER"
 
 while true; do
     printf "\r\033[2K Press Enter to continue or Ctrl+C to cancel."
     read -n1 -s -r
     (( $? != 0 )) && exit 1 # exit if Ctrl+C was pressed
-    [[ -z "$REPLY" ]] && break # break if Enter was pressed
+    [[ -z "$REPLY" ]] && break # continue if Enter was pressed
 done
 
 # packages install with progress bar
@@ -163,6 +161,7 @@ check_deps() {
                    "$(( BAR_MAX - pct*BAR_MAX/100 ))" '' \
                    "$max_len" "$p"
         }
+		sleep .2	
     done
 
     printf "\r Progress: 100%% [%-*s] Installed %d new package(s).\n\n" \
@@ -242,6 +241,7 @@ reboot_system(){
     /sbin/reboot
 }
 reboot_system
+
 
 
 
