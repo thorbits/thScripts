@@ -273,9 +273,4 @@ reboot_system(){
 	done
     /sbin/reboot
 }
-
 reboot_system
-
-
-
-
