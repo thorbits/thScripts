@@ -116,6 +116,7 @@ while true; do
     [[ -z "$REPLY" ]] && break # break if Enter was pressed
 done
 
+# packages install with progress bar
 check_deps() {
 	printf "\n\n Checking compilation dependencies for %s …\n\n" "$DISTRO"
 	read -ra pkgs <<< "${KRNL_GROUP[$DISTRO]}"
@@ -126,9 +127,8 @@ check_deps() {
 		done
 
 	local BAR_MAX=30 
-	locaal BAR_CHAR='|'
-    local bar
-    bar=$(printf "%*s" "$BAR_MAX" '' | tr ' ' "$BAR_CHAR")
+	local BAR_CHAR='|'
+    local bar; bar=$(printf "%*s" "$BAR_MAX" '' | tr ' ' "$BAR_CHAR")
 		
 	draw_bar() {
     	local percent=$1
@@ -226,6 +226,7 @@ reboot_system(){
     /sbin/reboot
 }
 reboot_system
+
 
 
 
