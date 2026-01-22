@@ -170,11 +170,10 @@ check_deps() {
 	esac
 
     local -i total=${#pkgs[@]} ok=0 i=0 pct=-1 filled
-	local -i max_len=$(tput cols)
     local -r BAR_MAX=30 BAR_CHAR='|'
     local -r bar=$(printf "%${BAR_MAX}s" '' | tr ' ' "$BAR_CHAR")
-#    local -i max_len=0
-#    for q in "${pkgs[@]}"; do (( ${#q} > max_len )) && max_len=${#q}; done
+    local -i max_len=0
+    for q in "${pkgs[@]}"; do (( ${#q} > max_len )) && max_len=${#q}; done
 
     for p in "${pkgs[@]}"; do
         ((i++))
@@ -277,6 +276,7 @@ reboot_system(){
 }
 
 reboot_system
+
 
 
 
