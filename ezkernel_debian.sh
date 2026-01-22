@@ -199,11 +199,6 @@ check_deps() {
 check_deps
 
 # prepare build env
-read -r -d '' FLAVOUR_MAP <<'EOF'
-upstream	latest upstream kernel snapshot
-debian		latest Debian/sid kernel source
-EOF
-
 declare -A FLAVOUR_MAP=(
     [upstream]="latest upstream kernel snapshot"
     [debian]="latest Debian/sid kernel source"
@@ -278,4 +273,3 @@ reboot_system(){
     /sbin/reboot
 }
 reboot_system
-
