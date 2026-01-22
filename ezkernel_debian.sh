@@ -91,9 +91,9 @@ printf "\n\n Welcome %s, to eZkernel for %s.\n\n The latest mainline Linux kerne
 WORKDIR="${HOME:-/root}/kernel"
 case "${DISTRO:-}" in
     debian)
+        printf " Which kernel sources do you want?\n\n"
         choose_source(){
     		while true; do
-        		printf " Which kernel sources do you want?\n\n"
         		printf "\r\033[2K upstream master snapshot (1) or latest in sid/debian (2): [1/2]: "
         		read -n1 -s -r choice
 	        case $choice in
@@ -102,7 +102,7 @@ case "${DISTRO:-}" in
                 	URL='https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-master.tar.gz'
                 	SRCDIR="${WORKDIR}/linux-upstream-${KVER}"
                 	TARBALL="${SRCDIR}/linux-master.tar.gz"
-                	printf "\n"           # newline after choice
+                	printf "\n\n"           # newline after choice
                 	return
                 	;;
             	2)  # Debian sid (latest 6.x)
@@ -113,20 +113,19 @@ case "${DISTRO:-}" in
                 	URL="http://deb.debian.org/debian/pool/main/l/linux/linux_${KVER}.debian.tar.xz"
                 	SRCDIR="${WORKDIR}/linux-debian-${KVER}"
                 	TARBALL="${SRCDIR}/linux_${KVER}.debian.tar.xz"
-                	printf "\n"           # newline after choice
+                	printf "\n\n"           # newline after choice
                 	return
                 	;;
             	*)  printf "\nInvalid key—try again.\n" ;;
         	esac
     		done
 		}
+		choose_source
         ;;
     *)
         fatal "unsupported distribution: $DISTRO."
         ;;
 esac
-
-choose_source
 
 # kernel version check
 printf " Checking kernels versions... please wait"
@@ -267,6 +266,7 @@ reboot_system(){
 }
 
 reboot_system
+
 
 
 
