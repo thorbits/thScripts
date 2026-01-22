@@ -128,7 +128,6 @@ check_deps() {
     local -r BAR_MAX=30 BAR_CHAR='|'
     local -r bar=$(printf "%${BAR_MAX}s" '' | tr ' ' "$BAR_CHAR")
 
-    tput civis
     printf "\r Progress: ---%% [%-*s] %-*s" "$BAR_MAX" '' "$max_len" ''
 
     for p in "${pkgs[@]}"; do
@@ -149,7 +148,6 @@ check_deps() {
 
     printf "\r Progress: 100%% [%-*s] Installed %d new package(s).\n\n" \
            "$BAR_MAX" "$bar" "$ok"
-    tput cnorm
 }
 check_deps
 
@@ -225,6 +223,7 @@ reboot_system(){
     /sbin/reboot
 }
 reboot_system
+
 
 
 
