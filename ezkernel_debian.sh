@@ -121,12 +121,10 @@ debian)
         done
     }
     ;;
-
 *)
     fatal "unsupported distribution: $DISTRO."
     ;;
 esac
-}
 
 choose_source
 
@@ -264,3 +262,4 @@ reboot_system(){
 }
 
 reboot_system
+
