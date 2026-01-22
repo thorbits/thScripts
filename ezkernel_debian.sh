@@ -104,15 +104,15 @@ case "${DISTRO:-}" in
         		printf "\r\033[2K upstream master snapshot (1) or latest in sid/debian (2) [1/2]: "
         		read -n1 -s -r choice
 	        case $choice in
-            	1)  # Upstream master snapshot
+            	1)  # upstream master snapshot
                 	KVER=$(curl -s https://www.kernel.org/finger_banner | sed -n '2s/^[^6]*//p')
                 	URL='https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-master.tar.gz'
                 	SRCDIR="${WORKDIR}/linux-upstream-${KVER}"
                 	TARBALL="${SRCDIR}/linux-master.tar.gz"
-                	printf "\n\n"           # newline after choice
+                	printf "\n\n"
                 	return
                 	;;
-            	2)  # Debian sid (latest 6.x)
+            	2)  # Debian sid (latest 6.1x)
                 	KVER=$(curl -s "https://packages.debian.org/sid/kernel/" \
                        | grep -oP '\d+\.\d+\.\d+-\d+' \
                        | grep '^6\..*-1$' \
@@ -120,7 +120,7 @@ case "${DISTRO:-}" in
                 	URL="http://deb.debian.org/debian/pool/main/l/linux/linux_${KVER}.debian.tar.xz"
                 	SRCDIR="${WORKDIR}/linux-debian-${KVER}"
                 	TARBALL="${SRCDIR}/linux_${KVER}.debian.tar.xz"
-                	printf "\n\n"           # newline after choice
+                	printf "\n\n"
                 	return
                 	;;
             	*)  printf "\nInvalid key—try again.\n" ;;
@@ -128,9 +128,6 @@ case "${DISTRO:-}" in
     		done
 		}
 		choose_source
-        ;;
-    *)
-        fatal "unsupported distribution: $DISTRO."
         ;;
 esac
 
@@ -281,6 +278,7 @@ reboot_system(){
 }
 
 reboot_system
+
 
 
 
