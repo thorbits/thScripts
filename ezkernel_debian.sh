@@ -121,7 +121,7 @@ draw_bar() {
     local bar
     bar=$(printf "%*s" "$filled" "" | tr ' ' "$BAR_CHAR")
     printf "\r$(tprint el) Progress: %3d%% [%-${BAR_MAX}s] %-*s" \
-        "$percent" "$bar" "$pkg_len" "$pkg" >&3
+        "$percent" "$bar" "$pkg_len" "$pkg"
 }
 
 i=0
@@ -213,5 +213,6 @@ reboot_system(){
     /sbin/reboot
 }
 reboot_system
+
 
 
