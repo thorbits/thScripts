@@ -26,6 +26,17 @@ info() {
     printf '\n\e[32m [INFO]\e[0m %s\n\n' "$*"
 }
 
+restore_cursor() {
+    	[[ -t 1 ]] && tput cnorm
+}
+
+abort() {
+	restore_cursor
+    fatal "aborted by user."
+}
+trap restore_cursor EXIT
+trap abort INT TERM QUIT
+
 os_release() {
     awk -F= '/^ID=/{gsub(/"/,""); print tolower($2)}' /etc/os-release | cut -d- -f1
 }
@@ -106,26 +117,16 @@ while true; do
 done
 
 check_deps() {
-	restore_cursor() {
-    	[[ -t 1 ]] && tput cnorm
-	}
-
-	abort() {
-		restore_cursor
-    	fatal "aborted by user."
-	}
-    trap restore_cursor EXIT
-	trap abort INT TERM QUIT
 	printf "\n\n Checking compilation dependencies for %s …\n\n" "$DISTRO"
 	read -ra pkgs <<< "${KRNL_GROUP[$DISTRO]}"
-	sum=${#pkgs[@]}
-	pkg_len=0
+	local sum=${#pkgs[@]}
+	local pkg_len=0
 		for q in "${pkgs[@]}"; do
     	(( ${#q} > pkg_len )) && pkg_len=${#q}
 		done
 
-	BAR_MAX=30 
-	BAR_CHAR='|'
+	local BAR_MAX=30 
+	locaal BAR_CHAR='|'
     local bar
     bar=$(printf "%*s" "$BAR_MAX" '' | tr ' ' "$BAR_CHAR")
 		
@@ -144,10 +145,12 @@ check_deps() {
     	((i++))
     	if ! dpkg -s "$p" &>/dev/null; then
         	"${PM[@]}" "$p" &>/dev/null && ((ok++))
+            draw_bar $(( i * 100 / total )) "$p"
+        else
+            draw_bar $(( i * 100 / total )) "$p"
     	fi
-    	draw_bar $(( i * 100 / sum )) "$p"
 	done
-	printf "\r Progress: 100%% [%-${BAR_MAX}s] Installed %d new package(s).\n\n" "$(printf '%*s' "$BAR_MAX" '' | tr ' ' "$BAR_CHAR")" "$ok"
+	printf "\r Progress: 100%% [%-${BAR_MAX}s] Installed %d new package(s).\n\n" "$bar" "$ok"
 }
 check_deps
 
@@ -223,6 +226,7 @@ reboot_system(){
     /sbin/reboot
 }
 reboot_system
+
 
 
 
