@@ -233,7 +233,9 @@ JOBS=$(nproc)
 (( JOBS > MAXJOBS )) && JOBS=$MAXJOBS
 
 # kernel compilation
-yes '' | make localmodconfig && make menuconfig
+if ! (yes '' | make localmodconfig && make menuconfig); then
+    fatal "error generating kernel config"
+fi
 if ! time { \
         make -j"$MAXJOBS" bindeb-pkg && \
         dpkg -i "${WORKDIR}"/*.deb; \
@@ -273,4 +275,5 @@ reboot_system(){
 }
 
 reboot_system
+
 
