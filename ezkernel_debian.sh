@@ -113,13 +113,10 @@ case "${DISTRO:-}" in
                 	return
                 	;;
             	2)  # Debian sid (latest 6.1x)
-                	KVER=$(curl -s "https://packages.debian.org/sid/kernel/" \
-                       | grep -oP '\d+\.\d+\.\d+-\d+' \
-                       | grep '^6\..*-1$' \
-                       | sort -V | tail -n1)
+                	KVER=$(curl -s "https://packages.debian.org/sid/kernel/" | grep -oP '\d+\.\d+\.\d+-\d+' | grep '^6\..*-1$' | sort -V | tail -n1 | sed 's/-.*//')
                 	URL="http://deb.debian.org/debian/pool/main/l/linux/linux_${KVER}.debian.tar.xz"
                 	SRCDIR="${WORKDIR}/linux-debian-${KVER}"
-                	TARBALL="${SRCDIR}/linux_${KVER}.debian.tar.xz"
+                	TARBALL="${SRCDIR}/linux_${KVER}.orig.tar.xz"
                 	printf "\n\n"
                 	return
                 	;;
@@ -205,7 +202,7 @@ debian		latest Debian/sid kernel source
 EOF
 
 source_download(){
-    while read -r key text; do
+    while IFS=' ' read -r key text; do
         case $SRCDIR in
         *"$key"*) printf " Downloading %s…\n\n" "$text"; return ;; # directory-independent message, see flavour map
         esac
@@ -275,3 +272,4 @@ reboot_system(){
 }
 
 reboot_system
+
