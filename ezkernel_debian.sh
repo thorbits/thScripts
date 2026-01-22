@@ -131,11 +131,6 @@ check_deps() {
             ;;
 	esac
 
-	if [[ ${#pkgs[@]} -eq 0 ]]; then
-    	printf "\r Progress: 100%% [%-*s] all required packages are already installed.\n\n" \
-           "$BAR_MAX" "$bar" "$ok"	
-    fi
-	
     local -i total=${#pkgs[@]} ok=0 i=0 pct=-1 filled
     local -i max_len=0
     for q in "${pkgs[@]}"; do (( ${#q} > max_len )) && max_len=${#q}; done
@@ -161,31 +156,13 @@ check_deps() {
                    "$(( BAR_MAX - pct*BAR_MAX/100 ))" '' \
                    "$max_len" "$p"
         }
-		sleep .2	
+#		sleep .2	
     done
-
     printf "\r Progress: 100%% [%-*s] Installed %d new package(s).\n\n" \
            "$BAR_MAX" "$bar" "$ok"
 }
-check_deps
 
-#printf "\n\n Checking compilation dependencies...\n\n"
-#pkgs=(build-essential libdw-dev libelf-dev zlib1g-dev libncurses-dev libssl-dev bison bc flex make rsync debhelper python3)
-#sum=${#pkgs[@]}
-#pkg_len=0
-#for q in "${pkgs[@]}"; do
-#    (( ${#q} > pkg_len )) && pkg_len=${#q}
-#done
-#i=0
-#ok=0
-#for p in "${pkgs[@]}"; do
-#    ((i++))
-#    dpkg -s "$p" &>/dev/null || {
-#        "${PM[@]}" "$p" &>/dev/null && ((ok++))
-#    }
-#	printf "\r Progress: %3d%% [%-30s] %-*s" $((i*100/sum)) "$(printf '|%.0s' $(seq 1 $((i*30/sum))))" "$pkg_len" "$p"
-#done
-#printf "\r Progress: 100%% [%-30s] Installed %d new package(s).\n\n" "$(printf '|%.0s' $(seq 1 30))" "$ok"
+check_deps
 
 # prepare build env
 mkdir -p "${SRCDIR}"
@@ -240,25 +217,5 @@ reboot_system(){
 
     /sbin/reboot
 }
+
 reboot_system
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
