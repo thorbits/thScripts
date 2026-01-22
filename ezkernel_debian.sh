@@ -55,7 +55,7 @@ case "$DISTRO" in
 esac
 
 declare -A KRNL_GROUP # map each distro to its required kernel compilation dependencies
-KRNL_GROUP[debian]="libdw-dev libelf-dev zlib1g-dev libncurses-dev libssl-dev bison bc flex rsync debhelper python3 build-essential"
+KRNL_GROUP[debian]="build-essential libdw-dev libelf-dev zlib1g-dev libncurses-dev libssl-dev bison bc flex rsync debhelper python3"
 
 #intro
 clear
@@ -241,6 +241,7 @@ reboot_system(){
     /sbin/reboot
 }
 reboot_system
+
 
 
 
