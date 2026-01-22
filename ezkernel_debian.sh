@@ -104,25 +104,55 @@ while true; do
     [[ -z "$REPLY" ]] && break # break if Enter was pressed
 done
 
-printf "\n\n Checking compilation dependencies...\n\n"
-# packages install with progress bar
-pkgs=(build-essential libdw-dev libelf-dev zlib1g-dev libncurses-dev libssl-dev bison bc flex make rsync debhelper python3)
+printf "\n\n Checking compilation dependencies for %s …\n\n" "$distro"
+read -ra pkgs <<< "${KRNL_GROUP[$distro]}"
 sum=${#pkgs[@]}
 pkg_len=0
 for q in "${pkgs[@]}"; do
     (( ${#q} > pkg_len )) && pkg_len=${#q}
 done
+
+BAR_MAX=30 
+BAR_CHAR='|'
+draw_bar() {
+    local percent=$1
+    local pkg=$2
+    local filled=$(( percent * BAR_MAX / 100 ))
+    local bar
+    bar=$(printf "%*s" "$filled" "" | tr ' ' "$BAR_CHAR")
+    printf "\r$(tprint el) Progress: %3d%% [%-${BAR_MAX}s] %-*s" \
+        "$percent" "$bar" "$pkg_len" "$pkg" >&3
+}
+
 i=0
 ok=0
 for p in "${pkgs[@]}"; do
     ((i++))
-    dpkg -s "$p" &>/dev/null || {
+    if ! dpkg -s "$p" &>/dev/null; then
         "${PM[@]}" "$p" &>/dev/null && ((ok++))
-    }
-	printf "\r Progress: %3d%% [%-30s] %-*s" $((i*100/sum)) "$(printf '|%.0s' $(seq 1 $((i*30/sum))))" "$pkg_len" "$p"
+    fi
+    draw_bar $(( i * 100 / sum )) "$p"
 done
+printf "\r$(tput el) Progress: 100%% [%-${BAR_MAX}s] Installed %d new package(s).\n\n" \
+    "$(printf '%*s' "$BAR_MAX" '' | tr ' ' "$BAR_CHAR")" "$ok"
 
-printf "\r Progress: 100%% [%-30s] Installed %d new package(s).\n\n" "$(printf '|%.0s' $(seq 1 30))" "$ok"
+#printf "\n\n Checking compilation dependencies...\n\n"
+#pkgs=(build-essential libdw-dev libelf-dev zlib1g-dev libncurses-dev libssl-dev bison bc flex make rsync debhelper python3)
+#sum=${#pkgs[@]}
+#pkg_len=0
+#for q in "${pkgs[@]}"; do
+#    (( ${#q} > pkg_len )) && pkg_len=${#q}
+#done
+#i=0
+#ok=0
+#for p in "${pkgs[@]}"; do
+#    ((i++))
+#    dpkg -s "$p" &>/dev/null || {
+#        "${PM[@]}" "$p" &>/dev/null && ((ok++))
+#    }
+#	printf "\r Progress: %3d%% [%-30s] %-*s" $((i*100/sum)) "$(printf '|%.0s' $(seq 1 $((i*30/sum))))" "$pkg_len" "$p"
+#done
+#printf "\r Progress: 100%% [%-30s] Installed %d new package(s).\n\n" "$(printf '|%.0s' $(seq 1 30))" "$ok"
 
 # prepare build env
 mkdir -p "${SRCDIR}"
@@ -183,3 +213,4 @@ reboot_system(){
     /sbin/reboot
 }
 reboot_system
+
