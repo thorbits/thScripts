@@ -106,7 +106,7 @@ case "${DISTRO:-}" in
 	        case $choice in
             	1)  # upstream master snapshot
                 	KVER=$(curl -s https://www.kernel.org/finger_banner | sed -n '2s/^[^6]*//p')
-                	URL='https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-master.tar.gz'
+                	URL="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-master.tar.gz"
                 	SRCDIR="${WORKDIR}/linux-upstream-${KVER}"
                 	TARBALL="${SRCDIR}/linux-master.tar.gz"
                 	printf "\n\n"
@@ -272,4 +272,5 @@ reboot_system(){
 }
 
 reboot_system
+
 
