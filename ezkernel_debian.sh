@@ -87,7 +87,8 @@ esac
 
 case "${DISTRO:-}" in
     debian)
-		printf "\n\n Welcome %s, to eZkernel for %s.\n\n The latest Linux kernel available in mainline (kernel.org) or sid (deb.debian.org), will be will be sourced, compiled and installed.\n\n" "$USER" "$DISTRO"
+		printf "\n\n Welcome %s, to eZkernel for %s.\n\n The latest Linux kernel available in mainline (kernel.org) or sid (deb.debian.org), \
+		will be will be sourced, compiled and installed.\n\n" "$USER" "$DISTRO"
 		;;
     *)
         fatal "unsupported distribution: $DISTRO."
@@ -201,18 +202,18 @@ check_deps
 # prepare build env
 read -r -d '' FLAVOUR_MAP <<'EOF'
 upstream	latest upstream kernel snapshot
-debian		latest Debian sid kernel source
+debian		latest Debian/sid kernel source
 EOF
 
 source_download(){
     while read -r key text; do
         case $SRCDIR in
-        *"$key"*) printf " Downloading %s…\n\n" "$text"; return ;;
+        *"$key"*) printf " Downloading %s…\n\n" "$text"; return ;; # directory-independent message, see flavour map
         esac
     done <<<"$FLAVOUR_MAP"
 }
 
-source_download # directory-independent message, see flavour map
+source_download
 
 mkdir -p "${SRCDIR}"
 cd "${SRCDIR}"
@@ -276,6 +277,7 @@ reboot_system(){
 }
 
 reboot_system
+
 
 
 
