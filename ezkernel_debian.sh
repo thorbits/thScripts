@@ -120,7 +120,9 @@ done
 check_deps() {
     printf "\n\n Checking compilation dependencies for %s …\n\n" "$DISTRO"
 
-    read -ra pkgs <<< "${KRNL_GROUP[$DISTRO]}"
+    #read -ra pkgs <<< "${KRNL_GROUP[$DISTRO]}"
+	local -a pkgs
+	mapfile -t pkgs < <("${LIST_CMD[@]}" "${KRNL_GROUP[$DISTRO]}" | awk '/^Inst / {print $2}')
     local -i total=${#pkgs[@]} ok=0 i=0 pct=-1 filled
     local -i max_len=0
     for q in "${pkgs[@]}"; do (( ${#q} > max_len )) && max_len=${#q}; done
@@ -223,6 +225,7 @@ reboot_system(){
     /sbin/reboot
 }
 reboot_system
+
 
 
 
