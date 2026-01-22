@@ -85,13 +85,20 @@ ART
         ;;
 esac
 
-printf "\n\n Welcome %s, to eZkernel for %s.\n\n The latest mainline Linux kernel from www.kernel.org will be will be sourced, compiled and installed.\n\n" "$USER" "$DISTRO"
+case "${DISTRO:-}" in
+    debian)
+		printf "\n\n Welcome %s, to eZkernel for %s.\n\n The latest Linux kernel available in mainline (kernel.org) or sid (deb.debian.org), will be will be sourced, compiled and installed.\n\n" "$USER" "$DISTRO"
+		;;
+    *)
+        fatal "unsupported distribution: $DISTRO."
+        ;;
+esac	
 
 # choice of kernel sources
 WORKDIR="${HOME:-/root}/kernel"
 case "${DISTRO:-}" in
     debian)
-        printf " Which kernel sources do you want:\n\n"
+        printf " Which kernel sources do you want to use:\n\n"
         choose_source(){
     		while true; do
         		printf "\r\033[2K upstream master snapshot (1) or latest in sid/debian (2) [1/2]: "
@@ -266,6 +273,7 @@ reboot_system(){
 }
 
 reboot_system
+
 
 
 
