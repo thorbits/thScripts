@@ -120,8 +120,7 @@ draw_bar() {
     local filled=$(( percent * BAR_MAX / 100 ))
     local bar
     bar=$(printf "%*s" "$filled" "" | tr ' ' "$BAR_CHAR")
-    printf "\r$(tput el) Progress: %3d%% [%-${BAR_MAX}s] %-*s" \
-           "$percent" "$bar" "$pkg_len" "$pkg" > "$out"
+    printf "\r Progress: %3d%% [%-${BAR_MAX}s] %-*s" "$percent" "$bar" "$pkg_len" "$pkg"
 }
 
 i=0
@@ -133,8 +132,7 @@ for p in "${pkgs[@]}"; do
     fi
     draw_bar $(( i * 100 / sum )) "$p"
 done
-printf "\r$(tput el) Progress: 100%% [%-${BAR_MAX}s] Installed %d new package(s).\n\n" \
-    "$(printf '%*s' "$BAR_MAX" '' | tr ' ' "$BAR_CHAR")" "$ok"
+printf "\r Progress: 100%% [%-${BAR_MAX}s] Installed %d new package(s).\n\n" "$(printf '%*s' "$BAR_MAX" '' | tr ' ' "$BAR_CHAR")" "$ok"
 
 #printf "\n\n Checking compilation dependencies...\n\n"
 #pkgs=(build-essential libdw-dev libelf-dev zlib1g-dev libncurses-dev libssl-dev bison bc flex make rsync debhelper python3)
@@ -213,6 +211,7 @@ reboot_system(){
     /sbin/reboot
 }
 reboot_system
+
 
 
 
