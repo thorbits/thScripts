@@ -123,6 +123,12 @@ check_deps() {
     #read -ra pkgs <<< "${KRNL_GROUP[$DISTRO]}"
 	local -a pkgs
 	mapfile -t pkgs < <("${LIST_CMD[@]}" "${KRNL_GROUP[$DISTRO]}" | awk '/^Inst / {print $2}')
+
+    if [[ ${#pkgs[@]} -eq 0 ]]; then
+        printf "All required packages are already installed.\n\n"
+        return 0
+    fi
+	
     local -i total=${#pkgs[@]} ok=0 i=0 pct=-1 filled
     local -i max_len=0
     for q in "${pkgs[@]}"; do (( ${#q} > max_len )) && max_len=${#q}; done
@@ -134,9 +140,11 @@ check_deps() {
 
     for p in "${pkgs[@]}"; do
         ((i++))
-        if ! dpkg -s "$p" &>/dev/null && "${PM[@]}" "$p" &>/dev/null; then
-            ((ok++))
-        fi
+        if dpkg -s "$p" &>/dev/null; then
+    		((ok++))
+		elif "${PM[@]}" "$p" &>/dev/null; then
+    		((ok++))
+		fi
         filled=$(( i * 100 / total ))
         (( filled != pct )) && {
             pct=$filled
@@ -225,6 +233,7 @@ reboot_system(){
     /sbin/reboot
 }
 reboot_system
+
 
 
 
