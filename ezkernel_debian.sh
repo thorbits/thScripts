@@ -18,7 +18,7 @@
 #set -euo pipefail
 
 fatal() {
-    printf '\n\e[31m [WARNING]\e[0m %s\n\n' "$*" >&2
+    printf '\n\n\e[31m [WARNING]\e[0m %s\n\n' "$*" >&2
     exit 1
 }
 
@@ -32,7 +32,7 @@ restore_cursor() {
 
 abort() {
 	restore_cursor
-    fatal "aborted by user."
+    fatal "process aborted by user."
 }
 trap restore_cursor EXIT
 trap abort INT TERM QUIT
@@ -50,12 +50,12 @@ case "$DISTRO" in
     	LIST_CMD=(apt-get install --dry-run -qq)
 	;;
     *)
-        fatal " unsupported distribution: $DISTRO."
+        fatal "unsupported distribution: $DISTRO."
     ;;
 esac
 
 declare -A KRNL_GROUP # map each distro to its required kernel compilation dependencies
-KRNL_GROUP[debian]="libdw-dev libelf-dev zlib1g-dev libncurses-dev libssl-dev bison bc flex rsync debhelper python3 build-essential"
+KRNL_GROUP[debian]="build-essential libdw-dev libelf-dev zlib1g-dev libncurses-dev libssl-dev bison bc flex rsync debhelper python3"
 
 #intro
 clear
@@ -126,7 +126,7 @@ check_deps() {
     for q in "${pkgs[@]}"; do (( ${#q} > max_len )) && max_len=${#q}; done
 
     local -r BAR_MAX=30 BAR_CHAR='|'
-    local -r bar_empty=$(printf "%${BAR_MAX}s" '' | tr ' ' "$BAR_CHAR")
+    local -r bar=$(printf "%${BAR_MAX}s" '' | tr ' ' "$BAR_CHAR")
 
     tput civis
     printf "\r Progress: ---%% [%-*s] %-*s" "$BAR_MAX" '' "$max_len" ''
@@ -136,21 +136,19 @@ check_deps() {
         if ! dpkg -s "$p" &>/dev/null && "${PM[@]}" "$p" &>/dev/null; then
             ((ok++))
         fi
-
-        # refresh bar only when percentage changes
         filled=$(( i * 100 / total ))
         (( filled != pct )) && {
             pct=$filled
             printf "\r Progress: %3d%% [%-*.*s%-*s] %-*s" \
                    "$pct" \
-                   "$BAR_MAX" "$(( pct*BAR_MAX/100 ))" "$bar_empty" \
+                   "$BAR_MAX" "$(( pct*BAR_MAX/100 ))" "$bar" \
                    "$(( BAR_MAX - pct*BAR_MAX/100 ))" '' \
                    "$max_len" "$p"
         }
     done
 
     printf "\r Progress: 100%% [%-*s] Installed %d new package(s).\n\n" \
-           "$BAR_MAX" "$bar_empty" "$ok"
+           "$BAR_MAX" "$bar" "$ok"
     tput cnorm
 }
 check_deps
@@ -227,6 +225,7 @@ reboot_system(){
     /sbin/reboot
 }
 reboot_system
+
 
 
 
