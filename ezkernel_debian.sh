@@ -159,8 +159,10 @@ check_deps() {
             # inherit the current locale not to block install
             current_locale=${LC_ALL:-${LANG:-C.UTF-8}}
             current_locale=${current_locale%%.*}.UTF-8
-            echo "locales locales/default_environment_locale select $current_locale" | debconf-set-selections
-            echo "locales locales/locales_to_be_generated multiselect $current_locale UTF-8" | debconf-set-selections
+            {
+              echo "locales locales/default_environment_locale select $current_locale"
+              echo "locales locales/locales_to_be_generated multiselect $current_locale UTF-8"
+            } | debconf-set-selections
             export DEBIAN_FRONTEND=noninteractive
             
             mapfile -t pkgs < <("${LIST_CMD[@]}" ${KRNL_GROUP[$DISTRO]} | awk '/^Inst / {print $2}')
@@ -169,30 +171,27 @@ check_deps() {
 
     local -i total=${#pkgs[@]} ok=0 i=0 pct=-1 filled
 	local -i max_len=$(tput cols)
+    local -r BAR_MAX=30 BAR_CHAR='|'
+    local -r bar=$(printf "%${BAR_MAX}s" '' | tr ' ' "$BAR_CHAR")
 #    local -i max_len=0
 #    for q in "${pkgs[@]}"; do (( ${#q} > max_len )) && max_len=${#q}; done
 
-    local -r BAR_MAX=30 BAR_CHAR='|'
-    local -r bar=$(printf "%${BAR_MAX}s" '' | tr ' ' "$BAR_CHAR")
-
-#    printf "\r Progress: ---%% [%-*s] %-*s" "$BAR_MAX" '' "$max_len" ''
     for p in "${pkgs[@]}"; do
         ((i++))
-        if dpkg -s "$p" &>/dev/null; then
-    		((ok++))
-		elif "${PM[@]}" "$p" &>/dev/null; then
-    		((ok++))
-		fi
+        dpkg -s "$p" &>/dev/null || "${PM[@]}" "$p" &>/dev/null && ((ok++))
+
         filled=$(( i * 100 / total ))
-        (( filled != pct )) && {
-            pct=$filled
-            printf "\r Progress: %3d%% [%-*.*s%-*s] Verifying: %-*s" \
-                   "$pct" \
-                   "$BAR_MAX" "$(( pct*BAR_MAX/100 ))" "$bar" \
-                   "$(( BAR_MAX - pct*BAR_MAX/100 ))" '' \
-                   "$max_len" "$p"
-        }
-#		sleep .2	
+        ((filled==pct)) && continue
+        pct=$filled
+
+        # fixed-length bar
+        printf "\r Progress: %3d%% [%*s%s] Verifying: %-*s%*s" \
+               "$pct" \
+               $(( filled*BAR_MAX/100 )) \
+               "$(printf '%*s' $((filled*BAR_MAX/100)) '' | tr ' ' "$BAR_CHAR")" \
+               "$(printf '%*s' $((BAR_MAX - filled*BAR_MAX/100)) '')" \
+               $((max_len-55)) "$p" \
+               $((max_len-55-${#p}>0?max_len-55-${#p}:0)) ''
     done
     printf "\r Progress: 100%% [%-*s] Installed %d new package(s).\n\n" \
            "$BAR_MAX" "$bar" "$ok"
@@ -278,6 +277,7 @@ reboot_system(){
 }
 
 reboot_system
+
 
 
 
