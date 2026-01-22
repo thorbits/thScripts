@@ -85,7 +85,52 @@ ART
         ;;
 esac
 
+# cpu variables
+MAXJOBS=$(nproc) # use max cores, change to MAXJOBS=8 to limit cpu parallelism, avoid OOM on tiny VMs
+JOBS=$(nproc)
+(( JOBS > MAXJOBS )) && JOBS=$MAXJOBS
+
 printf "\n\n Welcome %s, to eZkernel for %s.\n\n The latest mainline Linux kernel from www.kernel.org will be will be sourced, compiled and installed.\n\n" "$USER" "$DISTRO"
+
+# choice of kernel sources
+WORKDIR="${HOME:-/root}/kernel"
+case "${DISTRO:-}" in
+debian)
+    choose_source(){
+		printf " Which kernel sources do you want?\n\n"
+		select src in "Upstream master snapshot" "Debian sid (latest 6.x)"; do
+            case $src in
+                "Upstream master snapshot")
+                    KVER=$(curl -s https://www.kernel.org/finger_banner | sed -n '2s/^[^6]*//p')
+                    URL='https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-master.tar.gz'
+					SRCDIR="${WORKDIR}/linux-upstream-${KVER}"
+					TARBALL="${SRCDIR}/linux-master.tar.gz"
+                    return
+                    ;;
+                "Debian sid (latest 6.x)")
+                    KVER=$(curl -s "https://packages.debian.org/sid/kernel/" \
+                           | grep -oP '\d+\.\d+\.\d+-\d+' \
+                           | grep '^6\..*-1$' \
+                           | sort -V | tail -n1)
+                    URL="http://deb.debian.org/debian/pool/main/l/linux/linux_${KVER}.debian.tar.xz"
+					SRCDIR="${WORKDIR}/linux-debian-${KVER}"
+					TARBALL="${SRCDIR}/linux_${KVER}.debian.tar.xz"
+                    return
+                    ;;
+            esac
+        done
+    }
+    ;;
+
+*)
+    fatal "unsupported distribution: $DISTRO."
+    ;;
+esac
+}
+
+choose_source
+
+# kernel version check
 printf " Checking kernels versions... please wait"
 
 "${UPDATE[@]}" >/dev/null 2>&1 || fatal " no internet connection detected."
@@ -94,16 +139,6 @@ if ! command -v curl >/dev/null 2>&1 || ! command -v wget >/dev/null 2>&1; then
     "${PM[@]}" curl wget >/dev/null 2>&1
 fi
 
-# configurable variables
-KVER=$(curl -s https://www.kernel.org/finger_banner | sed -n '2s/^[^6]*//p')
-WORKDIR="${HOME:-/root}/kernel"
-SRCDIR="${WORKDIR}/linux-upstream-${KVER}"
-TARBALL="${SRCDIR}/linux-master.tar.gz"
-MAXJOBS=$(nproc) # MAXJOBS=8 limit cpu parallelism (avoid OOM on tiny VMs)
-JOBS=$(nproc)
-(( JOBS > MAXJOBS )) && JOBS=$MAXJOBS
-
-# kernel version check
 printf "\r%-*s\n\n" "$COLUMNS" " Checking kernels versions... done."
 printf " Current kernel version: %s\n It will be updated to:  %s\n\n" "$(uname -r)" "$KVER"
 
@@ -120,7 +155,7 @@ check_deps() {
 	local -a pkgs
     case "$DISTRO" in
         debian)
-            # inherit the current locale for install
+            # inherit the current locale not to block install
             current_locale=${LC_ALL:-${LANG:-C.UTF-8}}
             current_locale=${current_locale%%.*}.UTF-8
             echo "locales locales/default_environment_locale select $current_locale" | debconf-set-selections
@@ -138,7 +173,7 @@ check_deps() {
     local -r BAR_MAX=30 BAR_CHAR='|'
     local -r bar=$(printf "%${BAR_MAX}s" '' | tr ' ' "$BAR_CHAR")
 
-    printf "\r Progress: ---%% [%-*s] %-*s" "$BAR_MAX" '' "$max_len" ''
+#    printf "\r Progress: ---%% [%-*s] %-*s" "$BAR_MAX" '' "$max_len" ''
 
     for p in "${pkgs[@]}"; do
         ((i++))
@@ -150,7 +185,7 @@ check_deps() {
         filled=$(( i * 100 / total ))
         (( filled != pct )) && {
             pct=$filled
-            printf "\r Progress: %3d%% [%-*.*s%-*s] %-*s" \
+            printf "\r Progress: %3d%% [%-*.*s%-*s] Verifying: %-*s" \
                    "$pct" \
                    "$BAR_MAX" "$(( pct*BAR_MAX/100 ))" "$bar" \
                    "$(( BAR_MAX - pct*BAR_MAX/100 ))" '' \
@@ -165,23 +200,33 @@ check_deps() {
 check_deps
 
 # prepare build env
+case "$SRCDIR" in
+    linux-upstream-*)
+        printf "Downloading latest upstream kernel snapshot…\n\n"
+        ;;
+    linux-debian-*)
+        printf "Downloading latest Debian sid kernel source…\n\n"
+        ;;
+esac
+
 mkdir -p "${SRCDIR}"
 cd "${SRCDIR}"
 
-printf " Downloading latest upstream kernel snapshot…\n\n"
-if ! wget -q --show-progress -O "${TARBALL}" \
-        "https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-master.tar.gz"; then
+if ! wget -q --show-progress "$URL" -O "${TARBALL}"; then
     fatal "failed to download kernel source."
 fi
 
 printf "\n Extracting kernel sources…\n\n"
-tar -xzf "${TARBALL}" --strip-components=1
+case "$URL" in
+    *.tar.gz)  tar -xzf "${TARBALL}" --strip-components=1 ;;
+    *.tar.xz)  tar -xJf "${TARBALL}" --strip-components=1 ;;
+esac
 rm -f "${TARBALL}"
 
 # kernel compilation
 yes '' | make localmodconfig && make menuconfig
 if ! time { \
-        make -j"$JOBS" bindeb-pkg && \
+        make -j"$MAXJOBS" bindeb-pkg && \
         dpkg -i "${WORKDIR}"/*.deb; \
 		printf "\n\n eZkernel compilation successful for version: %s\n\n Compilation time :\n" "$KVER"
     }; then
