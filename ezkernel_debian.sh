@@ -189,8 +189,8 @@ check_deps() {
                $(( filled*BAR_MAX/100 )) \
                "$(printf '%*s' $((filled*BAR_MAX/100)) '' | tr ' ' "$BAR_CHAR")" \
                "$(printf '%*s' $((BAR_MAX - filled*BAR_MAX/100)) '')" \
-               $((max_len-55)) "$p" \
-               $((max_len-55-${#p}>0?max_len-55-${#p}:0)) ''
+               $((max_len-60)) "$p" \
+               $((max_len-60-${#p}>0?max_len-60-${#p}:0)) ''
     done
     printf "\r Progress: 100%% [%-*s] Installed %d new package(s).\n\n" \
            "$BAR_MAX" "$bar" "$ok"
@@ -273,4 +273,5 @@ reboot_system(){
     /sbin/reboot
 }
 reboot_system
+
 
