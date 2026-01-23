@@ -293,24 +293,23 @@ info() {
 
 # cpu variables
 choose_cores() {
-	local cores total
+    local cores total
     total=$(nproc)
     printf ' How many CPU cores of the system (in %%) do you want to use for compilation?\n\n'
-	printf ' 25%% : %d cores   50%% : %d cores   100%% : %d cores\n\n' $((total/4)) $((total/2)) "$total"
-	PS3='Choose (25/50/100): '
-	printf '\n'
-	select pct in 25 50 100; do
-    	case $pct in
-        	25|50|100)
-				cores=$(( total * ${pct} / 100 ))
-            	MAKEFLAGS="-j$cores"
-				export MAKEFLAGS
-				printf "\n\n"
-            break
-            ;;
-        	*) ;;
-    	esac
-	done
+    printf ' 25%% : %d cores   50%% : %d cores   100%% : %d cores\n\n' $((total/4)) $((total/2)) "$total"
+    while read -rp ' Choose (1=25%%  2=50%%  3=100%%): ' choice; do
+        case $choice in
+            1) pct=25 ;;
+            2) pct=50 ;;
+            3) pct=100 ;;
+            *) continue ;;
+        esac
+        cores=$(( total * pct / 100 ))
+        MAKEFLAGS="-j$cores"
+        export MAKEFLAGS
+        printf "\n\n"
+        return
+    done
 }
 
 choose_cores
@@ -378,5 +377,3 @@ reboot_system(){
 }
 
 reboot_system
-
-
