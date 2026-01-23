@@ -125,7 +125,7 @@ case "${DISTRO:-}" in
         ;;
 esac	
 
-"${UPDATE[@]}" >/dev/null 2>&1 || fatal " no internet connection detected."
+"${UPDATE[@]}" >/dev/null 2>&1 || fatal "no internet connection detected."
 if ! command -v curl >/dev/null 2>&1 || ! command -v wget >/dev/null 2>&1; then
 	"${PM[@]}" curl wget >/dev/null 2>&1
 fi
@@ -188,7 +188,7 @@ done
 
 # packages install with progress bar
 check_deps() {
-    printf "\n\n Checking compilation dependencies for %s …\n\n" "$DISTRO"
+    printf "\n\n Checking compilation dependencies for %s...\n\n" "$DISTRO"
 	local -a pkgs
     case "$DISTRO" in
 		arch)
@@ -251,7 +251,7 @@ download_source() {
             break
         fi
     done
-    printf " Downloading %s …\n\n" "$msg" # directory-independent message, see flavour map
+    printf " Downloading %s...\n\n" "$msg" # directory-independent message, see flavour map
     mkdir -p "$SRCDIR"
     cd "$SRCDIR"
     wget -q --show-progress -O "$TARBALL" "$URL" || fatal "error downloading kernel sources."
@@ -259,7 +259,7 @@ download_source() {
 
 download_source
 
-printf "\n Extracting kernel sources…\n\n"
+printf "\n Extracting kernel sources...\n\n"
 case "$TARBALL" in
     *.tar.gz)  tar -xzf "${TARBALL}" --strip-components=1 ;;
     *.tar.xz)  tar -xJf "${TARBALL}" --strip-components=1 ;;
@@ -281,7 +281,7 @@ fi
 			if ! time { \
         	make -j"$MAXJOBS" bzImage modules && \
         	make modules_install install; \
-			printf "\n\n eZkernel compilation successful for version: %s\n\n Compilation time :\n" "$KVER"
+			printf "\n\n eZkernel compilation successful for version: %s\n\n Compilation time: \n" "$KVER"
     		}; then
     			fatal "error compiling kernel."
 			fi
@@ -290,7 +290,7 @@ fi
 			if ! time { \
         	make -j"$MAXJOBS" bindeb-pkg && \
         	dpkg -i "${WORKDIR}"/*.deb; \
-			printf "\n\n eZkernel compilation successful for version: %s\n\n Compilation time :\n" "$KVER"
+			printf "\n\n eZkernel compilation successful for version: %s\n\n Compilation time: \n" "$KVER"
     		}; then
     			fatal "error compiling kernel."
 			fi
@@ -333,4 +333,5 @@ reboot_system(){
 }
 
 reboot_system
+
 
