@@ -162,6 +162,9 @@ case "${DISTRO:-}" in
                 	;;
             	*)  ;;
 			esac
+			done
+		}
+		choose_source
 		;;
     debian)
         printf " Which kernel sources do you want to use:\n\n"
@@ -288,7 +291,7 @@ esac
 rm -f "$TARBALL"
 
 # cpu variables
-MAXJOBS=$(nproc) # use max cores, change to MAXJOBS=8 to limit cpu parallelism, avoid OOM on tiny VMs
+MAXJOBS=$(nproc) # use max cores, change MAXJOBS=8 to limit usage
 JOBS=$(nproc)
 (( JOBS > MAXJOBS )) && JOBS=$MAXJOBS
 
@@ -296,27 +299,26 @@ JOBS=$(nproc)
 if ! (yes '' | make localmodconfig && make menuconfig); then
     fatal "error generating kernel config."
 fi
-
-    case "$DISTRO" in
-		arch)
-			if ! time { \
-        	make -j"$MAXJOBS" bzImage modules && \
-        	make modules_install install; \
-			printf "\n\n eZkernel compilation successful for version: %s\n\n Compilation time: \n" "$KVER"
-    		}; then
-    			fatal "error compiling kernel."
-			fi
-			;;
-        debian)
-			if ! time { \
-        	make -j"$MAXJOBS" bindeb-pkg && \
-        	dpkg -i "${WORKDIR}"/*.deb; \
-			printf "\n\n eZkernel compilation successful for version: %s\n\n Compilation time: \n" "$KVER"
-    		}; then
-    			fatal "error compiling kernel."
-			fi
-			;;
-	esac
+case "$DISTRO" in
+	arch)
+		if ! time { \
+        make -j"$MAXJOBS" bzImage modules && \
+        make modules_install install; \
+		printf "\n\n eZkernel compilation successful for version: %s\n\n Compilation time: \n" "$KVER"
+    	}; then
+    		fatal "error compiling kernel."
+		fi
+		;;
+    debian)
+		if ! time { \
+        make -j"$MAXJOBS" bindeb-pkg && \
+        dpkg -i "${WORKDIR}"/*.deb; \
+		printf "\n\n eZkernel compilation successful for version: %s\n\n Compilation time: \n" "$KVER"
+    	}; then
+    		fatal "error compiling kernel."
+		fi
+		;;
+esac
 
 # cleanup and reboot
 cd ~
@@ -354,6 +356,3 @@ reboot_system(){
 }
 
 reboot_system
-
-
-
