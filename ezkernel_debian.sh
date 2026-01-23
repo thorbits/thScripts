@@ -287,14 +287,31 @@ case "$TARBALL" in
 esac
 rm -f "$TARBALL"
 
-# cpu variables
-MAXJOBS=$(nproc) # use max cores, change MAXJOBS=8 to limit usage
-JOBS=$(nproc)
-(( JOBS > MAXJOBS )) && JOBS=$MAXJOBS
-
 info() {
-    printf '\n\e[32m [INFO]\e[0m eZkernel compilation successful for version: %s\n\n Compilation time:' "$*"
+    printf "\n\e[32m [INFO]\e[0m eZkernel compilation successful for version: %s\n\n Compilation time:" "$*"
 }
+
+# cpu variables
+choose_cores() {
+    total=$(nproc --all)
+    while true; do
+        printf $'\r\033[2KHow many CPU cores of the system (in %%) do you want to use for compilation? '
+        printf '25) 25%% (%d cores)  ' $(( total / 4 ))
+        printf '50) 50%% (%d cores)  ' $(( total / 2 ))
+        printf '100) 100%% (%d cores)' $total
+        read -r -s -n1 -p '  Choose (25/50/100): ' choice
+
+        case $choice in
+            25|50|100)
+                MAXJOBS=$(( total * choice / 100 ))
+                printf '\n'
+                return
+                ;;
+        esac
+    done
+}
+
+choose_cores
 
 # kernel compilation
 if ! (yes '' | make localmodconfig && make menuconfig); then
@@ -360,3 +377,4 @@ reboot_system(){
 }
 
 reboot_system
+
