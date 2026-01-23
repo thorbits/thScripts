@@ -295,8 +295,8 @@ info() {
 choose_cores() {
 	local cores total
     total=$(nproc)
-    printf '\nHow many CPU cores of the system (in %%) do you want to use for compilation?\n\n'
-	printf '25:%d  50:%d  100:%d\n' $((total/4)) $((total/2)) "$total"
+    printf ' How many CPU cores of the system (in %%) do you want to use for compilation?\n\n'
+	printf ' 25%: %d cores  50%: %d cores  100%: %d cores \n\n' $((total/4)) $((total/2)) "$total"
 	PS3='Choose (25/50/100): '
 	select pct in 25 50 100; do
     	case $pct in
