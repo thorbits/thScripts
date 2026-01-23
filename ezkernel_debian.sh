@@ -205,7 +205,7 @@ printf '\r%-*s\n\n Current kernel version: %s\n It will be updated to:  %s\n\n' 
        "$(uname -r)" "$KVER"
 
 while true; do
-    printf $'\r\033[2K Press Enter to continue or Ctrl+C to cancel. '
+    printf $'\r\033[2K Press Enter to continue or Ctrl+C to cancel'
     read -n1 -s -r
     (( $? != 0 )) && exit 1 # exit if Ctrl+C was pressed
     [[ -z "$REPLY" ]] && break # continue if Enter was pressed
@@ -359,4 +359,5 @@ reboot_system(){
 }
 
 reboot_system
+
 
