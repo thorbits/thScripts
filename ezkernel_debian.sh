@@ -138,7 +138,7 @@ KVER= URL= SRCDIR= TARBALL=	# initialise, so tu use later ouside function
 # choice of kernel sources
 case "${DISTRO:-}" in
 	arch)
-		printf " Which kernel sources do you want to use:\n\n"
+		printf " Which kernel sources do you want to use\n\n"
         choose_source(){
     		while true; do
         		printf $'\r\033[2K upstream master snapshot (1) or latest in cachyos/rc (2) [1/2]: '
@@ -168,7 +168,7 @@ case "${DISTRO:-}" in
 		choose_source
 		;;
     debian)
-        printf " Which kernel sources do you want to use:\n\n"
+        printf " Which kernel sources do you want to use\n\n"
         choose_source(){
     		while true; do
         		printf $'\r\033[2K upstream master snapshot (1) or latest in debian/sid (2) [1/2]: '
@@ -359,3 +359,4 @@ reboot_system(){
 }
 
 reboot_system
+
