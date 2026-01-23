@@ -109,7 +109,7 @@ case "${DISTRO:-}" in
         printf " Which kernel sources do you want to use:\n\n"
         choose_source(){
     		while true; do
-        		printf $'\r\033[2Kupstream master snapshot (1) or latest in sid/debian (2) [1/2]: '
+        		printf $'\r\033[2K upstream master snapshot (1) or latest in sid/debian (2) [1/2]: '
         		read -n1 -s -r choice
 	        case $choice in
             	1)  # upstream master snapshot
@@ -272,6 +272,7 @@ reboot_system(){
     /sbin/reboot
 }
 reboot_system
+
 
 
 
