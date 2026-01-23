@@ -284,6 +284,7 @@ fi
 			printf "\n\n eZkernel compilation successful for version: %s\n\n Compilation time :\n" "$KVER"
     		}; then
     			fatal "error compiling kernel."
+			fi
 			;;
         debian)
 			if ! time { \
@@ -326,4 +327,5 @@ reboot_system(){
 }
 
 reboot_system
+
 
