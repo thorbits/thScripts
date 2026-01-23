@@ -115,7 +115,7 @@ esac
 
 case "${DISTRO:-}" in
 	arch)
-		printf "\n\n Welcome %s, to eZkernel for %s.\n\n The latest Linux kernel available in mainline (kernel.org), will be will be sourced, compiled and installed.\n\n" "$USER" "$DISTRO"
+		printf "\n\n Welcome %s, to eZkernel for %s.\n\n The latest Linux kernel available in mainline (kernel.org) or cachyos/rc (aur.archlinux.org), will be will be sourced, compiled and installed.\n\n" "$USER" "$DISTRO"
 		;;
     debian)
 		printf "\n\n Welcome %s, to eZkernel for %s.\n\n The latest Linux kernel available in mainline (kernel.org) or sid (deb.debian.org), will be will be sourced, compiled and installed.\n\n" "$USER" "$DISTRO"
@@ -137,10 +137,31 @@ KVER= URL= SRCDIR= TARBALL=	# initialise, so tu use later ouside function
 # choice of kernel sources
 case "${DISTRO:-}" in
 	arch)
-		KVER=$(curl -s https://www.kernel.org/finger_banner | sed -n '2s/^[^6]*//p')
-        URL="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-master.tar.gz"
-        SRCDIR="${WORKDIR}/linux-upstream-${KVER}"
-        TARBALL="${SRCDIR}/linux-master.tar.gz"
+		printf " Which kernel sources do you want to use:\n\n"
+        choose_source(){
+    		while true; do
+        		printf $'\r\033[2K upstream master snapshot (1) or latest in cachyos/rc (2) [1/2]: '
+        		read -n1 -s -r choice
+	        case $choice in
+            	1)  # upstream master snapshot
+                	KVER=$(curl -s https://www.kernel.org/finger_banner | sed -n '2s/^[^6]*//p')
+                	URL="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-master.tar.gz"
+                	SRCDIR="${WORKDIR}/linux-upstream-${KVER}"
+                	TARBALL="${SRCDIR}/linux-master.tar.gz"
+                	printf "\n\n"
+                	return
+                	;;
+            	2)  # cachyos/rc
+                	KVER=$(curl -s https://www.kernel.org/finger_banner | sed -n '2s/^[^6]*//p')
+                	URL="https://github.com/torvalds/linux/archive/refs/tags/v6.19-rc6.tar.gz"
+					KCFG="https://aur.archlinux.org/cgit/aur.git/snapshot/linux-cachyos-rc.tar.gz"
+                	SRCDIR="${WORKDIR}/linux-cachyos-${KVER}"
+                	TARBALL="${SRCDIR}/v${KVER}.tar.gz"
+                	printf "\n\n"
+                	return
+                	;;
+            	*)  ;;
+			esac
 		;;
     debian)
         printf " Which kernel sources do you want to use:\n\n"
@@ -302,7 +323,7 @@ cd ~
 rm -rf "${WORKDIR}"
 
 reboot_system(){
-	printf "\n System will reboot now.\n\n"
+	printf "\n System must be rebooted to load the new kernel.\n\n"
 	while : ; do
     read -r -s -n1 -p $' Press Enter to continue or Ctrl+C to cancel.' REPLY
     if [[ -z "$REPLY" ]]; then # Enter only, no other key
@@ -333,5 +354,6 @@ reboot_system(){
 }
 
 reboot_system
+
 
 
