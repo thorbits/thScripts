@@ -106,10 +106,6 @@ case "${DISTRO:-}" in
     		while true; do
         		printf $'\r\033[2Kupstream master snapshot (1) or latest in sid/debian (2) [1/2]: '
         		read -n1 -s -r choice
-				"${UPDATE[@]}" >/dev/null 2>&1 || fatal " no internet connection detected."
-				if ! command -v curl >/dev/null 2>&1 || ! command -v wget >/dev/null 2>&1; then
-					"${PM[@]}" curl wget >/dev/null 2>&1
-				fi
 	        case $choice in
             	1)  # upstream master snapshot
                 	KVER=$(curl -s https://www.kernel.org/finger_banner | sed -n '2s/^[^6]*//p')
@@ -127,7 +123,7 @@ case "${DISTRO:-}" in
                 	printf "\n\n"
                 	return
                 	;;
-            	*)  printf "\nInvalid key—try again.\n" ;;
+            	*)  ;;
         	esac
     		done
 		}
@@ -271,6 +267,7 @@ reboot_system(){
     /sbin/reboot
 }
 reboot_system
+
 
 
 
