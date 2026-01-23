@@ -23,7 +23,7 @@ fatal() {
 }
 
 info() {
-    printf '\n\e[32m [INFO]\e[0m %s\n' "$*"
+    printf '\n\e[32m [INFO]\e[0m %s: %s\n' "$1" "$2"
 }
 
 restore_cursor() {
@@ -360,5 +360,6 @@ reboot_system(){
 }
 
 reboot_system
+
 
 
