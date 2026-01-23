@@ -4,12 +4,12 @@
 #   |__ __|
 #     ||horbits
 #
-#    eZkernel for Debian
+#    eZkernel for arch/debian
 #    Interactive Linux kernel compilation and installation script
-# ----------------------------------------------------------------#
-#    Installs the latest mainline Linux kernel from www.kernel.org
-# 
-# ----------------------------------------------------------------#
+# -------------------------------------------------------------------#
+#    Compile the latest mainline Linux kernel snapshot (arch/debian)
+#    or the latest kernel in sid (debian).
+# -------------------------------------------------------------------#
 
 (if (return 0 2>/dev/null); then return 0; fi)
 
@@ -276,13 +276,26 @@ JOBS=$(nproc)
 if ! (yes '' | make localmodconfig && make menuconfig); then
     fatal "error generating kernel config."
 fi
-if ! time { \
-        make -j"$MAXJOBS" bindeb-pkg && \
-        dpkg -i "${WORKDIR}"/*.deb; \
-		printf "\n\n eZkernel compilation successful for version: %s\n\n Compilation time :\n" "$KVER"
-    }; then
-    fatal "error compiling kernel."
-fi
+
+    case "$DISTRO" in
+		arch)
+			if ! time { \
+        	make -j"$MAXJOBS" bzImage modules && \
+        	make modules_install install; \
+			printf "\n\n eZkernel compilation successful for version: %s\n\n Compilation time :\n" "$KVER"
+    		}; then
+    			fatal "error compiling kernel."
+			;;
+        debian)
+			if ! time { \
+        	make -j"$MAXJOBS" bindeb-pkg && \
+        	dpkg -i "${WORKDIR}"/*.deb; \
+			printf "\n\n eZkernel compilation successful for version: %s\n\n Compilation time :\n" "$KVER"
+    		}; then
+    			fatal "error compiling kernel."
+			fi
+			;;
+	esac
 
 # cleanup and reboot
 cd ~
@@ -314,6 +327,3 @@ reboot_system(){
 }
 
 reboot_system
-
-
-
