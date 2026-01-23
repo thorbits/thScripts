@@ -44,6 +44,7 @@ os_release() {
 DISTRO=$(os_release)
 
 declare -A KRNL_GROUP # map each distro to its required kernel compilation dependencies
+KRNL_GROUP[arch]="base-devel bc bison flex libelf ncurses openssl python rsync zlib"
 KRNL_GROUP[debian]="build-essential libdw-dev libelf-dev zlib1g-dev libncurses-dev libssl-dev bison bc flex rsync debhelper python3"
 
 case "$DISTRO" in
@@ -191,6 +192,9 @@ check_deps() {
     printf "\n\n Checking compilation dependencies for %s …\n\n" "$DISTRO"
 	local -a pkgs
     case "$DISTRO" in
+		arch)
+			mapfile -t pkgs < <("${LIST_CMD[@]}" ${KRNL_GROUP[$DISTRO]})
+			;;
         debian)
             # inherit the current locale not to block install
             current_locale=${LC_ALL:-${LANG:-C.UTF-8}}
@@ -310,5 +314,6 @@ reboot_system(){
 }
 
 reboot_system
+
 
 
