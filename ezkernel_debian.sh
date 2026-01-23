@@ -104,8 +104,12 @@ case "${DISTRO:-}" in
         printf " Which kernel sources do you want to use:\n\n"
         choose_source(){
     		while true; do
-        		printf "\r\033[2K upstream master snapshot (1) or latest in sid/debian (2) [1/2]: "
+        		printf $'\r\033[2Kupstream master snapshot (1) or latest in sid/debian (2) [1/2]: '
         		read -n1 -s -r choice
+				"${UPDATE[@]}" >/dev/null 2>&1 || fatal " no internet connection detected."
+				if ! command -v curl >/dev/null 2>&1 || ! command -v wget >/dev/null 2>&1; then
+					"${PM[@]}" curl wget >/dev/null 2>&1
+				fi
 	        case $choice in
             	1)  # upstream master snapshot
                 	KVER=$(curl -s https://www.kernel.org/finger_banner | sed -n '2s/^[^6]*//p')
@@ -117,7 +121,7 @@ case "${DISTRO:-}" in
                 	;;
             	2)  # Debian sid (latest 6.1x)
                 	KVER=$(curl -s "https://packages.debian.org/sid/kernel/" | grep -oP '\d+\.\d+\.\d+-\d+' | grep '^6\..*-1$' | sort -V | tail -n1 | sed 's/-.*//')
-                	URL="http://deb.debian.org/debian/pool/main/l/linux/linux_${KVER}.debian.tar.xz"
+                	URL="http://deb.debian.org/debian/pool/main/l/linux/linux_${KVER}.orig.tar.xz"
                 	SRCDIR="${WORKDIR}/linux-debian-${KVER}"
                 	TARBALL="${SRCDIR}/linux_${KVER}.orig.tar.xz"
                 	printf "\n\n"
@@ -132,19 +136,13 @@ case "${DISTRO:-}" in
 esac
 
 # kernel version check
-printf " Checking kernels versions... please wait"
-
-"${UPDATE[@]}" >/dev/null 2>&1 || fatal " no internet connection detected."
-
-if ! command -v curl >/dev/null 2>&1 || ! command -v wget >/dev/null 2>&1; then
-    "${PM[@]}" curl wget >/dev/null 2>&1
-fi
-
-printf "\r%-*s\n\n" "$COLUMNS" " Checking kernels versions... done."
-printf " Current kernel version: %s\n It will be updated to:  %s\n\n" "$(uname -r)" "$KVER"
+printf " Checking kernels versions... please wait" && sleep 2
+printf '\r%-*s\n\n Current kernel version: %s\n It will be updated to:  %s\n\n' \
+       "$COLUMNS" " Checking kernels versions... done." \
+       "$(uname -r)" "$KVER"
 
 while true; do
-    printf "\r\033[2K Press Enter to continue or Ctrl+C to cancel."
+    printf $'\r\033[2K Press Enter to continue or Ctrl+C to cancel. '
     read -n1 -s -r
     (( $? != 0 )) && exit 1 # exit if Ctrl+C was pressed
     [[ -z "$REPLY" ]] && break # continue if Enter was pressed
@@ -273,5 +271,6 @@ reboot_system(){
     /sbin/reboot
 }
 reboot_system
+
 
 
