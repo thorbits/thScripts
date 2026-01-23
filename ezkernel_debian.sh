@@ -214,7 +214,7 @@ download_source() {
     printf " Downloading %s …\n\n" "$msg" # directory-independent message, see flavour map
     mkdir -p "$SRCDIR"
     cd "$SRCDIR"
-    wget -q --show-progress -O "$TARBALL" "$URL"
+    wget -q --show-progress -O "$TARBALL" "$URL" || fatal "error downloading kernel sources."
 }
 
 download_source
@@ -273,3 +273,4 @@ reboot_system(){
 }
 
 reboot_system
+
