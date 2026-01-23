@@ -293,18 +293,17 @@ info() {
 
 # cpu variables
 choose_cores() {
-    total=$(nproc --all)
     while true; do
-        printf $'\r\033[2KHow many CPU cores of the system (in %%) do you want to use for compilation? '
-        printf '25) 25%% (%d cores)  ' $(( total / 4 ))
-        printf '50) 50%% (%d cores)  ' $(( total / 2 ))
-        printf '100) 100%% (%d cores)' $total
+        printf $'\r\033[2KHow many CPU cores of your system (in %%) do you want to use for compilation \n'
+        printf '25) (%d cores)  ' $(( $(nproc) / 4 ))
+        printf '50) (%d cores)  ' $(( $(nproc) / 2 ))
+        printf '100) (%d cores) ' $(nproc)
         read -r -s -n1 -p '  Choose (25/50/100): ' choice
 
         case $choice in
             25|50|100)
-                MAXJOBS=$(( total * choice / 100 ))
-                printf '\n'
+                MAXJOBS=$(( $(nproc) * choice / 100 ))
+                printf '\n\n'
                 return
                 ;;
         esac
@@ -377,4 +376,5 @@ reboot_system(){
 }
 
 reboot_system
+
 
