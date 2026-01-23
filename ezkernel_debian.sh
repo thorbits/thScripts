@@ -44,7 +44,8 @@ os_release() {
 DISTRO=$(os_release)
 
 declare -A KRNL_GROUP # map each distro to its required kernel compilation dependencies
-KRNL_GROUP[arch]="base-devel bc bison flex libelf ncurses openssl python rsync zlib"
+#KRNL_GROUP[arch]="base-devel bc bison flex libelf ncurses openssl python rsync zlib"
+KRNL_GROUP[arch]="bc cpio gettext libelf pahole perl python rust rust-bindgen rust-src tar xz zstd"
 KRNL_GROUP[debian]="build-essential libdw-dev libelf-dev zlib1g-dev libncurses-dev libssl-dev bison bc flex rsync debhelper python3"
 
 case "$DISTRO" in
@@ -356,3 +357,4 @@ reboot_system(){
 }
 
 reboot_system
+
