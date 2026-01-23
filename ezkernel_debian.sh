@@ -22,10 +22,6 @@ fatal() {
     exit 1
 }
 
-info() {
-    printf '\n\e[32m [INFO]\e[0m %s %s\n' "$1" "$2"
-}
-
 restore_cursor() {
     	[[ -t 1 ]] && tput cnorm
 }
@@ -296,6 +292,10 @@ MAXJOBS=$(nproc) # use max cores, change MAXJOBS=8 to limit usage
 JOBS=$(nproc)
 (( JOBS > MAXJOBS )) && JOBS=$MAXJOBS
 
+info() {
+    printf '\n\e[32m [INFO]\e[0m eZkernel compilation successful for version: %s\n\n Compilation time:' "$*"
+}
+
 # kernel compilation
 if ! (yes '' | make localmodconfig && make menuconfig); then
     fatal "error generating kernel config."
@@ -305,7 +305,7 @@ case "$DISTRO" in
 		if ! time { \
         make -j"$MAXJOBS" bzImage modules && \
         make modules_install install; \
-		info "eZkernel compilation successful for version: %s\n\n Compilation time:" "$KVER"
+		info "$KVER"
 #		printf "\n\n eZkernel compilation successful for version: %s\n\n Compilation time: \n" "$KVER"
     	}; then
     		fatal "error compiling kernel."
@@ -360,3 +360,4 @@ reboot_system(){
 }
 
 reboot_system
+
