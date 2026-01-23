@@ -359,5 +359,3 @@ reboot_system(){
 }
 
 reboot_system
-
-
