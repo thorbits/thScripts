@@ -47,7 +47,12 @@ declare -A KRNL_GROUP # map each distro to its required kernel compilation depen
 KRNL_GROUP[debian]="build-essential libdw-dev libelf-dev zlib1g-dev libncurses-dev libssl-dev bison bc flex rsync debhelper python3"
 
 case "$DISTRO" in
-    debian)
+    arch)
+    	UPDATE=(pacman -Sy)
+    	PM=(pacman -S --needed --noconfirm)
+    	LIST_CMD=(pacman -Sp --print-format '%n')
+	;;
+	debian)
     	UPDATE=(apt-get update -qq)
     	PM=(apt-get install -y --no-install-recommends)
     	LIST_CMD=(apt-get install --dry-run -qq)
@@ -62,6 +67,28 @@ clear
 echo
 
 case "$DISTRO" in
+        arch)
+            cat << 'ART'
+                      .o+`
+                     `ooo/
+                    `+oooo:
+                   `+oooooo:
+                   -+oooooo+:
+                 `/:-:++oooo+:
+                `/++++/+++++++:
+               `/++++++++++++++:
+              `/+++ooooooooooooo/`
+             ./ooosssso++osssssso+`
+            .oossssso-````/ossssss+`
+           -osssssso.      :ssssssso.
+          :osssssss/        osssso+++.
+         /ossssssss/        +ssssooo/-
+       `/ossssso+/:-        -:/+osssso+-
+      `+sso+:-`                 `.-/+oso:
+     `++:.                           `-/+/
+     .`                                 `/
+ART
+        ;;
         debian)
             cat << 'ART'
                _,met$$$$$gg.
@@ -86,6 +113,9 @@ ART
 esac
 
 case "${DISTRO:-}" in
+	arch)
+		printf "\n\n Welcome %s, to eZkernel for %s.\n\n The latest Linux kernel available in mainline (kernel.org), will be will be sourced, compiled and installed.\n\n" "$USER" "$DISTRO"
+		;;
     debian)
 		printf "\n\n Welcome %s, to eZkernel for %s.\n\n The latest Linux kernel available in mainline (kernel.org) or sid (deb.debian.org), will be will be sourced, compiled and installed.\n\n" "$USER" "$DISTRO"
 		;;
@@ -105,6 +135,12 @@ KVER= URL= SRCDIR= TARBALL=	# initialise, so tu use later ouside function
 
 # choice of kernel sources
 case "${DISTRO:-}" in
+	arch)
+		KVER=$(curl -s https://www.kernel.org/finger_banner | sed -n '2s/^[^6]*//p')
+        URL="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-master.tar.gz"
+        SRCDIR="${WORKDIR}/linux-upstream-${KVER}"
+        TARBALL="${SRCDIR}/linux-master.tar.gz"
+		;;
     debian)
         printf " Which kernel sources do you want to use:\n\n"
         choose_source(){
@@ -132,9 +168,10 @@ case "${DISTRO:-}" in
         	esac
     		done
 		}
-		choose_source
         ;;
 esac
+
+choose_source
 
 # kernel version check
 printf " Checking kernels versions... please wait" && sleep 2
@@ -273,4 +310,5 @@ reboot_system(){
 }
 
 reboot_system
+
 
