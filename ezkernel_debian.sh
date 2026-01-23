@@ -145,7 +145,7 @@ case "${DISTRO:-}" in
                 	URL="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-master.tar.gz"
                 	SRCDIR="${WORKDIR}/linux-upstream-${KVER}"
                 	TARBALL="${SRCDIR}/linux-master.tar.gz"
-                	printf "\n\n"
+                	printf "\n\n Selected: upstream master snapshot\n\n"
                 	return
                 	;;
             	2)  # cachyos/rc
@@ -154,7 +154,7 @@ case "${DISTRO:-}" in
 					KCFG="https://aur.archlinux.org/cgit/aur.git/snapshot/linux-cachyos-rc.tar.gz"
                 	SRCDIR="${WORKDIR}/linux-cachyos-${KVER}"
                 	TARBALL="${SRCDIR}/v${KVER}.tar.gz"
-                	printf "\n\n"
+                	printf "\n\nSelected: cachyos/rc\n\n"
                 	return
                 	;;
             	*)  ;;
@@ -175,7 +175,7 @@ case "${DISTRO:-}" in
                 	URL="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-master.tar.gz"
                 	SRCDIR="${WORKDIR}/linux-upstream-${KVER}"
                 	TARBALL="${SRCDIR}/linux-master.tar.gz"
-                	printf "\n\n"
+                	printf "\n\n Selected: upstream master snapshot\n\n"
                 	return
                 	;;
             	2)  # debian/sid
@@ -183,7 +183,7 @@ case "${DISTRO:-}" in
                 	URL="http://deb.debian.org/debian/pool/main/l/linux/linux_${KVER}.orig.tar.xz"
                 	SRCDIR="${WORKDIR}/linux-debian-${KVER}"
                 	TARBALL="${SRCDIR}/linux_${KVER}.orig.tar.xz"
-                	printf "\n\n"
+                	printf "\n\n Selected: debian/sid\n\n"
                 	return
                 	;;
             	*)  ;;
@@ -375,5 +375,3 @@ reboot_system(){
 }
 
 reboot_system
-
-
