@@ -328,7 +328,7 @@ rm -rf "${WORKDIR}"
 reboot_system(){
 	printf "\n System must be rebooted to load the new kernel.\n\n"
 	while : ; do
-    read -r -s -n1 -p $' Press Enter to continue or Ctrl+C to cancel.' REPLY
+    read -r -s -n1 -p $' Press Enter to continue or Ctrl+C to cancel' REPLY
     if [[ -z "$REPLY" ]]; then # Enter only, no other key
         break
     fi
@@ -357,5 +357,3 @@ reboot_system(){
 }
 
 reboot_system
-
-
