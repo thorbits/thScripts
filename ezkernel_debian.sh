@@ -94,7 +94,7 @@ case "${DISTRO:-}" in
         ;;
 esac	
 
-"{UPDATE[@]}" >/dev/null 2>&1 || fatal " no internet connection detected."
+"${UPDATE[@]}" >/dev/null 2>&1 || fatal " no internet connection detected."
 if ! command -v curl >/dev/null 2>&1 || ! command -v wget >/dev/null 2>&1; then
 	"{PM[@]}" curl wget >/dev/null 2>&1
 fi
@@ -272,6 +272,7 @@ reboot_system(){
     /sbin/reboot
 }
 reboot_system
+
 
 
 
