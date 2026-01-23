@@ -233,14 +233,14 @@ JOBS=$(nproc)
 
 # kernel compilation
 if ! (yes '' | make localmodconfig && make menuconfig); then
-    fatal "error generating kernel config"
+    fatal "error generating kernel config."
 fi
 if ! time { \
         make -j"$MAXJOBS" bindeb-pkg && \
         dpkg -i "${WORKDIR}"/*.deb; \
 		printf "\n\n eZkernel compilation successful for version: %s\n\n Compilation time :\n" "$KVER"
     }; then
-    fatal "kernel compilation or package installation failed."
+    fatal "error compiling kernel."
 fi
 
 # cleanup and reboot
@@ -271,12 +271,5 @@ reboot_system(){
 	done
     /sbin/reboot
 }
+
 reboot_system
-
-
-
-
-
-
-
-
