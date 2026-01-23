@@ -96,7 +96,7 @@ esac
 
 "${UPDATE[@]}" >/dev/null 2>&1 || fatal " no internet connection detected."
 if ! command -v curl >/dev/null 2>&1 || ! command -v wget >/dev/null 2>&1; then
-	"{PM[@]}" curl wget >/dev/null 2>&1
+	"${PM[@]}" curl wget >/dev/null 2>&1
 fi
 
 # path variables
@@ -272,6 +272,7 @@ reboot_system(){
     /sbin/reboot
 }
 reboot_system
+
 
 
 
