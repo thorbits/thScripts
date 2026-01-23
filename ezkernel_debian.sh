@@ -295,7 +295,7 @@ info() {
 choose_cores() {
     while true; do
         printf $'\r\033[2K How many CPU cores of the system (in %%) do you want to use for compilation \n'
-        printf '25) (%d cores)  ' $(( $(nproc) / 4 ))
+        printf ' 25) (%d cores)  ' $(( $(nproc) / 4 ))
         printf '50) (%d cores)  ' $(( $(nproc) / 2 ))
         printf '100) (%d cores) ' $(nproc)
         read -rp "Choose (25/50/100): " choice
@@ -376,3 +376,4 @@ reboot_system(){
 }
 
 reboot_system
+
