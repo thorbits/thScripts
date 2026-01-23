@@ -164,7 +164,7 @@ case "${DISTRO:-}" in
 		choose_source
 		;;
     debian)
-        printf " Which kernel sources do you want to use,\n\n"
+        printf " Which kernel sources do you want to use\n\n"
         choose_source(){
     		while true; do
         		printf $'\r\033[2K upstream master snapshot (1) or latest in debian/sid (2) [1/2]: '
@@ -288,13 +288,13 @@ esac
 rm -f "$TARBALL"
 
 info() {
-    printf "\n\e[32m [INFO]\e[0m eZkernel compilation successful for version: %s\n\n Compilation time:" "$*"
+    printf "\n\e[32m [INFO]\e[0m eZkernel compilation successful for version: %s\n\n Compilation time: \n" "$*"
 }
 
 # cpu variables
 choose_cores() {
     while true; do
-        printf $'\r\033[2K How many CPU cores of the system (in %%) do you want to use for compilation \n'
+        printf $'\r\033[2K How many CPU cores of the system (in %%) do you want to use for compilation \n\n'
         printf ' 25) (%d cores)  ' $(( $(nproc) / 4 ))
         printf '50) (%d cores)  ' $(( $(nproc) / 2 ))
         printf '100) (%d cores) ' $(nproc)
@@ -322,7 +322,6 @@ case "$DISTRO" in
         make -j"$MAXJOBS" bzImage modules && \
         make modules_install install; \
 		info "$KVER"
-#		printf "\n\n eZkernel compilation successful for version: %s\n\n Compilation time: \n" "$KVER"
     	}; then
     		fatal "error compiling kernel."
 		fi
@@ -331,7 +330,7 @@ case "$DISTRO" in
 		if ! time { \
         make -j"$MAXJOBS" bindeb-pkg && \
         dpkg -i "${WORKDIR}"/*.deb; \
-		printf "\n\n eZkernel compilation successful for version: %s\n\n Compilation time: \n" "$KVER"
+		info "$KVER"
     	}; then
     		fatal "error compiling kernel."
 		fi
@@ -376,4 +375,5 @@ reboot_system(){
 }
 
 reboot_system
+
 
