@@ -169,10 +169,9 @@ case "${DISTRO:-}" in
         	esac
     		done
 		}
+		choose_source
         ;;
 esac
-
-choose_source
 
 # kernel version check
 printf " Checking kernels versions... please wait" && sleep 2
@@ -327,3 +326,4 @@ reboot_system(){
 }
 
 reboot_system
+
