@@ -146,7 +146,7 @@ case "${DISTRO:-}" in
         printf " Which kernel sources do you want to use:\n\n"
         choose_source(){
     		while true; do
-        		printf $'\r\033[2K upstream master snapshot (1) or latest in sid/debian (2) [1/2]: '
+        		printf $'\r\033[2K upstream master snapshot (1) or latest in debian/sid (2) [1/2]: '
         		read -n1 -s -r choice
 	        case $choice in
             	1)  # upstream master snapshot
@@ -157,7 +157,7 @@ case "${DISTRO:-}" in
                 	printf "\n\n"
                 	return
                 	;;
-            	2)  # Debian sid (latest 6.1x)
+            	2)  # debian/sid
                 	KVER=$(curl -s "https://packages.debian.org/sid/kernel/" | grep -oP '\d+\.\d+\.\d+-\d+' | grep '^6\..*-1$' | sort -V | tail -n1 | sed 's/-.*//')
                 	URL="http://deb.debian.org/debian/pool/main/l/linux/linux_${KVER}.orig.tar.xz"
                 	SRCDIR="${WORKDIR}/linux-debian-${KVER}"
@@ -333,3 +333,4 @@ reboot_system(){
 }
 
 reboot_system
+
