@@ -333,21 +333,23 @@ reboot_system(){
         break
     fi
 	done
-    
-	if grep -q '^GRUB_TIMEOUT=' /etc/default/grub; then
-        sed -i 's/^GRUB_TIMEOUT=[0-9]\+/GRUB_TIMEOUT=1/' /etc/default/grub
-    else
-        echo "GRUB_TIMEOUT=1" >> /etc/default/grub
-    fi
 	case "$DISTRO" in
 		arch)
-			grub-mkconfig -o /boot/grub/grub.cfg >/dev/null 2>&1 || fatal "failed to update grub."
+			if [ -d /boot/loader/entries ] && ls /boot/loader/entries/*.conf >/dev/null 2>&1; then
+    			:
+			elif command -v grub-mkconfig >/dev/null 2>&1; then
+    			grub-mkconfig -o /boot/grub/grub.cfg >/dev/null 2>&1 || fatal "failed to update grub."
+			fi
 			;;
         debian)
+			if grep -q '^GRUB_TIMEOUT=' /etc/default/grub; then
+        		sed -i 's/^GRUB_TIMEOUT=[0-9]\+/GRUB_TIMEOUT=1/' /etc/default/grub
+    		else
+        		echo "GRUB_TIMEOUT=1" >> /etc/default/grub
+    		fi
     		update-grub >/dev/null 2>&1 || fatal "failed to update grub."
 			;;
 	esac
-
 	printf "\n\n"
 	for i in {5..1}; do
     	printf "\r\033[2K Rebooting in %d second%s..." "$i" $([ "$i" -eq 1 ] && echo "" || echo "s")
