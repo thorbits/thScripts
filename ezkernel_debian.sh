@@ -256,8 +256,8 @@ check_deps() {
                $((max_len-60)) "$p" \
                $((max_len-60-${#p}>0?max_len-60-${#p}:0)) ''
     done
-    printf "\r Progress: 100%% [%-*s] Installed %d new package(s).\n\n" \
-           "$BAR_MAX" "$bar" "$ok"
+#    printf "\r Progress: 100%% [%-*s] Installed %d new package(s).\n\n" "$BAR_MAX" "$bar" "$ok"
+	printf '\r%-*s\r Progress: 100%% [%-*s] Installed %d new package(s).\n\n' "$COLUMNS" '' "$BAR_MAX" "$bar" "$ok"
 }
 
 check_deps
@@ -359,3 +359,4 @@ reboot_system(){
 }
 
 reboot_system
+
