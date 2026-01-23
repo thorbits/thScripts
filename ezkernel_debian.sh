@@ -23,7 +23,7 @@ fatal() {
 }
 
 info() {
-    printf '\n\e[32m [INFO]\e[0m %s\n\n' "$*"
+    printf '\n\e[32m [INFO]\e[0m %s\n' "$*"
 }
 
 restore_cursor() {
@@ -305,7 +305,8 @@ case "$DISTRO" in
 		if ! time { \
         make -j"$MAXJOBS" bzImage modules && \
         make modules_install install; \
-		printf "\n\n eZkernel compilation successful for version: %s\n\n Compilation time: \n" "$KVER"
+		info "eZkernel compilation successful for version: %s\n\n Compilation time:" "$KVER"
+#		printf "\n\n eZkernel compilation successful for version: %s\n\n Compilation time: \n" "$KVER"
     	}; then
     		fatal "error compiling kernel."
 		fi
@@ -359,4 +360,5 @@ reboot_system(){
 }
 
 reboot_system
+
 
