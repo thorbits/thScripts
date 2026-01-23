@@ -294,7 +294,7 @@ info() {
 # cpu variables
 choose_cores() {
     while true; do
-        printf $'\r\033[2KHow many CPU cores of the system (in %%) do you want to use for compilation \n'
+        printf $'\r\033[2K How many CPU cores of the system (in %%) do you want to use for compilation \n'
         printf '25) (%d cores)  ' $(( $(nproc) / 4 ))
         printf '50) (%d cores)  ' $(( $(nproc) / 2 ))
         printf '100) (%d cores) ' $(nproc)
@@ -376,6 +376,3 @@ reboot_system(){
 }
 
 reboot_system
-
-
-
