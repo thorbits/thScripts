@@ -309,14 +309,20 @@ reboot_system(){
         break
     fi
 	done
-
-    if grep -q '^GRUB_TIMEOUT=' /etc/default/grub; then
+    
+	if grep -q '^GRUB_TIMEOUT=' /etc/default/grub; then
         sed -i 's/^GRUB_TIMEOUT=[0-9]\+/GRUB_TIMEOUT=1/' /etc/default/grub
     else
         echo "GRUB_TIMEOUT=1" >> /etc/default/grub
     fi
-
-    update-grub >/dev/null 2>&1 || fatal "failed to update grub."
+	case "$DISTRO" in
+		arch)
+			grub-mkconfig -o /boot/grub/grub.cfg >/dev/null 2>&1 || fatal "failed to update grub."
+			;;
+        debian)
+    		update-grub >/dev/null 2>&1 || fatal "failed to update grub."
+			;;
+	esac
 
 	printf "\n\n"
 	for i in {5..1}; do
@@ -327,5 +333,3 @@ reboot_system(){
 }
 
 reboot_system
-
-
