@@ -129,7 +129,7 @@ fi
 
 # path variables
 WORKDIR="${HOME:-/root}/kernel"
-KVER= URL= SRCDIR= TARBALL=	# initialise, so tu use later ouside function
+KVER= URL= SRCDIR= TARBALL=	MAKEFLAGS= # initialise, to use later ouside function
 
 # choice of kernel sources
 case "${DISTRO:-}" in
@@ -306,7 +306,7 @@ choose_cores() {
         esac
         cores=$(( total * pct / 100 ))
         MAKEFLAGS="-j$cores"
-        export MAKEFLAGS
+#        export MAKEFLAGS
         printf "\n\n"
         return
     done
@@ -377,4 +377,5 @@ reboot_system(){
 }
 
 reboot_system
+
 
