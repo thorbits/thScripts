@@ -129,7 +129,7 @@ fi
 
 # path variables
 WORKDIR="${HOME:-/root}/kernel"
-KVER= URL= SRCDIR= TARBALL=	MAKEFLAGS= # initialise, to use later ouside function
+KVER= URL= SRCDIR= TARBALL=	KCFG= MAKEFLAGS= # initialise, to use later ouside function
 
 # choice of kernel sources
 case "${DISTRO:-}" in
@@ -151,10 +151,12 @@ case "${DISTRO:-}" in
             	2)  # cachyos/rc
                 	KVER=$(curl -s https://www.kernel.org/finger_banner | sed -n '2s/^[^6]*//p')
                 	URL="https://github.com/torvalds/linux/archive/refs/tags/v6.19-rc6.tar.gz"
-					KCFG="https://aur.archlinux.org/cgit/aur.git/snapshot/linux-cachyos-rc.tar.gz"
+					URL1="https://aur.archlinux.org/cgit/aur.git/snapshot/linux-cachyos-rc.tar.gz"
                 	SRCDIR="${WORKDIR}/linux-cachyos-${KVER}"
                 	TARBALL="${SRCDIR}/v${KVER}.tar.gz"
+					TARKCFG="${SRCDIR}/linux-cachyos-rc.tar.gz"
                 	printf "\n\nSelected: cachyos/rc\n\n"
+					KCFG=true
                 	return
                 	;;
             	*)  ;;
@@ -261,13 +263,14 @@ check_deps
 # prepare build env
 declare -A FLAVOUR_MAP=(
     [upstream]="latest upstream kernel snapshot"
-    [debian]="latest Debian/sid kernel source"
+    [debian]="latest debian/sid kernel source"
+	[cachyos]="latest cachyos/rc kernel source"
 )
 
 download_source() {
     local msg="" key
     for key in "${!FLAVOUR_MAP[@]}"; do
-        if [[ $SRCDIR =~ $key ]]; then
+        if [[ "$SRCDIR" =~ $key ]]; then
             msg=${FLAVOUR_MAP[$key]}
             break
         fi
@@ -276,20 +279,23 @@ download_source() {
     mkdir -p "$SRCDIR"
     cd "$SRCDIR"
     wget -q --show-progress -O "$TARBALL" "$URL" || fatal "error downloading kernel sources."
+	if [[ ${KCFG} == true]]; then
+        wget -q --show-progress -O "$TARKCFG" "$URL1" || fatal "error downloading cachyos config."
+    fi
+	printf "\n Extracting kernel sources...\n\n"
+	case "$TARBALL" in
+    	*.tar.gz)  tar -xzf "${TARBALL}" --strip-components=1 ;;
+    	*.tar.xz)  tar -xJf "${TARBALL}" --strip-components=1 ;;
+	esac
+	rm -f "$TARBALL"
+	if [[ "$KCFG" == true ]]; then
+    	printf "\n Extracting CachyOS config archive...\n\n"
+    	tar -xzf "$TARKCFG" --strip-components=1
+    	rm -f "$TARKCFG"
+	fi
 }
 
 download_source
-
-printf "\n Extracting kernel sources...\n\n"
-case "$TARBALL" in
-    *.tar.gz)  tar -xzf "${TARBALL}" --strip-components=1 ;;
-    *.tar.xz)  tar -xJf "${TARBALL}" --strip-components=1 ;;
-esac
-rm -f "$TARBALL"
-
-info() {
-    printf "\n\e[32m [INFO]\e[0m eZkernel compilation successful for version: %s\n\n Compilation time: \n" "$*"
-}
 
 # cpu variables
 choose_cores() {
@@ -313,6 +319,10 @@ choose_cores() {
 }
 
 choose_cores
+
+info() {
+    printf "\n\e[32m [INFO]\e[0m eZkernel compilation successful for version: %s\n\n Compilation time: \n" "$*"
+}
 
 # kernel compilation
 if ! (yes '' | make localmodconfig && make menuconfig); then
@@ -377,5 +387,3 @@ reboot_system(){
 }
 
 reboot_system
-
-
