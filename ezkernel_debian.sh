@@ -346,16 +346,16 @@ case "$DISTRO" in
 		    if ! pacman -U --noconfirm "$pkgfile"; then
         		fatal "error installing the built package"
     		fi
-    	info "$KVER"
+    		info "$KVER"
 		} 2>&1
 		;;
     debian)
 		time { \
-        	if make "$MAKEFLAGS" bindeb-pkg; then
+        	if ! make "$MAKEFLAGS" bindeb-pkg; then
 				fatal "error in kernel compilation process."
 			fi
-        dpkg -i "${WORKDIR}"/*.deb
-		info "$KVER"
+        	dpkg -i "${WORKDIR}"/*.deb
+			info "$KVER"
 		} 2>&1
 		;;
 esac
