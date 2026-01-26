@@ -289,7 +289,7 @@ manage_sources() {
 	esac
 	rm -f "$TARBALL"
 	if [[ "$KCFG" == true ]]; then
-    	printf "\n Extracting cachyos config...\n\n"
+    	printf " Extracting cachyos config...\n\n"
 		tar -xOf "$TARKCFG" $(tar -tf "$TARKCFG" | grep -E '/config$') > .config
     	rm -f "$TARKCFG"
 	fi
@@ -394,5 +394,3 @@ reboot_system(){
 }
 
 reboot_system
-
-
