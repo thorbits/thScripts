@@ -372,6 +372,7 @@ reboot_system(){
 	case "$DISTRO" in
 		arch)
 			if [ -d /boot/loader/entries ] && ls /boot/loader/entries/*.conf >/dev/null 2>&1; then
+#				bootctl update
     			:
 			elif command -v grub-mkconfig >/dev/null 2>&1; then
     			grub-mkconfig -o /boot/grub/grub.cfg >/dev/null 2>&1 || fatal "failed to update grub."
@@ -395,6 +396,3 @@ reboot_system(){
 }
 
 reboot_system
-
-
-
