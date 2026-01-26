@@ -128,11 +128,7 @@ if ! command -v curl >/dev/null 2>&1 || ! command -v wget >/dev/null 2>&1; then
 fi
 
 # path variables
-if [[ $EUID -eq 0 ]]; then
-    WORKDIR="/tmp/kernel"
-else
-    WORKDIR="${HOME}/kernel"
-fi
+WORKDIR="/var/tmp/kernel"
 KCFG=false
 KVER= URL= SRCDIR= TARBALL=	MAKEFLAGS= # initialise, to use later ouside function
 
@@ -280,6 +276,7 @@ manage_sources() {
     done
     printf " Downloading %s...\n\n" "$msg" # directory-independent message, see flavour map
     mkdir -p "$SRCDIR"
+	chmod 1777 "$SRCDIR"
     cd "$SRCDIR"
     wget -q --show-progress -O "$TARBALL" "$URL" || fatal "error downloading kernel sources."
 	if [[ ${KCFG} == true ]]; then
@@ -406,6 +403,3 @@ reboot_system(){
 }
 
 reboot_system
-
-
-
