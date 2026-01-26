@@ -286,8 +286,8 @@ manage_sources() {
 	case "$TARBALL" in
     	*.tar.gz)  tar -xzf "${TARBALL}" --strip-components=1 ;;
     	*.tar.xz)  tar -xJf "${TARBALL}" --strip-components=1 ;;
-		rm -f "$TARBALL" ;;
 	esac
+	rm -f "$TARBALL"
 	if [[ "$KCFG" == true ]]; then
     	printf "\n Extracting cachyos config...\n\n"
 		tar -xOf "$TARKCFG" $(tar -tf "$TARKCFG" | grep -E '/config$') > .config
@@ -394,4 +394,5 @@ reboot_system(){
 }
 
 reboot_system
+
 
