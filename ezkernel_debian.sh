@@ -330,37 +330,38 @@ if [[ "$KCFG" == false ]]; then
     fi
 else
 	if [[ ! -f ".config" || ! -r ".config" || ! -s ".config" ]]; then
-        fatal "error: 'config' file is missing, unreadable, or empty."
+        fatal "'config' file is missing, unreadable, or empty."
     fi
 #	sed -i 's/^CONFIG_MODULES=y/CONFIG_MODULES=n/' .config
 fi
 case "$DISTRO" in
 	arch)
 		time { \
-#    		if ! make "$MAKEFLAGS" bzImage modules; then
-#    			make modules_install install
-			if ! MAKEFLAGS="$MAKEFLAGS" yes | makepkg -s --noconfirm; then
-        		fatal "error in kernel compilation process."
-		    fi
-			pkgfile=$(find . -maxdepth 1 -name "*.pkg.tar.zst" -print -quit)
-		    if command -v sudo >/dev/null 2>&1; then
-                sudo pacman -U --noconfirm "$pkgfile" || fatal "error installing the built package"
-            else
-                su -c "pacman -U --noconfirm $(printf '%q' "$pkgfile")" || fatal "error installing the built package"
+			# Run makepkg as regular user in a subshell
+            if ! su "${SUDO_USER:-$USER}" -c "cd '$PWD' && MAKEFLAGS='$MAKEFLAGS' makepkg -s --noconfirm"; then
+                fatal "error during kernel compilation process."
             fi
+            pkgfile=$(find . -maxdepth 1 -name "*.pkg.tar.zst" -print -quit)
+            if [[ -z "$pkgfile" ]]; then
+                fatal "could not find built package"
+            fi
+            pacman -U --noconfirm "$pkgfile" || fatal "error installing the built package"
     		info "$KVER"
 		} 2>&1
 		;;
     debian)
 		time { \
         	if ! make "$MAKEFLAGS" bindeb-pkg; then
-				fatal "error in kernel compilation process."
+				fatal "error during kernel compilation process."
 			fi
         	dpkg -i "${WORKDIR}"/*.deb
 			info "$KVER"
 		} 2>&1
 		;;
 esac
+
+#    		if ! make "$MAKEFLAGS" bzImage modules; then
+#    			make modules_install install
 
 # cleanup and reboot
 cd ~
@@ -401,4 +402,3 @@ reboot_system(){
 }
 
 reboot_system
-
