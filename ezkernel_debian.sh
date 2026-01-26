@@ -312,7 +312,6 @@ choose_cores() {
         esac
         cores=$(( total * pct / 100 ))
         MAKEFLAGS="-j$cores"
-		export MAKEFLAGS
         printf "\n\n"
         return
     done
@@ -333,12 +332,12 @@ else
 	if [[ ! -f ".config" || ! -r ".config" || ! -s ".config" ]]; then
         fatal "error: 'config' file is missing, unreadable, or empty."
     fi
-	sed -i 's/^CONFIG_MODULES=y/CONFIG_MODULES=n/' .config
+#	sed -i 's/^CONFIG_MODULES=y/CONFIG_MODULES=n/' .config
 fi
 case "$DISTRO" in
 	arch)
 		time { \
-			if ! yes | MAKEFLAGS="-j$(nproc)" makepkg -s; then
+			if ! MAKEFLAGS="$MAKEFLAGS" yes | makepkg -sic; then
 #    		if ! make "$MAKEFLAGS" bzImage modules; then
         		fatal "error in kernel compilation process."
 		    fi
@@ -396,4 +395,3 @@ reboot_system(){
 }
 
 reboot_system
-
