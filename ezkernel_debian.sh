@@ -289,7 +289,8 @@ manage_sources() {
 	rm -f "$TARBALL"
 	if [[ "$KCFG" == true ]]; then
     	printf "\n Extracting CachyOS config archive...\n\n"
-    	tar -xzf "$TARKCFG" --strip-components=1
+		tar -xOf "$TARKCFG" $(tar -tf "$TARKCFG" | grep -E '/config$') > .config
+#    	tar -xzf "$TARKCFG" --strip-components=1
     	rm -f "$TARKCFG"
 	fi
 }
@@ -331,9 +332,9 @@ else
 	if [[ ! -f "config" || ! -r "config" || ! -s "config" ]]; then
         fatal "error: 'config' file is missing, unreadable, or empty."
     fi
-	if ! cp -f config .config; then
-        fatal "error copying configuration file to .config."
-    fi
+#	if ! mv -f config .config; then
+#        fatal "error copying configuration file to .config."
+#    fi
 fi
 case "$DISTRO" in
 	arch)
@@ -394,5 +395,6 @@ reboot_system(){
 }
 
 reboot_system
+
 
 
