@@ -129,7 +129,8 @@ fi
 
 # path variables
 WORKDIR="${HOME:-/root}/kernel"
-KVER= URL= SRCDIR= TARBALL=	KCFG= MAKEFLAGS= # initialise, to use later ouside function
+KCFG=false
+KVER= URL= SRCDIR= TARBALL=	MAKEFLAGS= # initialise, to use later ouside function
 
 # choice of kernel sources
 case "${DISTRO:-}" in
@@ -267,7 +268,7 @@ declare -A FLAVOUR_MAP=(
 	[cachyos]="latest cachyos/rc kernel source"
 )
 
-download_source() {
+download_sources() {
     local msg="" key
     for key in "${!FLAVOUR_MAP[@]}"; do
         if [[ "$SRCDIR" =~ $key ]]; then
@@ -295,7 +296,7 @@ download_source() {
 	fi
 }
 
-download_source
+download_sources
 
 # cpu variables
 choose_cores() {
@@ -325,8 +326,10 @@ info() {
 }
 
 # kernel compilation
-if ! (yes '' | make localmodconfig && make menuconfig); then
-    fatal "error generating kernel config."
+if [[ "$KCFG" == false ]]; then
+    if ! (yes '' | make localmodconfig && make menuconfig); then
+        fatal "error generating kernel config."
+    fi
 fi
 case "$DISTRO" in
 	arch)
@@ -387,3 +390,4 @@ reboot_system(){
 }
 
 reboot_system
+
