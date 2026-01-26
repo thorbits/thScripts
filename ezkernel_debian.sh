@@ -339,13 +339,15 @@ case "$DISTRO" in
 		time { \
 #    		if ! make "$MAKEFLAGS" bzImage modules; then
 #    			make modules_install install
-			if ! MAKEFLAGS="$MAKEFLAGS" yes | makepkg -sc; then
+			if ! MAKEFLAGS="$MAKEFLAGS" yes | makepkg -s --noconfirm; then
         		fatal "error in kernel compilation process."
 		    fi
 			pkgfile=$(find . -maxdepth 1 -name "*.pkg.tar.zst" -print -quit)
-		    if ! pacman -U --noconfirm "$pkgfile"; then
-        		fatal "error installing the built package"
-    		fi
+		    if command -v sudo >/dev/null 2>&1; then
+                sudo pacman -U --noconfirm "$pkgfile" || fatal "error installing the built package"
+            else
+                su -c "pacman -U --noconfirm $(printf '%q' "$pkgfile")" || fatal "error installing the built package"
+            fi
     		info "$KVER"
 		} 2>&1
 		;;
@@ -399,3 +401,4 @@ reboot_system(){
 }
 
 reboot_system
+
