@@ -291,7 +291,9 @@ manage_sources() {
 	rm -f "$TARBALL"
 	if [[ "$KCFG" == true ]]; then
     	printf " Extracting cachyos config...\n\n"
-		tar -xOf "$TARKCFG" $(tar -tf "$TARKCFG" | grep -E '/config$') > .config
+		tar -xzf "${TARBALL}" --strip-components=1
+		mv config .config
+#		tar -xOf "$TARKCFG" $(tar -tf "$TARKCFG" | grep -E '/config$') > .config
     	rm -f "$TARKCFG"
 	fi
 }
