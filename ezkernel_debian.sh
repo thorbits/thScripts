@@ -151,12 +151,12 @@ case "${DISTRO:-}" in
                 	;;
             	2)  # cachyos/rc
                 	KVER=$(curl -s https://www.kernel.org/finger_banner | sed -n '2s/^[^6]*//p')
-                	URL="https://github.com/torvalds/linux/archive/refs/tags/v6.19-rc6.tar.gz"
+                	URL="https://github.com/torvalds/linux/archive/refs/tags/v${KVER}.tar.gz"
 					URL1="https://aur.archlinux.org/cgit/aur.git/snapshot/linux-cachyos-rc.tar.gz"
                 	SRCDIR="${WORKDIR}/linux-cachyos-${KVER}"
                 	TARBALL="${SRCDIR}/v${KVER}.tar.gz"
 					TARKCFG="${SRCDIR}/linux-cachyos-rc.tar.gz"
-                	printf "\n\nSelected: cachyos/rc\n\n"
+                	printf "\n\n Selected: cachyos/rc\n\n"
 					KCFG=true
                 	return
                 	;;
@@ -390,4 +390,5 @@ reboot_system(){
 }
 
 reboot_system
+
 
