@@ -278,7 +278,7 @@ manage_sources() {
     mkdir -p "$SRCDIR"
     cd "$SRCDIR"
     wget -q --show-progress -O "$TARBALL" "$URL" || fatal "error downloading kernel sources."
-	if [[ ${KCFG} == true]]; then
+	if [[ ${KCFG} == true ]]; then
         wget -q --show-progress -O "$TARKCFG" "$URL1" || fatal "error downloading cachyos config."
     fi
 	printf "\n Extracting kernel sources...\n\n"
@@ -387,3 +387,4 @@ reboot_system(){
 }
 
 reboot_system
+
