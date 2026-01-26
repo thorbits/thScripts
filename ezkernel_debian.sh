@@ -128,7 +128,11 @@ if ! command -v curl >/dev/null 2>&1 || ! command -v wget >/dev/null 2>&1; then
 fi
 
 # path variables
-WORKDIR="${HOME:-/root}/kernel"
+if [[ $EUID -eq 0 ]]; then
+    WORKDIR="/usr/local/src/kernel"
+else
+    WORKDIR="${HOME}/kernel"
+fi
 KCFG=false
 KVER= URL= SRCDIR= TARBALL=	MAKEFLAGS= # initialise, to use later ouside function
 
@@ -402,3 +406,4 @@ reboot_system(){
 }
 
 reboot_system
+
