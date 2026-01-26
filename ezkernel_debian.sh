@@ -129,7 +129,7 @@ fi
 
 # path variables
 if [[ $EUID -eq 0 ]]; then
-    WORKDIR="/var/tmp/kernel"
+    WORKDIR="/tmp/kernel"
 else
     WORKDIR="${HOME}/kernel"
 fi
@@ -406,5 +406,6 @@ reboot_system(){
 }
 
 reboot_system
+
 
 
