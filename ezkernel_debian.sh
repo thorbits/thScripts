@@ -279,18 +279,18 @@ manage_sources() {
     cd "$SRCDIR"
     wget -q --show-progress -O "$TARBALL" "$URL" || fatal "error downloading kernel sources."
 	if [[ ${KCFG} == true ]]; then
+		printf " Downloading latest cachyos config file...\n\n"
         wget -q --show-progress -O "$TARKCFG" "$URL1" || fatal "error downloading cachyos config."
     fi
 	printf "\n Extracting kernel sources...\n\n"
 	case "$TARBALL" in
     	*.tar.gz)  tar -xzf "${TARBALL}" --strip-components=1 ;;
     	*.tar.xz)  tar -xJf "${TARBALL}" --strip-components=1 ;;
+		rm -f "$TARBALL"
 	esac
-	rm -f "$TARBALL"
 	if [[ "$KCFG" == true ]]; then
-    	printf "\n Extracting CachyOS config archive...\n\n"
+    	printf "\n Extracting cachyos config...\n\n"
 		tar -xOf "$TARKCFG" $(tar -tf "$TARKCFG" | grep -E '/config$') > .config
-#    	tar -xzf "$TARKCFG" --strip-components=1
     	rm -f "$TARKCFG"
 	fi
 }
@@ -332,6 +332,7 @@ else
 	if [[ ! -f ".config" || ! -r ".config" || ! -s ".config" ]]; then
         fatal "error: 'config' file is missing, unreadable, or empty."
     fi
+	sed -i 's/^CONFIG_MODULES=y/CONFIG_MODULES=n/' .config
 fi
 case "$DISTRO" in
 	arch)
