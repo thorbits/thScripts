@@ -337,11 +337,15 @@ fi
 case "$DISTRO" in
 	arch)
 		time { \
-			if ! MAKEFLAGS="$MAKEFLAGS" yes | makepkg -sic; then
 #    		if ! make "$MAKEFLAGS" bzImage modules; then
+#    			make modules_install install
+			if ! MAKEFLAGS="$MAKEFLAGS" yes | makepkg -sc; then
         		fatal "error in kernel compilation process."
 		    fi
-#    	make modules_install install
+			pkgfile=$(find . -maxdepth 1 -name "*.pkg.tar.zst" -print -quit)
+		    if ! pacman -U --noconfirm "$pkgfile"; then
+        		fatal "error installing the built package"
+    		fi
     	info "$KVER"
 		} 2>&1
 		;;
