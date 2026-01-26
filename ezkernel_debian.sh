@@ -132,10 +132,10 @@ WORKDIR="${HOME:-/root}/kernel"
 KCFG=false
 KVER= URL= SRCDIR= TARBALL=	MAKEFLAGS= # initialise, to use later ouside function
 
-# choice of kernel sources
+# sources selection
+printf " Which kernel sources do you want to use,\n\n"
 case "${DISTRO:-}" in
 	arch)
-		printf " Which kernel sources do you want to use,\n\n"
         choose_source(){
     		while true; do
         		printf $'\r\033[2K upstream master snapshot (1) or latest in cachyos/rc (2) [1/2]: '
@@ -167,7 +167,6 @@ case "${DISTRO:-}" in
 		choose_source
 		;;
     debian)
-        printf " Which kernel sources do you want to use\n\n"
         choose_source(){
     		while true; do
         		printf $'\r\033[2K upstream master snapshot (1) or latest in debian/sid (2) [1/2]: '
@@ -255,7 +254,6 @@ check_deps() {
                $((max_len-60)) "$p" \
                $((max_len-60-${#p}>0?max_len-60-${#p}:0)) ''
     done
-#    printf "\r Progress: 100%% [%-*s] Installed %d new package(s).\n\n" "$BAR_MAX" "$bar" "$ok"
 	printf '\r%-*s\r Progress: 100%% [%-*s] Installed %d new package(s).\n\n' "$COLUMNS" '' "$BAR_MAX" "$bar" "$ok"
 }
 
@@ -268,7 +266,7 @@ declare -A FLAVOUR_MAP=(
 	[cachyos]="latest cachyos/rc kernel source"
 )
 
-download_sources() {
+manage_sources() {
     local msg="" key
     for key in "${!FLAVOUR_MAP[@]}"; do
         if [[ "$SRCDIR" =~ $key ]]; then
@@ -296,7 +294,7 @@ download_sources() {
 	fi
 }
 
-download_sources
+manage_sources
 
 # cpu variables
 choose_cores() {
@@ -313,7 +311,6 @@ choose_cores() {
         esac
         cores=$(( total * pct / 100 ))
         MAKEFLAGS="-j$cores"
-#        export MAKEFLAGS
         printf "\n\n"
         return
     done
@@ -390,5 +387,3 @@ reboot_system(){
 }
 
 reboot_system
-
-
