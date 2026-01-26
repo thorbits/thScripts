@@ -312,6 +312,7 @@ choose_cores() {
         esac
         cores=$(( total * pct / 100 ))
         MAKEFLAGS="-j$cores"
+		export MAKEFLAGS
         printf "\n\n"
         return
     done
@@ -337,10 +338,11 @@ fi
 case "$DISTRO" in
 	arch)
 		time { \
-    		if ! make "$MAKEFLAGS" bzImage modules; then
+			if ! yes | MAKEFLAGS="-j$(nproc)" makepkg -s; then
+#    		if ! make "$MAKEFLAGS" bzImage modules; then
         		fatal "error in kernel compilation process."
 		    fi
-    	make modules_install install
+#    	make modules_install install
     	info "$KVER"
 		} 2>&1
 		;;
@@ -394,3 +396,4 @@ reboot_system(){
 }
 
 reboot_system
+
