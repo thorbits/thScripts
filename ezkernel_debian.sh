@@ -335,22 +335,22 @@ else
 fi
 case "$DISTRO" in
 	arch)
-		if ! time { \
-        make "$MAKEFLAGS" bzImage modules && \
-        make modules_install install; \
-		info "$KVER"
-    	}; then
-    		fatal "error compiling kernel."
-		fi
+		time { \
+    		if ! make "$MAKEFLAGS" bzImage modules; then
+        		fatal "error in kernel compilation process."
+		    fi
+    	make modules_install install
+    	info "$KVER"
+		} 2>&1
 		;;
     debian)
-		if ! time { \
-        make "$MAKEFLAGS" bindeb-pkg && \
-        dpkg -i "${WORKDIR}"/*.deb; \
+		time { \
+        	if make "$MAKEFLAGS" bindeb-pkg; then
+				fatal "error in kernel compilation process."
+			fi
+        dpkg -i "${WORKDIR}"/*.deb
 		info "$KVER"
-    	}; then
-    		fatal "error compiling kernel."
-		fi
+		} 2>&1
 		;;
 esac
 
@@ -393,4 +393,3 @@ reboot_system(){
 }
 
 reboot_system
-
