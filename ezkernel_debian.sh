@@ -338,6 +338,7 @@ choose_cores() {
 if [[ ${KCFG} == true ]]; then
 	choose_cores
 	manage_make
+	reboot_system
 else
 	manage_sources
 	choose_cores
@@ -412,5 +413,3 @@ reboot_system(){
 }
 
 reboot_system
-
-
