@@ -263,7 +263,7 @@ check_deps
 declare -A FLAVOUR_MAP=(
     [upstream]="latest upstream kernel snapshot"
     [debian]="latest debian/sid kernel source"
-	[cachyos]="latest cachyos/rc kernel source"
+	[cachyos]="latest cachyos/rc kernel snapshot"
 )
 
 manage_sources() {
@@ -287,48 +287,35 @@ manage_sources() {
 }
 
 manage_make(){
-
-if [[ ${KCFG} == true ]]; then
-	manage_make
-else
-	manage_sources
-fi
-	
-printf "\n Downloading latest cachyos config file...\n\n"
-mkdir -p "$SRCDIR"
-chmod 1777 "$SRCDIR"
-cd "$SRCDIR"
-wget -q --show-progress -O "$TARKCFG" "$URL1" || fatal "error downloading cachyos config."
-printf " Extracting cachyos config...\n\n"
-tar -xzf "${TARKCFG}" --strip-components=1
-cp config .config
-rm -f "$TARKCFG"
-#tar -xOf "$TARKCFG" $(tar -tf "$TARKCFG" | grep -E '/config$') > .config
-#sed -i 's/^CONFIG_MODULES=y/CONFIG_MODULES=n/' .config
-if [[ ! -f ".config" || ! -r ".config" || ! -s ".config" ]]; then
-    fatal "'config' file is missing, unreadable, or empty."
-fi
-case "$DISTRO" in
-	arch)
-		time { \
-			# Run makepkg as regular user in a subshell
-            if ! su "${SUDO_USER:-$USER}" -c "cd '$PWD' && MAKEFLAGS='$MAKEFLAGS' makepkg -s --noconfirm"; then
-                fatal "error during kernel compilation process."
-            fi
-            pkgfile=$(find . -maxdepth 1 -name "*.pkg.tar.zst" -print -quit)
-            if [[ -z "$pkgfile" ]]; then
-                fatal "could not find built package"
-            fi
-            pacman -U --noconfirm "$pkgfile" || fatal "error installing the built package"
-    		info "$KVER"
-		} 2>&1
-		;;
-esac
+	printf " Downloading %s...\n\n" "$msg" # directory-independent message, see flavour map
+	mkdir -p "$SRCDIR"
+	chmod 1777 "$SRCDIR"
+	cd "$SRCDIR"
+	wget -q --show-progress -O "$TARKCFG" "$URL1" || fatal "error downloading cachyos config."
+	printf " Extracting cachyos config...\n\n"
+	tar -xzf "${TARKCFG}" --strip-components=1
+	#cp config .config
+	#rm -f "$TARKCFG"
+	#tar -xOf "$TARKCFG" $(tar -tf "$TARKCFG" | grep -E '/config$') > .config
+	#sed -i 's/^CONFIG_MODULES=y/CONFIG_MODULES=n/' .config
+	if [[ ! -f ".config" || ! -r ".config" || ! -s ".config" ]]; then
+    	fatal "'config' file is missing, unreadable, or empty."
+	fi
+	time { \
+	# Run makepkg as regular user in a subshell
+	if ! su "${SUDO_USER:-$USER}" -c "cd '$PWD' && MAKEFLAGS='$MAKEFLAGS' makepkg -s --noconfirm"; then
+    	fatal "error during kernel compilation process."
+	fi
+	pkgfile=$(find . -maxdepth 1 -name "*.pkg.tar.zst" -print -quit)
+	if [[ -z "$pkgfile" ]]; then
+    	fatal "could not find built package"
+	fi
+	pacman -U --noconfirm "$pkgfile" || fatal "error installing the built package"
+    info "$KVER"
+} 2>&1
 }
 
-manage_sources
-
-# cpu variables
+# cpu management
 choose_cores() {
     local cores total
     total=$(nproc)
@@ -348,7 +335,13 @@ choose_cores() {
     done
 }
 
-choose_cores
+if [[ ${KCFG} == true ]]; then
+	choose_cores
+	manage_make
+else
+	manage_sources
+	choose_cores
+fi
 
 # kernel compilation
 info() {
@@ -419,3 +412,4 @@ reboot_system(){
 }
 
 reboot_system
+
