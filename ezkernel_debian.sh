@@ -140,7 +140,6 @@ choose_cores() {
         cores=$(( total * pct / 100 ))
         MAKEFLAGS="-j$cores"
 		export MAKEFLAGS
-        printf "\n"
         return
     done
 }
@@ -320,7 +319,7 @@ manage_make(){
 	tar -xzf "${TARKCFG}" --strip-components=1
 	time { \
 		# run makepkg as regular user in a subshell
-		"${SUDO_USER:-$USER}" -c "MAKEFLAGS='$MAKEFLAGS' makepkg -s --noconfirm" || {
+		su "${SUDO_USER:-$USER}" -c "MAKEFLAGS='$MAKEFLAGS' makepkg -s --noconfirm" || {
 			fatal "error during kernel compilation process."
 		}
 		pkgfile=$(find . -maxdepth 1 -name "*.pkg.tar.zst" -print -quit)
