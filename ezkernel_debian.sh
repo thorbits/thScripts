@@ -8,7 +8,7 @@
 #    Interactive Linux kernel compilation and installation script
 # -------------------------------------------------------------------#
 #    Compile the latest mainline Linux kernel snapshot (arch/debian)
-#    or the latest kernel in sid (debian).
+#
 # -------------------------------------------------------------------#
 
 (if (return 0 2>/dev/null); then return 0; fi)
@@ -335,50 +335,9 @@ choose_cores() {
     done
 }
 
-if [[ ${KCFG} == true ]]; then
-	choose_cores
-	manage_make
-	reboot_system
-else
-	manage_sources
-	choose_cores
-fi
-
-# kernel compilation
-info() {
-    printf "\n\e[32m [INFO]\e[0m eZkernel compilation successful for version: %s\n\n Compilation time: \n" "$*"
-}
-
-if ! (yes '' | make localmodconfig && make menuconfig); then
-    fatal "error generating kernel config."
-fi
-
-case "$DISTRO" in
-	arch)
-		time { \
-			if ! make "$MAKEFLAGS" bzImage modules; then
-                fatal "error during kernel compilation process."
-            fi
-            make modules_install install
-    		info "$KVER"
-		} 2>&1
-		;;
-    debian)
-		time { \
-        	if ! make "$MAKEFLAGS" bindeb-pkg; then
-				fatal "error during kernel compilation process."
-			fi
-        	dpkg -i "${WORKDIR}"/*.deb
-			info "$KVER"
-		} 2>&1
-		;;
-esac
-
 # cleanup and reboot
-cd ~
-rm -rf "${WORKDIR}"
-
 reboot_system(){
+	cd ~ && rm -rf "${WORKDIR}" 
 	printf "\n System must be rebooted to load the new kernel.\n\n"
 	while : ; do
     read -r -s -n1 -p $' Press Enter to continue or Ctrl+C to cancel' REPLY
@@ -412,4 +371,40 @@ reboot_system(){
     /sbin/reboot
 }
 
+if [[ ${KCFG} == true ]]; then
+	choose_cores
+	manage_make
+	reboot_system
+else
+	choose_cores
+	manage_sources	
+fi
+
+# kernel compilation
+info() {
+    printf "\n\e[32m [INFO]\e[0m eZkernel compilation successful for version: %s\n\n Compilation time: \n" "$*"
+}
+if ! (yes '' | make localmodconfig && make menuconfig); then
+    fatal "error generating kernel config."
+fi
+case "$DISTRO" in
+	arch)
+		time { \
+			if ! make "$MAKEFLAGS" bzImage modules; then
+                fatal "error during kernel compilation process."
+            fi
+            make modules_install install
+    		info "$KVER"
+		} 2>&1
+		;;
+    debian)
+		time { \
+        	if ! make "$MAKEFLAGS" bindeb-pkg; then
+				fatal "error during kernel compilation process."
+			fi
+        	dpkg -i "${WORKDIR}"/*.deb
+			info "$KVER"
+		} 2>&1
+		;;
+esac
 reboot_system
