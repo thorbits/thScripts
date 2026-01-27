@@ -320,12 +320,10 @@ manage_make(){
 	tar -xzf "${TARKCFG}" --strip-components=1
 	time { \
 		# run makepkg as regular user in a subshell
-		"${SUDO_USER:-$USER}" -c "MAKEFLAGS='$MAKEFLAGS' makepkg -s --noconfirm" ||
-    		fatal "error during kernel compilation process."
+		"${SUDO_USER:-$USER}" -c "MAKEFLAGS='$MAKEFLAGS' makepkg -s --noconfirm" || {
+			fatal "error during kernel compilation process."
+		}
 		pkgfile=$(find . -maxdepth 1 -name "*.pkg.tar.zst" -print -quit)
-		if [[ -z "$pkgfile" ]]; then
-    		fatal "could not find built package"
-		fi
 		pacman -U --noconfirm "$pkgfile" || fatal "error installing the built package"
     	info "$KVER"
 	} 2>&1
@@ -413,4 +411,3 @@ case "$DISTRO" in
 		;;
 esac
 reboot_system
-
