@@ -317,9 +317,11 @@ manage_make(){
 	wget -q --show-progress -O "$TARKCFG" "$URL1" || fatal "error downloading cachyos config."
 	printf "\n Extracting cachyos config...\n\n"
 	tar -xzf "${TARKCFG}" --strip-components=1
-	time { \
+	time {
 		# run makepkg as regular user in a subshell
-		if ! su "${SUDO_USER:-$USER}" -c "MAKEFLAGS='$MAKEFLAGS' makepkg -s --noconfirm"; then
+#		if ! su "${SUDO_USER:-$USER}" -c "MAKEFLAGS='$MAKEFLAGS' makepkg -s --noconfirm"; then
+		target_user="${SUDO_USER:-$USER}"
+		if ! sudo -u "$target_user" env MAKEFLAGS="$MAKEFLAGS" makepkg -s --noconfirm; then
 		    fatal "error during kernel compilation process."
 		fi
 		pkgfile=$(find . -maxdepth 1 -name "*.pkg.tar.zst" -print -quit)
