@@ -276,26 +276,14 @@ manage_sources() {
     done
     printf " Downloading %s...\n\n" "$msg" # directory-independent message, see flavour map
     mkdir -p "$SRCDIR"
-	chmod 1777 "$SRCDIR"
     cd "$SRCDIR"
-#    wget -q --show-progress -O "$TARBALL" "$URL" || fatal "error downloading kernel sources."
-	if [[ ${KCFG} == true ]]; then
-		printf "\n Downloading latest cachyos config file...\n\n"
-        wget -q --show-progress -O "$TARKCFG" "$URL1" || fatal "error downloading cachyos config."
-    fi
+    wget -q --show-progress -O "$TARBALL" "$URL" || fatal "error downloading kernel sources."
 	printf "\n Extracting kernel sources...\n\n"
 	case "$TARBALL" in
     	*.tar.gz)  tar -xzf "${TARBALL}" --strip-components=1 ;;
     	*.tar.xz)  tar -xJf "${TARBALL}" --strip-components=1 ;;
 	esac
 	rm -f "$TARBALL"
-	if [[ "$KCFG" == true ]]; then
-    	printf " Extracting cachyos config...\n\n"
-		tar -xzf "${TARKCFG}" --strip-components=1
-		cp config .config
-#		tar -xOf "$TARKCFG" $(tar -tf "$TARKCFG" | grep -E '/config$') > .config
-	fi
-	rm -f "$TARKCFG"
 }
 
 manage_sources
@@ -322,21 +310,23 @@ choose_cores() {
 
 choose_cores
 
-info() {
-    printf "\n\e[32m [INFO]\e[0m eZkernel compilation successful for version: %s\n\n Compilation time: \n" "$*"
-}
+make_pkg(){
+if [[ ${KCFG} == true ]]; then
+	printf " Downloading %s...\n\n" "$msg" # directory-independent message, see flavour map
+	mkdir -p "$SRCDIR"
+	chmod 1777 "$SRCDIR"
+	cd "$SRCDIR"
 
-# kernel compilation
-if [[ "$KCFG" == false ]]; then
-    if ! (yes '' | make localmodconfig && make menuconfig); then
-        fatal "error generating kernel config."
-    fi
-else
-	if [[ ! -f ".config" || ! -r ".config" || ! -s ".config" ]]; then
-        fatal "'config' file is missing, unreadable, or empty."
-    fi
-#	sed -i 's/^CONFIG_MODULES=y/CONFIG_MODULES=n/' .config
+	printf "\n Downloading latest cachyos config file...\n\n"
+    wget -q --show-progress -O "$TARKCFG" "$URL1" || fatal "error downloading cachyos config."
+
+    printf " Extracting cachyos config...\n\n"
+	tar -xzf "${TARKCFG}" --strip-components=1
+	cp config .config
+#		tar -xOf "$TARKCFG" $(tar -tf "$TARKCFG" | grep -E '/config$') > .config
 fi
+rm -f "$TARKCFG"
+
 case "$DISTRO" in
 	arch)
 		time { \
@@ -352,6 +342,39 @@ case "$DISTRO" in
     		info "$KVER"
 		} 2>&1
 		;;
+esac
+
+if [[ "$KCFG" == false ]]; then
+    if ! (yes '' | make localmodconfig && make menuconfig); then
+        fatal "error generating kernel config."
+    fi
+else
+	if [[ ! -f ".config" || ! -r ".config" || ! -s ".config" ]]; then
+        fatal "'config' file is missing, unreadable, or empty."
+    fi
+fi
+#	sed -i 's/^CONFIG_MODULES=y/CONFIG_MODULES=n/' .config
+}
+
+info() {
+    printf "\n\e[32m [INFO]\e[0m eZkernel compilation successful for version: %s\n\n Compilation time: \n" "$*"
+}
+
+# kernel compilation
+if ! (yes '' | make localmodconfig && make menuconfig); then
+    fatal "error generating kernel config."
+fi
+
+case "$DISTRO" in
+	arch)
+		time { \
+			if ! make "$MAKEFLAGS" bzImage modules; then
+                fatal "error during kernel compilation process."
+            fi
+            make modules_install install
+    		info "$KVER"
+		} 2>&1
+		;;
     debian)
 		time { \
         	if ! make "$MAKEFLAGS" bindeb-pkg; then
@@ -362,9 +385,6 @@ case "$DISTRO" in
 		} 2>&1
 		;;
 esac
-
-#    		if ! make "$MAKEFLAGS" bzImage modules; then
-#    			make modules_install install
 
 # cleanup and reboot
 cd ~
