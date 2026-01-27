@@ -128,8 +128,8 @@ fi
 choose_cores() {
     local cores total
     total=$(nproc)
-    printf ' How many CPU cores of the system (in %%) do you want to use for compilation?\n\n'
-    printf ' 25%% : %d cores   50%% : %d cores   100%% : %d cores\n\n' $((total/4)) $((total/2)) "$total"
+    printf "\n\n How many CPU cores of the system (in %%) do you want to use for compilation?\n\n"
+    printf " 25%% : %d cores   50%% : %d cores   100%% : %d cores\n\n" $((total/4)) $((total/2)) "$total"
     while read -rn1 -p ' Choose (1=25%%  2=50%%  3=100%%): ' choice; do
         case $choice in
             1) pct=25 ;;
@@ -405,3 +405,4 @@ case "$DISTRO" in
 		;;
 esac
 reboot_system
+
