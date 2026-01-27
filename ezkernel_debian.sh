@@ -308,15 +308,15 @@ manage_make(){
 	chmod 1777 "$SRCDIR"
 	cd "$SRCDIR"
 	wget -q --show-progress -O "$TARKCFG" "$URL1" || fatal "error downloading cachyos config."
-	printf " Extracting cachyos config...\n\n"
+	printf "\n Extracting cachyos config...\n\n"
 	tar -xzf "${TARKCFG}" --strip-components=1
 	#cp config .config
 	#rm -f "$TARKCFG"
 	#tar -xOf "$TARKCFG" $(tar -tf "$TARKCFG" | grep -E '/config$') > .config
 	#sed -i 's/^CONFIG_MODULES=y/CONFIG_MODULES=n/' .config
-	if [[ ! -f ".config" || ! -r ".config" || ! -s ".config" ]]; then
-    	fatal "'config' file is missing, unreadable, or empty."
-	fi
+	#if [[ ! -f ".config" || ! -r ".config" || ! -s ".config" ]]; then
+    #	fatal "'config' file is missing, unreadable, or empty."
+	#fi
 	time { \
 	# Run makepkg as regular user in a subshell
 	if ! su "${SUDO_USER:-$USER}" -c "cd '$PWD' && MAKEFLAGS='$MAKEFLAGS' makepkg -s --noconfirm"; then
@@ -406,4 +406,5 @@ case "$DISTRO" in
 		;;
 esac
 reboot_system
+
 
