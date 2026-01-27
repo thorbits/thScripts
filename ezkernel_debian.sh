@@ -327,13 +327,6 @@ manage_make(){
     	info "$KVER"
 	} 2>&1
 }
-	#cp config .config
-	#rm -f "$TARKCFG"
-	#tar -xOf "$TARKCFG" $(tar -tf "$TARKCFG" | grep -E '/config$') > .config
-	#sed -i 's/^CONFIG_MODULES=y/CONFIG_MODULES=n/' .config
-	#if [[ ! -f ".config" || ! -r ".config" || ! -s ".config" ]]; then
-    #	fatal "'config' file is missing, unreadable, or empty."
-	#fi
 
 # cleanup and reboot
 reboot_system(){
@@ -410,4 +403,3 @@ case "$DISTRO" in
 		;;
 esac
 reboot_system
-
