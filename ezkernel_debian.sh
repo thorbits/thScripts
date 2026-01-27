@@ -278,7 +278,7 @@ manage_sources() {
     mkdir -p "$SRCDIR"
 	chmod 1777 "$SRCDIR"
     cd "$SRCDIR"
-    wget -q --show-progress -O "$TARBALL" "$URL" || fatal "error downloading kernel sources."
+#    wget -q --show-progress -O "$TARBALL" "$URL" || fatal "error downloading kernel sources."
 	if [[ ${KCFG} == true ]]; then
 		printf "\n Downloading latest cachyos config file...\n\n"
         wget -q --show-progress -O "$TARKCFG" "$URL1" || fatal "error downloading cachyos config."
