@@ -303,13 +303,33 @@ manage_sources() {
 }
 
 manage_make(){
+    local msg="" key
+    for key in "${!FLAVOUR_MAP[@]}"; do
+        if [[ "$SRCDIR" =~ $key ]]; then
+            msg=${FLAVOUR_MAP[$key]}
+            break
+        fi
+    done
 	printf " Downloading %s...\n\n" "$msg" # directory-independent message, see flavour map
 	mkdir -p "$SRCDIR"
-	chmod 1777 "$SRCDIR"
+	chown "${SUDO_USER:-$USER}:root" "$SRCDIR" 2>/dev/null || true
+	chmod 775 "$SRCDIR" 2>/dev/null || true
 	cd "$SRCDIR"
 	wget -q --show-progress -O "$TARKCFG" "$URL1" || fatal "error downloading cachyos config."
 	printf "\n Extracting cachyos config...\n\n"
 	tar -xzf "${TARKCFG}" --strip-components=1
+	time { \
+		# run makepkg as regular user in a subshell
+		"${SUDO_USER:-$USER}" -c "MAKEFLAGS='$MAKEFLAGS' makepkg -s --noconfirm" ||
+    		fatal "error during kernel compilation process."
+		pkgfile=$(find . -maxdepth 1 -name "*.pkg.tar.zst" -print -quit)
+		if [[ -z "$pkgfile" ]]; then
+    		fatal "could not find built package"
+		fi
+		pacman -U --noconfirm "$pkgfile" || fatal "error installing the built package"
+    	info "$KVER"
+	} 2>&1
+}
 	#cp config .config
 	#rm -f "$TARKCFG"
 	#tar -xOf "$TARKCFG" $(tar -tf "$TARKCFG" | grep -E '/config$') > .config
@@ -317,19 +337,6 @@ manage_make(){
 	#if [[ ! -f ".config" || ! -r ".config" || ! -s ".config" ]]; then
     #	fatal "'config' file is missing, unreadable, or empty."
 	#fi
-	time { \
-	# Run makepkg as regular user in a subshell
-	if ! su "${SUDO_USER:-$USER}" -c "cd '$PWD' && MAKEFLAGS='$MAKEFLAGS' makepkg -s --noconfirm"; then
-    	fatal "error during kernel compilation process."
-	fi
-	pkgfile=$(find . -maxdepth 1 -name "*.pkg.tar.zst" -print -quit)
-	if [[ -z "$pkgfile" ]]; then
-    	fatal "could not find built package"
-	fi
-	pacman -U --noconfirm "$pkgfile" || fatal "error installing the built package"
-    info "$KVER"
-} 2>&1
-}
 
 # cleanup and reboot
 reboot_system(){
@@ -406,3 +413,4 @@ case "$DISTRO" in
 		;;
 esac
 reboot_system
+
