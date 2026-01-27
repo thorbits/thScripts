@@ -117,15 +117,33 @@ case "${DISTRO:-}" in
     debian)
 		printf "\n\n Welcome %s, to eZkernel for %s.\n\n The latest Linux kernel available in mainline (kernel.org) or sid (deb.debian.org), will be will be sourced, compiled and installed.\n\n" "$USER" "$DISTRO"
 		;;
-    *)
-        fatal "unsupported distribution: $DISTRO."
-        ;;
 esac	
 
 "${UPDATE[@]}" >/dev/null 2>&1 || fatal "no internet connection detected."
 if ! command -v curl >/dev/null 2>&1 || ! command -v wget >/dev/null 2>&1; then
 	"${PM[@]}" curl wget >/dev/null 2>&1
 fi
+
+# cpu management
+choose_cores() {
+    local cores total
+    total=$(nproc)
+    printf ' How many CPU cores of the system (in %%) do you want to use for compilation?\n\n'
+    printf ' 25%% : %d cores   50%% : %d cores   100%% : %d cores\n\n' $((total/4)) $((total/2)) "$total"
+    while read -rn1 -p ' Choose (1=25%%  2=50%%  3=100%%): ' choice; do
+        case $choice in
+            1) pct=25 ;;
+            2) pct=50 ;;
+            3) pct=100 ;;
+            *) continue ;;
+        esac
+        cores=$(( total * pct / 100 ))
+        MAKEFLAGS="-j$cores"
+		export MAKEFLAGS
+        printf "\n\n"
+        return
+    done
+}
 
 # path variables
 WORKDIR="/tmp/kernel"
@@ -257,8 +275,6 @@ check_deps() {
 	printf '\r%-*s\r Progress: 100%% [%-*s] Installed %d new package(s).\n\n' "$COLUMNS" '' "$BAR_MAX" "$bar" "$ok"
 }
 
-check_deps
-
 # prepare build env
 declare -A FLAVOUR_MAP=(
     [upstream]="latest upstream kernel snapshot"
@@ -315,26 +331,6 @@ manage_make(){
 } 2>&1
 }
 
-# cpu management
-choose_cores() {
-    local cores total
-    total=$(nproc)
-    printf ' How many CPU cores of the system (in %%) do you want to use for compilation?\n\n'
-    printf ' 25%% : %d cores   50%% : %d cores   100%% : %d cores\n\n' $((total/4)) $((total/2)) "$total"
-    while read -rn1 -p ' Choose (1=25%%  2=50%%  3=100%%): ' choice; do
-        case $choice in
-            1) pct=25 ;;
-            2) pct=50 ;;
-            3) pct=100 ;;
-            *) continue ;;
-        esac
-        cores=$(( total * pct / 100 ))
-        MAKEFLAGS="-j$cores"
-        printf "\n\n"
-        return
-    done
-}
-
 # cleanup and reboot
 reboot_system(){
 	cd ~ && rm -rf "${WORKDIR}" 
@@ -373,10 +369,12 @@ reboot_system(){
 
 if [[ ${KCFG} == true ]]; then
 	choose_cores
+	check_deps
 	manage_make
 	reboot_system
 else
 	choose_cores
+	check_deps
 	manage_sources	
 fi
 
