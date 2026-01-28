@@ -332,7 +332,7 @@ manage_make(){
 	time {
 		# run makepkg as regular user in a subshell
 		target_user="${SUDO_USER:-$USER}"
-		if ! sudo -u "$target_user" env MAKEFLAGS="$MAKEFLAGS" makepkg -s --noconfirm --skipchecksums --skippgpcheck; then
+		if ! sudo -u "$target_user" env MAKEFLAGS="$MAKEFLAGS" makepkg -s --noconfirm --skipchecksums --skippgpcheck --disable-debug; then
 			fatal "error during kernel compilation process."
 		fi
 		pkgfile=$(find . -maxdepth 1 -name "*.pkg.tar.zst" -print -quit)
@@ -416,4 +416,3 @@ case "$DISTRO" in
 		;;
 esac
 reboot_system
-
