@@ -172,22 +172,18 @@ case "${DISTRO:-}" in
                 	;;
             	2)  # cachyos/rc
                 	KVER=$(curl -s https://www.kernel.org/finger_banner | sed -n '2s/^[^6]*//p')
-                	URL="https://github.com/torvalds/linux/archive/refs/tags/v${KVER}.tar.gz"
-					URL1="https://aur.archlinux.org/cgit/aur.git/snapshot/linux-cachyos-rc.tar.gz"
-                	SRCDIR="${WORKDIR}/linux-cachyos-${KVER}"
-                	TARBALL="${SRCDIR}/v${KVER}.tar.gz"
-					TARKCFG="${SRCDIR}/linux-cachyos-rc.tar.gz"
+					URL="https://aur.archlinux.org/cgit/aur.git/snapshot/linux-cachyos-rc.tar.gz"
+                	SRCDIR="${WORKDIR}/linux-cachyos"
+                	TARBALL="${SRCDIR}/linux-cachyos-rc.tar.gz"
                 	printf "\n\n Selected: cachyos/rc\n\n"
 					KCFG=true
                 	return
                 	;;
             	3)  # xanmod/edge
-                	KVER=$(curl -s https://www.kernel.org/finger_banner | sed -n '2s/^[^6]*//p')
-                	URL="https://github.com/torvalds/linux/archive/refs/tags/v${KVER}.tar.gz"
-					URL1="https://aur.archlinux.org/cgit/aur.git/snapshot/linux-xanmod-edge.tar.gz"
-                	SRCDIR="${WORKDIR}/linux-xanmod-${KVER}"
-                	TARBALL="${SRCDIR}/v${KVER}.tar.gz"
-					TARKCFG="${SRCDIR}/linux-xanmod-edge.tar.gz"
+                	KVER=$(curl -s https://www.kernel.org | grep -A 1 'id="latest_link"' | awk 'NR==2' | grep -oP 'linux-\K[^"]+' | sed 's/\.tar\.xz$//')
+					URL="https://aur.archlinux.org/cgit/aur.git/snapshot/linux-xanmod-edge.tar.gz"
+                	SRCDIR="${WORKDIR}/linux-xanmod"
+                	TARBALL="${SRCDIR}/linux-xanmod-edge.tar.gz"
                 	printf "\n\n Selected: xanmod/edge\n\n"
 					KCFG=true
                 	return
@@ -330,9 +326,9 @@ manage_make(){
 	chown "${SUDO_USER:-$USER}:root" "$SRCDIR" 2>/dev/null || true
 	chmod 775 "$SRCDIR" 2>/dev/null || true
 	cd "$SRCDIR"
-	wget -q --show-progress -O "$TARKCFG" "$URL1" || fatal "error downloading cachyos config."
+	wget -q --show-progress -O "$TARBALL" "$URL" || fatal "error downloading cachyos config."
 	printf "\n Extracting cachyos config...\n\n"
-	tar -xzf "${TARKCFG}" --strip-components=1
+	tar -xzf "${TARBALL}" --strip-components=1
 	time {
 		# run makepkg as regular user in a subshell
 		target_user="${SUDO_USER:-$USER}"
