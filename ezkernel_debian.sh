@@ -323,8 +323,8 @@ manage_make(){
 	chown "${SUDO_USER:-$USER}:root" "$SRCDIR" 2>/dev/null || true
 	chmod 775 "$SRCDIR" 2>/dev/null || true
 	cd "$SRCDIR"
-	wget -q --show-progress -O "$TARBALL" "$URL" || fatal "error downloading cachyos config."
-	printf "\n Extracting cachyos config...\n\n"
+	wget -q --show-progress -O "$TARBALL" "$URL" || fatal "error downloading "$TARBALL"."
+	printf "\n Extracting snapshot files...\n\n"
 	tar -xzf "${TARBALL}" --strip-components=1
 	time {
 		# run makepkg as regular user in a subshell
