@@ -46,12 +46,9 @@ KRNL_GROUP[debian]="build-essential libdw-dev libelf-dev zlib1g-dev libncurses-d
 
 case "$DISTRO" in
     arch)
-		pm_chk() {
-    	[[ -d "/var/lib/pacman/local/${1}-"* ]]
-		}
     	LIST_CMD=(pacman -Sp --print-format '%n')
 		PM=(pacman -S --needed --noconfirm)
-		PM_CHK=("pm_chk")
+		PM_CHK=("pacman -Qq")
     	UPDATE=(pacman -Sy)
 	;;
 	debian)
@@ -416,4 +413,3 @@ case "$DISTRO" in
 		;;
 esac
 reboot_system
-
