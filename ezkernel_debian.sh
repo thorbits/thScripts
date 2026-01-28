@@ -240,7 +240,8 @@ check_deps() {
 	local -a pkgs
     case "$DISTRO" in
 		arch)
-			mapfile -t pkgs < <("${LIST_CMD[@]}" ${KRNL_GROUP[$DISTRO]})
+			mapfile -t pkgs < <("${LIST_CMD[@]}" ${KRNL_GROUP[$DISTRO]} | grep -Fxvf <(pacman -Qq))
+#			mapfile -t pkgs < <("${LIST_CMD[@]}" ${KRNL_GROUP[$DISTRO]})
 			;;
         debian)
             # inherit the current locale not to block install
