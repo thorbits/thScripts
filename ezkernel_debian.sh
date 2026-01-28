@@ -46,9 +46,12 @@ KRNL_GROUP[debian]="build-essential libdw-dev libelf-dev zlib1g-dev libncurses-d
 
 case "$DISTRO" in
     arch)
+		pm_chk() {
+    	[[ -d "/var/lib/pacman/local/${1}-"* ]]
+		}
     	LIST_CMD=(pacman -Sp --print-format '%n')
 		PM=(pacman -S --needed --noconfirm)
-		PM_CHK=(pacman -Q)
+		PM_CHK=("pm_chk")
     	UPDATE=(pacman -Sy)
 	;;
 	debian)
@@ -258,18 +261,18 @@ check_deps() {
 
     for p in "${pkgs[@]}"; do
         ((i++))
-        "${PM_CHK[@]}" "$p" &>/dev/null || "${PM[@]}" "$p" &>/dev/null && ((ok++))
+		"${PM_CHK[@]}" "$p" &>/dev/null || "${PM[@]}" "$p" &>/dev/null && ((ok++))
 
         filled=$(( i * 100 / total ))
         ((filled==pct)) && continue
         pct=$filled
-
+		filled_len=$(( filled * BAR_MAX / 100 ))
         # fixed-length bar
         printf "\r Progress: %3d%% [%*s%s] Verifying/installing: %-*s%*s" \
                "$pct" \
-               $(( filled*BAR_MAX/100 )) \
-               "$(printf '%*s' $((filled*BAR_MAX/100)) '' | tr ' ' "$BAR_CHAR")" \
-               "$(printf '%*s' $((BAR_MAX - filled*BAR_MAX/100)) '')" \
+               $filled_len \
+               "$(printf '%*s' $filled_len '' | tr ' ' "$BAR_CHAR")" \
+               "$(printf '%*s' $((BAR_MAX - filled_len)) '')" \
                $((max_len-60)) "$p" \
                $((max_len-60-${#p}>0?max_len-60-${#p}:0)) ''
     done
@@ -407,3 +410,4 @@ case "$DISTRO" in
 		;;
 esac
 reboot_system
+
