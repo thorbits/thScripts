@@ -144,7 +144,6 @@ choose_cores() {
         esac
         cores=$(( total * pct / 100 ))
         MAKEFLAGS="-j$cores"
-		export MAKEFLAGS
         return
     done
 }
@@ -410,4 +409,5 @@ case "$DISTRO" in
 		;;
 esac
 reboot_system
+
 
