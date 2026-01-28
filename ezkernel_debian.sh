@@ -129,6 +129,11 @@ if ! command -v curl >/dev/null 2>&1 || ! command -v wget >/dev/null 2>&1; then
 	"${PM[@]}" curl wget >/dev/null 2>&1
 fi
 
+# path variables
+WORKDIR="/tmp/kernel"
+KCFG=false
+KVER= URL= SRCDIR= TARBALL=	MAKEFLAGS= # initialise to use ouside function
+
 # cpu management
 choose_cores() {
     local cores total
@@ -147,11 +152,6 @@ choose_cores() {
         return
     done
 }
-
-# path variables
-WORKDIR="/tmp/kernel"
-KCFG=false
-KVER= URL= SRCDIR= TARBALL=	MAKEFLAGS= # initialise, to use later ouside function
 
 # sources selection
 printf " Which kernel sources do you want to use,\n\n"
@@ -323,13 +323,12 @@ manage_make(){
 	tar -xzf "${TARKCFG}" --strip-components=1
 	time {
 		# run makepkg as regular user in a subshell
-#		if ! su "${SUDO_USER:-$USER}" -c "MAKEFLAGS='$MAKEFLAGS' makepkg -s --noconfirm"; then
 		target_user="${SUDO_USER:-$USER}"
 		if ! sudo -u "$target_user" env MAKEFLAGS="$MAKEFLAGS" makepkg -s --noconfirm; then
 		    fatal "error during kernel compilation process."
 		fi
 		pkgfile=$(find . -maxdepth 1 -name "*.pkg.tar.zst" -print -quit)
-		pacman -U --noconfirm "$pkgfile" || fatal "error installing the built package"
+		pacman -U --noconfirm "$pkgfile" || fatal "error installing the built package."
     	info "$KVER"
 	} 2>&1
 }
