@@ -46,16 +46,16 @@ KRNL_GROUP[debian]="build-essential libdw-dev libelf-dev zlib1g-dev libncurses-d
 
 case "$DISTRO" in
     arch)
-    	UPDATE=(pacman -Sy)
-    	PM=(pacman -S --needed --noconfirm)
-		PM_CHK=(pacman -Q)
     	LIST_CMD=(pacman -Sp --print-format '%n')
+		PM=(pacman -S --needed --noconfirm)
+		PM_CHK=(pacman -Q)
+    	UPDATE=(pacman -Sy)
 	;;
 	debian)
-    	UPDATE=(apt-get update -qq)
-    	PM=(apt-get install -y --no-install-recommends)
-		PM_CHK=(dpkg -s)
     	LIST_CMD=(apt-get install --dry-run -qq)
+		PM=(apt-get install -y --no-install-recommends)
+		PM_CHK=(dpkg -s)
+		UPDATE=(apt-get update -qq)
 	;;
     *)
         fatal "unsupported distribution: $DISTRO."
