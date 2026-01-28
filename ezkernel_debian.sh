@@ -341,7 +341,7 @@ reboot_system(){
 	while : ; do
     read -r -s -n1 -p $' Press Enter to continue or Ctrl+C to cancel' REPLY
     if [[ -z "$REPLY" ]]; then # Enter only, no other key
-        return
+        break
     fi
 	done
 	case "$DISTRO" in
@@ -409,5 +409,3 @@ case "$DISTRO" in
 		;;
 esac
 reboot_system
-
-
