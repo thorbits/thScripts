@@ -114,10 +114,10 @@ esac
 printf "\n\n #%s#\n\n" "$(printf '%*s' "$(( $(tput cols) - 4 ))" '' | tr ' ' '-')"
 case "${DISTRO:-}" in
 	arch)
-		printf " Welcome %s, to eZkernel for %s.\n\n The latest Linux kernel available in mainline (kernel.org) or cachyos/rc (aur.archlinux.org), will be will be sourced, compiled and installed.\n\n" "$USER" "$DISTRO"
+		printf " Welcome %s, to eZkernel for %s.\n\n The latest Linux kernel in mainline (kernel.org) or cachyos/rc or xanmod/edge (aur.archlinux.org), will be will be sourced, compiled and installed.\n\n" "$USER" "$DISTRO"
 		;;
     debian)
-		printf " Welcome %s, to eZkernel for %s.\n\n The latest Linux kernel available in mainline (kernel.org) or sid (deb.debian.org), will be will be sourced, compiled and installed.\n\n" "$USER" "$DISTRO"
+		printf " Welcome %s, to eZkernel for %s.\n\n The latest Linux kernel in mainline (kernel.org) or sid (deb.debian.org), will be will be sourced, compiled and installed.\n\n" "$USER" "$DISTRO"
 		;;
 esac	
 
@@ -194,7 +194,7 @@ case "${DISTRO:-}" in
     debian)
         choose_source(){
     		while true; do
-        		printf $'\r\033[2K upstream master snapshot (1) or latest in debian/sid (2) [1/2]: '
+        		printf $'\r\033[2K upstream master snapshot (1) debian/sid (2) [1/2]: '
         		read -n1 -s -r choice
 	        case $choice in
             	1)  # upstream master snapshot
@@ -413,4 +413,3 @@ case "$DISTRO" in
 		;;
 esac
 reboot_system
-
