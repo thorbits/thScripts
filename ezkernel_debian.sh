@@ -48,11 +48,13 @@ case "$DISTRO" in
     arch)
     	UPDATE=(pacman -Sy)
     	PM=(pacman -S --needed --noconfirm)
+		PM_CHK=(pacman -Q)
     	LIST_CMD=(pacman -Sp --print-format '%n')
 	;;
 	debian)
     	UPDATE=(apt-get update -qq)
     	PM=(apt-get install -y --no-install-recommends)
+		PM_CHK=(dpkg -s)
     	LIST_CMD=(apt-get install --dry-run -qq)
 	;;
     *)
@@ -256,7 +258,7 @@ check_deps() {
 
     for p in "${pkgs[@]}"; do
         ((i++))
-        dpkg -s "$p" &>/dev/null || "${PM[@]}" "$p" &>/dev/null && ((ok++))
+        "${PM_CHK[@]}" "$p" &>/dev/null || "${PM[@]}" "$p" &>/dev/null && ((ok++))
 
         filled=$(( i * 100 / total ))
         ((filled==pct)) && continue
@@ -405,4 +407,3 @@ case "$DISTRO" in
 		;;
 esac
 reboot_system
-
