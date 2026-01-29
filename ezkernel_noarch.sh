@@ -129,7 +129,7 @@ fi
 # path variables
 WORKDIR="/tmp/kernel"
 KCFG=false
-KVER= URL= SRCDIR= TARBALL=	ENV= MAKEFLAGS= # initialise to use ouside function
+KVER= URL= SRCDIR= TARBALL=	ENV_VARS= MAKEFLAGS= # initialise to use ouside function
 
 # cpu management
 choose_cores() {
@@ -231,7 +231,7 @@ esac
 
 # kernel version check
 printf " Checking kernels versions... please wait" && sleep 2
-printf '\r%-*s\n\n Current kernel version: %s\n It will be updated to:  %s\n\n' \
+printf '\r%-*s\n\n Current kernel version: %s\n It will be updated to :  %s\n\n' \
        "$COLUMNS" " Checking kernels versions... done." \
        "$(uname -r)" "$KVER"
 
@@ -381,6 +381,7 @@ reboot_system(){
     /sbin/reboot
 }
 
+# compilation methods
 if [[ ${KCFG} == true ]]; then
 	choose_cores
 	check_deps
@@ -396,6 +397,7 @@ fi
 info() {
     printf "\n\e[32m [INFO]\e[0m eZkernel compilation successful for version: %s\n\n Compilation time: \n" "$*"
 }
+printf "\n Generating kernel config...\n\n" && sleep 1
 if ! (yes '' | make localmodconfig && make menuconfig); then
     fatal "error generating kernel config."
 fi
