@@ -278,14 +278,18 @@ check_deps() {
         ((filled==pct)) && continue
         pct=$filled
 		filled_len=$(( filled * BAR_MAX / 100 ))
-        # fixed-length bar
-        printf "\r Progress: %3d%% [%*s%s] Verifying/installing: %-*s%*s" \
+        empty_len=$(( BAR_MAX - filled_len ))
+		bar_filled=$(printf '%*s' $filled_len '' | tr ' ' "$BAR_CHAR")
+		bar_empty=$(printf '%*s' $empty_len '')
+		name_width=$(( max_len - 60 ))
+		pad_width=$(( name_width - ${#p} ))
+		(( pad_width < 0 )) && pad_width=0
+        printf "\r Progress: %3d%% [%s%s] Verifying/installing: %-*s%*s" \
                "$pct" \
-               $filled_len \
-               "$(printf '%*s' $filled_len '' | tr ' ' "$BAR_CHAR")" \
-               "$(printf '%*s' $((BAR_MAX - filled_len)) '')" \
-               $((max_len-60)) "$p" \
-               $((max_len-60-${#p}>0?max_len-60-${#p}:0)) ''
+               "$bar_filled" \
+               "$bar_empty" \
+               $name_width "$p" \
+               $pad_width ''
     done
 	printf '\r%-*s\r Progress: 100%% [%-*s] Installed %d new package(s).\n\n' "$COLUMNS" '' "$BAR_MAX" "$bar" "$ok"
 }
@@ -422,3 +426,4 @@ case "$DISTRO" in
 		;;
 esac
 reboot_system
+
