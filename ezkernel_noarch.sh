@@ -216,7 +216,7 @@ case "${DISTRO:-}" in
             	2)  # stable
                 	KVER=$(curl -s https://www.kernel.org/finger_banner | sed -n '1s/^[^6]*//p')
                 	URL="https://www.kernel.org/pub/linux/kernel/v6.x/linux-${KVER}.tar.xz"
-                	SRCDIR="${WORKDIR}/linux-debian-${KVER}"
+                	SRCDIR="${WORKDIR}/linux-stable-${KVER}"
                 	TARBALL="${SRCDIR}/linux_${KVER}.tar.xz"
                 	printf "\n\n Selected: stable latest release\n\n"
                 	return
@@ -292,7 +292,7 @@ check_deps() {
 
 declare -A FLAVOUR_MAP=(
     [upstream]="latest mainline sources"
-    [debian]="latest stable sources"
+    [stable]="latest stable sources"
 	[cachyos]="latest cachyos/rc snapshot"
 	[xanmod]="latest xanmod/edge snapshot"
 )
