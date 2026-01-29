@@ -127,7 +127,6 @@ if ! command -v curl >/dev/null 2>&1 || ! command -v wget >/dev/null 2>&1; then
 fi
 
 # path variables
-WORKDIR="/tmp/kernel"
 KCFG=false
 KVER= URL= SRCDIR= TARBALL=	ENV_VARS= MAKEFLAGS= # initialise to use ouside function
 
@@ -160,7 +159,8 @@ case "${DISTRO:-}" in
         		read -n1 -r choice
 	        case $choice in
             	1)  # upstream master snapshot
-                	KVER=$(curl -s https://www.kernel.org/finger_banner | sed -n '2s/^[^6]*//p')
+                	WORKDIR="/tmp/kernel"
+					KVER=$(curl -s https://www.kernel.org/finger_banner | sed -n '2s/^[^6]*//p')
                 	URL="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-master.tar.gz"
                 	SRCDIR="${WORKDIR}/linux-upstream-${KVER}"
                 	TARBALL="${SRCDIR}/linux-master.tar.gz"
@@ -168,28 +168,34 @@ case "${DISTRO:-}" in
                 	return
                 	;;
             	2)  # cachyos-rc
-                	KVER=$(curl -s https://www.kernel.org/finger_banner | awk 'NR==2 {print $NF}')
+                	WORKDIR="/var/tmp/kernel"
+					KVER=$(curl -s https://www.kernel.org/finger_banner | awk 'NR==2 {print $NF}')
 					URL="https://aur.archlinux.org/cgit/aur.git/snapshot/linux-cachyos-rc.tar.gz"
                 	SRCDIR="${WORKDIR}/linux-cachyos"
                 	TARBALL="${SRCDIR}/linux-cachyos-rc.tar.gz"
                 	printf "\n\n Selected: cachyos-rc\n\n"
 					KCFG=true
 					ENV_VARS=(
-  						"MAKEFLAGS=-j$cores"
-  						"KCFLAGS=-g0 -O2 -pipe"
+  						"MAKEFLAGS=-j$cores LD=ld.lld" # use ld.lld and limit jobs (prevents OOM)
+  						"KCFLAGS=-g0 -O2"		# removed -pipe to save VM memory
+						"HOSTCFLAGS=-g0 -O2"	# Also optimize host tools
+                    	"DEBUG_INFO=n"			# Disable debug info (major memory saver)
 					)
                 	return
                 	;;
             	3)  # xanmod-edge
-                	KVER=$(curl -s https://www.kernel.org/finger_banner | awk 'NR==1 {print $NF}')
+                	WORKDIR="/var/tmp/kernel"
+					KVER=$(curl -s https://www.kernel.org/finger_banner | awk 'NR==1 {print $NF}')
 					URL="https://aur.archlinux.org/cgit/aur.git/snapshot/linux-xanmod-edge.tar.gz"
                 	SRCDIR="${WORKDIR}/linux-xanmod"
                 	TARBALL="${SRCDIR}/linux-xanmod-edge.tar.gz"
                 	printf "\n\n Selected: xanmod-edge\n\n"
 					KCFG=true
 					ENV_VARS=(
-  						"MAKEFLAGS=-j$cores"
-  						"KCFLAGS=-g0 -O2 -pipe"
+  						"MAKEFLAGS=-j$cores LD=ld.lld" # use ld.lld and limit jobs (prevents OOM)
+  						"KCFLAGS=-g0 -O2"		# removed -pipe to save VM memory
+						"HOSTCFLAGS=-g0 -O2"	# Also optimize host tools
+                    	"DEBUG_INFO=n"			# Disable debug info (major memory saver)
 					)
                 	return
                 	;;
@@ -201,6 +207,7 @@ case "${DISTRO:-}" in
 		;;
     debian)
         choose_source(){
+			WORKDIR="/tmp/kernel"
     		while true; do
         		printf $'\r\033[2K mainline (1) stable (2) [1/2]: '
         		read -n1 -r choice
