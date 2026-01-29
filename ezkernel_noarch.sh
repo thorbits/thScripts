@@ -128,7 +128,7 @@ fi
 
 # path variables
 KCFG=false
-KVER= URL= SRCDIR= TARBALL=	ENV_VARS= MAKEFLAGS= # initialise to use ouside function
+KVER= URL= SRCDIR= TARBALL=	ENV_VARS= # initialise to use ouside function
 
 # cpu management
 choose_cores() {
@@ -154,6 +154,10 @@ printf " Which kernel sources do you want to use,\n\n"
 case "${DISTRO:-}" in
 	arch)
         choose_source(){
+			export DEBUG_INFO=n
+			export LD=ld.lld
+			export KCFLAGS="-g0 -O2"
+			export HOSTCFLAGS="-g0 -O2"
     		while true; do
         		printf $'\r\033[2K mainline (1) cachyos-rc (2) xanmod-edge (3) [1/2/3]: '
         		read -n1 -r choice
@@ -164,11 +168,7 @@ case "${DISTRO:-}" in
                 	URL="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-master.tar.gz"
                 	SRCDIR="${WORKDIR}/linux-upstream-${KVER}"
                 	TARBALL="${SRCDIR}/linux-master.tar.gz"
-					export DEBUG_INFO=n
-					export LD=ld.lld
-					export KCFLAGS="-g0 -O2"
-					export HOSTCFLAGS="-g0 -O2"
-                	printf "\n\n Selected: mainline latest release\n\n"
+					printf "\n\n Selected: mainline latest release\n\n"
                 	return
                 	;;
             	2)  # cachyos-rc
@@ -183,13 +183,7 @@ case "${DISTRO:-}" in
                 	TARBALL="${SRCDIR}/linux-cachyos-rc.tar.gz"
                 	printf "\n\n Selected: cachyos-rc\n\n"
 					KCFG=true
-					ENV_VARS=(
-  						"MAKEFLAGS=-j$cores LD=ld.lld" # use ld.lld and limit jobs (prevents OOM)
-  						"KCFLAGS=-g0 -O2"		# removed -pipe to save VM memory
-						"HOSTCFLAGS=-g0 -O2"	# Also optimize host tools
-                    	"DEBUG_INFO=n"			# Disable debug info (major memory saver)
-					)
-                	return
+					return
                 	;;
             	3)  # xanmod-edge
                 	if [[ -n "${SUDO_USER}" ]]; then # use home directory, avoid tmpfs & permission issues
@@ -201,14 +195,10 @@ case "${DISTRO:-}" in
 					URL="https://aur.archlinux.org/cgit/aur.git/snapshot/linux-xanmod-edge.tar.gz"
                 	SRCDIR="${WORKDIR}/linux-xanmod"
                 	TARBALL="${SRCDIR}/linux-xanmod-edge.tar.gz"
+					export _microarchitecture=99
+					export use_numa=n
                 	printf "\n\n Selected: xanmod-edge\n\n"
 					KCFG=true
-					ENV_VARS=(
-  						"MAKEFLAGS=-j$cores LD=ld.lld" # use ld.lld and limit jobs (prevents OOM)
-  						"KCFLAGS=-g0 -O2"		# removed -pipe to save VM memory
-						"HOSTCFLAGS=-g0 -O2"	# Also optimize host tools
-                    	"DEBUG_INFO=n"			# Disable debug info (major memory saver)
-					)
                 	return
                 	;;
             	*)  ;;
