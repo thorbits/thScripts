@@ -155,7 +155,7 @@ case "${DISTRO:-}" in
 	arch)
         choose_source(){
 			export DEBUG_INFO=n
-			export LD=ld.lld
+			export LD=ld.bfd # use GNU ld instead of ld.lld
 			export KCFLAGS="-g0 -O2"
 			export HOSTCFLAGS="-g0 -O2"
     		while true; do
@@ -196,7 +196,7 @@ case "${DISTRO:-}" in
                 	SRCDIR="${WORKDIR}/linux-xanmod"
                 	TARBALL="${SRCDIR}/linux-xanmod-edge.tar.gz"
 					export _microarchitecture=99
-					export use_numa=n
+#					export use_numa=n
                 	printf "\n\n Selected: xanmod-edge\n\n"
 					KCFG=true
                 	return
@@ -211,8 +211,7 @@ case "${DISTRO:-}" in
         choose_source(){
 			WORKDIR="/tmp/kernel"
 			export DEBUG_INFO=n
-			export LD=ld.bfd
-#			export LD=ld.lld
+			export LD=ld.bfd # use GNU ld instead of ld.lld
 			export KCFLAGS="-g0 -O2"
 			export HOSTCFLAGS="-g0 -O2"
     		while true; do
@@ -423,7 +422,7 @@ fi
 case "$DISTRO" in
 	arch)
 		time { \
-			if ! make "$MAKEFLAGS" bzImage modules; then
+			if ! make bzImage modules; then
                 fatal "error during kernel compilation process."
             fi
             make modules_install install
@@ -432,7 +431,7 @@ case "$DISTRO" in
 		;;
     debian)
 		time { \
-        	if ! make "$MAKEFLAGS" bindeb-pkg; then
+        	if ! make bindeb-pkg; then
 				fatal "error during kernel compilation process."
 			fi
         	dpkg -i "${WORKDIR}"/*.deb
@@ -441,4 +440,3 @@ case "$DISTRO" in
 		;;
 esac
 reboot_system
-
