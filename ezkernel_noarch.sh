@@ -210,10 +210,11 @@ case "${DISTRO:-}" in
     debian)
         choose_source(){
 			WORKDIR="/tmp/kernel"
-			export DEBUG_INFO=n
+			export CC="ccache gcc"
 			export LD=ld.bfd # use GNU ld instead of ld.lld
 			export KCFLAGS="-g0 -O2"
 			export HOSTCFLAGS="-g0 -O2"
+			export INSTALL_MOD_STRIP=1 # save space in /lib/modules
     		while true; do
         		printf $'\r\033[2K mainline (1) stable (2) [1/2]: '
         		read -n1 -r choice
@@ -419,6 +420,7 @@ printf " Generating kernel config...\n\n" && sleep 1
 if ! (yes '' | make localmodconfig && make menuconfig); then
     fatal "error generating kernel config."
 fi
+#sed -i 's/CONFIG_DEBUG_INFO=y/# CONFIG_DEBUG_INFO is not set/' .config
 case "$DISTRO" in
 	arch)
 		time { \
