@@ -211,7 +211,8 @@ case "${DISTRO:-}" in
         choose_source(){
 			WORKDIR="/tmp/kernel"
 			export DEBUG_INFO=n
-			export LD=ld.lld
+			export LD=ld.bfd
+#			export LD=ld.lld
 			export KCFLAGS="-g0 -O2"
 			export HOSTCFLAGS="-g0 -O2"
     		while true; do
@@ -440,3 +441,4 @@ case "$DISTRO" in
 		;;
 esac
 reboot_system
+
