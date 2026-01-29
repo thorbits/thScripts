@@ -203,7 +203,7 @@ case "${DISTRO:-}" in
         choose_source(){
     		while true; do
         		printf $'\r\033[2K mainline (1) stable (2) [1/2]: '
-        		read -n1 -s -r choice
+        		read -n1 -r choice
 	        case $choice in
             	1)  # mainline
                 	KVER=$(curl -s https://www.kernel.org/finger_banner | sed -n '2s/^[^6]*//p')
