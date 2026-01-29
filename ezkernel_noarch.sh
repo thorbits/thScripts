@@ -401,7 +401,7 @@ fi
 info() {
     printf "\n\e[32m [INFO]\e[0m eZkernel compilation successful for version: %s\n\n Compilation time: \n" "$*"
 }
-printf "\n Generating kernel config...\n\n" && sleep 1
+printf " Generating kernel config...\n\n" && sleep 1
 if ! (yes '' | make localmodconfig && make menuconfig); then
     fatal "error generating kernel config."
 fi
