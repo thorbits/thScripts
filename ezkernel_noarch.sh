@@ -128,7 +128,7 @@ fi
 
 # path variables
 KCFG=false
-KVER= URL= SRCDIR= TARBALL=	ENV_VARS= # initialise to use ouside function
+KVER= URL= SRCDIR= TARBALL=	# initialise to use ouside function
 
 # cpu management
 choose_cores() {
@@ -354,7 +354,7 @@ manage_make(){
 	time {
 		# run makepkg as regular user in a subshell
 		target="${SUDO_USER:-$USER}"
-		if ! sudo -u "$target" env "${ENV_VARS[@]}" makepkg -s --noconfirm --skipchecksums --skippgpcheck; then
+		if ! sudo -u "$target" makepkg -s --noconfirm --skipchecksums --skippgpcheck; then
 			fatal "error during kernel compilation process."
 		fi
 		pkgfile=$(find . -maxdepth 1 -name "*.pkg.tar.zst" -print -quit)
