@@ -144,7 +144,7 @@ choose_cores() {
             *) continue ;;
         esac
         cores=$(( total * pct / 100 ))
-        MAKEFLAGS="-j$cores"
+        export MAKEFLAGS="-j$cores"
         return
     done
 }
@@ -164,6 +164,9 @@ case "${DISTRO:-}" in
                 	URL="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-master.tar.gz"
                 	SRCDIR="${WORKDIR}/linux-upstream-${KVER}"
                 	TARBALL="${SRCDIR}/linux-master.tar.gz"
+					export LD=ld.lld
+					export KCFLAGS="-g0 -O2"
+					export HOSTCFLAGS="-g0 -O2"
                 	printf "\n\n Selected: mainline latest release\n\n"
                 	return
                 	;;
@@ -441,3 +444,4 @@ case "$DISTRO" in
 		;;
 esac
 reboot_system
+
