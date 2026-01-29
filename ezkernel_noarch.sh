@@ -172,7 +172,7 @@ case "${DISTRO:-}" in
 					URL="https://aur.archlinux.org/cgit/aur.git/snapshot/linux-cachyos-rc.tar.gz"
                 	SRCDIR="${WORKDIR}/linux-cachyos"
                 	TARBALL="${SRCDIR}/linux-cachyos-rc.tar.gz"
-                	printf "\n\n Selected: cachyos/rc\n\n"
+                	printf "\n\n Selected: cachyos-rc\n\n"
 					KCFG=true
 					ENV_VARS=(
   						"MAKEFLAGS=-j$cores"
@@ -185,7 +185,7 @@ case "${DISTRO:-}" in
 					URL="https://aur.archlinux.org/cgit/aur.git/snapshot/linux-xanmod-edge.tar.gz"
                 	SRCDIR="${WORKDIR}/linux-xanmod"
                 	TARBALL="${SRCDIR}/linux-xanmod-edge.tar.gz"
-                	printf "\n\n Selected: xanmod/edge\n\n"
+                	printf "\n\n Selected: xanmod-edge\n\n"
 					KCFG=true
 					ENV_VARS=(
   						"MAKEFLAGS=-j$cores"
