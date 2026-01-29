@@ -231,7 +231,7 @@ esac
 
 # kernel version check
 printf " Checking kernels versions... please wait" && sleep 2
-printf '\r%-*s\n\n Current kernel version: %s\n It will be updated to :  %s\n\n' \
+printf '\r%-*s\n\n Current kernel version: %s\n It will be updated to : %s\n\n' \
        "$COLUMNS" " Checking kernels versions... done." \
        "$(uname -r)" "$KVER"
 
@@ -426,4 +426,3 @@ case "$DISTRO" in
 		;;
 esac
 reboot_system
-
