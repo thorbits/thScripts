@@ -168,7 +168,11 @@ case "${DISTRO:-}" in
                 	return
                 	;;
             	2)  # cachyos-rc
-                	WORKDIR="/var/tmp/kernel"
+                	if [[ -n "${SUDO_USER}" ]]; then # use home directory, avoid tmpfs & permission issues
+						WORKDIR=$(eval echo "~${SUDO_USER}/kernel-build")
+					else
+						WORKDIR="${HOME}/kernel-build"
+					fi
 					KVER=$(curl -s https://www.kernel.org/finger_banner | awk 'NR==2 {print $NF}')
 					URL="https://aur.archlinux.org/cgit/aur.git/snapshot/linux-cachyos-rc.tar.gz"
                 	SRCDIR="${WORKDIR}/linux-cachyos"
