@@ -164,6 +164,7 @@ case "${DISTRO:-}" in
                 	URL="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-master.tar.gz"
                 	SRCDIR="${WORKDIR}/linux-upstream-${KVER}"
                 	TARBALL="${SRCDIR}/linux-master.tar.gz"
+					export DEBUG_INFO=n
 					export LD=ld.lld
 					export KCFLAGS="-g0 -O2"
 					export HOSTCFLAGS="-g0 -O2"
@@ -219,6 +220,10 @@ case "${DISTRO:-}" in
     debian)
         choose_source(){
 			WORKDIR="/tmp/kernel"
+			export DEBUG_INFO=n
+			export LD=ld.lld
+			export KCFLAGS="-g0 -O2"
+			export HOSTCFLAGS="-g0 -O2"
     		while true; do
         		printf $'\r\033[2K mainline (1) stable (2) [1/2]: '
         		read -n1 -r choice
@@ -312,6 +317,7 @@ check_deps() {
 	printf '\r%-*s\r Progress: 100%% [%-*s] Installed %d new package(s).\n\n' "$COLUMNS" '' "$BAR_MAX" "$bar" "$ok"
 }
 
+# sources management, compilation with make or makepkg
 declare -A FLAVOUR_MAP=(
     [upstream]="latest mainline sources"
     [stable]="latest stable sources"
@@ -444,4 +450,3 @@ case "$DISTRO" in
 		;;
 esac
 reboot_system
-
