@@ -39,7 +39,8 @@ os_release() {
 
 DISTRO=$(os_release)
 
-declare -A KRNL_GROUP # map each distro to its required kernel compilation dependencies
+# map each distro to its required kernel compilation dependencies
+declare -A KRNL_GROUP
 #KRNL_GROUP[arch]="base-devel bc bison flex libelf ncurses openssl python rsync zlib" # compile without rust
 KRNL_GROUP[arch]="base-devel bc cpio gettext libelf pahole perl python rust rust-bindgen rust-src tar xz zstd"
 KRNL_GROUP[debian]="build-essential libdw-dev libelf-dev zlib1g-dev libncurses-dev libssl-dev bison bc flex rsync debhelper python3"
@@ -65,7 +66,6 @@ esac
 #intro
 clear
 echo
-
 case "$DISTRO" in
         arch)
             cat << 'ART'
@@ -129,7 +129,7 @@ fi
 # path variables
 WORKDIR="/tmp/kernel"
 KCFG=false
-KVER= URL= SRCDIR= TARBALL=	MAKEFLAGS= # initialise to use ouside function
+KVER= URL= SRCDIR= TARBALL=	ENV= MAKEFLAGS= # initialise to use ouside function
 
 # cpu management
 choose_cores() {
@@ -174,6 +174,10 @@ case "${DISTRO:-}" in
                 	TARBALL="${SRCDIR}/linux-cachyos-rc.tar.gz"
                 	printf "\n\n Selected: cachyos/rc\n\n"
 					KCFG=true
+					ENV_VARS=(
+  						"MAKEFLAGS=-j$cores"
+  						"KCFLAGS=-g0 -O2 -pipe"
+					)
                 	return
                 	;;
             	3)  # xanmod-edge
@@ -183,6 +187,10 @@ case "${DISTRO:-}" in
                 	TARBALL="${SRCDIR}/linux-xanmod-edge.tar.gz"
                 	printf "\n\n Selected: xanmod/edge\n\n"
 					KCFG=true
+					ENV_VARS=(
+  						"MAKEFLAGS=-j$cores"
+  						"KCFLAGS=-g0 -O2 -pipe"
+					)
                 	return
                 	;;
             	*)  ;;
@@ -282,7 +290,6 @@ check_deps() {
 	printf '\r%-*s\r Progress: 100%% [%-*s] Installed %d new package(s).\n\n' "$COLUMNS" '' "$BAR_MAX" "$bar" "$ok"
 }
 
-# prepare build env
 declare -A FLAVOUR_MAP=(
     [upstream]="latest mainline sources"
     [debian]="latest stable sources"
@@ -328,8 +335,8 @@ manage_make(){
 	tar -xzf "${TARBALL}" --strip-components=1
 	time {
 		# run makepkg as regular user in a subshell
-		target_user="${SUDO_USER:-$USER}"
-		if ! sudo -u "$target_user" env MAKEFLAGS="$MAKEFLAGS" KCFLAGS="-g0 -O2 -pipe" makepkg -s --noconfirm --skipchecksums --skippgpcheck; then
+		target="${SUDO_USER:-$USER}"
+		if ! sudo -u "$target" env "${ENV_VARS[@]}" makepkg -s --noconfirm --skipchecksums --skippgpcheck; then
 			fatal "error during kernel compilation process."
 		fi
 		pkgfile=$(find . -maxdepth 1 -name "*.pkg.tar.zst" -print -quit)
