@@ -117,7 +117,7 @@ case "${DISTRO:-}" in
 		printf " Welcome %s, to eZkernel for %s.\n\n The latest Linux kernel in mainline (kernel.org) or cachyos/rc or xanmod/edge (aur.archlinux.org), will be will be sourced, compiled and installed.\n\n" "$USER" "$DISTRO"
 		;;
     debian)
-		printf " Welcome %s, to eZkernel for %s.\n\n The latest Linux kernel in mainline (kernel.org) or sid (deb.debian.org), will be will be sourced, compiled and installed.\n\n" "$USER" "$DISTRO"
+		printf " Welcome %s, to eZkernel for %s.\n\n The latest Linux kernel in mainline or stable (kernel.org), will be will be sourced, compiled and installed.\n\n" "$USER" "$DISTRO"
 		;;
 esac	
 
@@ -156,7 +156,7 @@ case "${DISTRO:-}" in
 	arch)
         choose_source(){
     		while true; do
-        		printf $'\r\033[2K upstream master snapshot (1) cachyos/rc (2) xanmod/edge (3) [1/2/3]: '
+        		printf $'\r\033[2K mainline (1) cachyos-rc (2) xanmod-edge (3) [1/2/3]: '
         		read -n1 -s -r choice
 	        case $choice in
             	1)  # upstream master snapshot
@@ -164,11 +164,11 @@ case "${DISTRO:-}" in
                 	URL="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-master.tar.gz"
                 	SRCDIR="${WORKDIR}/linux-upstream-${KVER}"
                 	TARBALL="${SRCDIR}/linux-master.tar.gz"
-                	printf "\n\n Selected: upstream master snapshot\n\n"
+                	printf "\n\n Selected: mainline latest release\n\n"
                 	return
                 	;;
-            	2)  # cachyos/rc
-                	KVER=$(curl -s https://www.kernel.org/finger_banner | sed -n '2s/^[^6]*//p')
+            	2)  # cachyos-rc
+                	KVER=$(curl -s https://www.kernel.org/finger_banner | awk 'NR==2 {print $NF}')
 					URL="https://aur.archlinux.org/cgit/aur.git/snapshot/linux-cachyos-rc.tar.gz"
                 	SRCDIR="${WORKDIR}/linux-cachyos"
                 	TARBALL="${SRCDIR}/linux-cachyos-rc.tar.gz"
@@ -176,8 +176,8 @@ case "${DISTRO:-}" in
 					KCFG=true
                 	return
                 	;;
-            	3)  # xanmod/edge
-                	KVER=$(curl -s https://www.kernel.org | grep -A 1 'id="latest_link"' | awk 'NR==2' | grep -oP 'linux-\K[^"]+' | sed 's/\.tar\.xz$//')
+            	3)  # xanmod-edge
+                	KVER=$(curl -s https://www.kernel.org/finger_banner | awk 'NR==1 {print $NF}')
 					URL="https://aur.archlinux.org/cgit/aur.git/snapshot/linux-xanmod-edge.tar.gz"
                 	SRCDIR="${WORKDIR}/linux-xanmod"
                 	TARBALL="${SRCDIR}/linux-xanmod-edge.tar.gz"
@@ -194,23 +194,23 @@ case "${DISTRO:-}" in
     debian)
         choose_source(){
     		while true; do
-        		printf $'\r\033[2K upstream master snapshot (1) debian/sid (2) [1/2]: '
+        		printf $'\r\033[2K mainline (1) stable (2) [1/2]: '
         		read -n1 -s -r choice
 	        case $choice in
-            	1)  # upstream master snapshot
+            	1)  # mainline
                 	KVER=$(curl -s https://www.kernel.org/finger_banner | sed -n '2s/^[^6]*//p')
                 	URL="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-master.tar.gz"
                 	SRCDIR="${WORKDIR}/linux-upstream-${KVER}"
                 	TARBALL="${SRCDIR}/linux-master.tar.gz"
-                	printf "\n\n Selected: upstream master snapshot\n\n"
+                	printf "\n\n Selected: mainline latest release\n\n"
                 	return
                 	;;
-            	2)  # debian/sid
-                	KVER=$(curl -s "https://packages.debian.org/sid/kernel/" | grep -oP '\d+\.\d+\.\d+-\d+' | grep '^6\..*-1$' | sort -V | tail -n1 | sed 's/-.*//')
-                	URL="http://deb.debian.org/debian/pool/main/l/linux/linux_${KVER}.orig.tar.xz"
+            	2)  # stable
+                	KVER=$(curl -s https://www.kernel.org/finger_banner | sed -n '1s/^[^6]*//p')
+                	URL="https://www.kernel.org/pub/linux/kernel/v6.x/linux-${KVER}.tar.xz"
                 	SRCDIR="${WORKDIR}/linux-debian-${KVER}"
-                	TARBALL="${SRCDIR}/linux_${KVER}.orig.tar.xz"
-                	printf "\n\n Selected: debian/sid\n\n"
+                	TARBALL="${SRCDIR}/linux_${KVER}.tar.xz"
+                	printf "\n\n Selected: stable latest release\n\n"
                 	return
                 	;;
             	*)  ;;
@@ -284,8 +284,8 @@ check_deps() {
 
 # prepare build env
 declare -A FLAVOUR_MAP=(
-    [upstream]="latest upstream snapshot"
-    [debian]="latest debian/sid source"
+    [upstream]="latest mainline sources"
+    [debian]="latest stable sources"
 	[cachyos]="latest cachyos/rc snapshot"
 	[xanmod]="latest xanmod/edge snapshot"
 )
