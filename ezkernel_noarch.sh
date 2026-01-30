@@ -114,7 +114,7 @@ esac
 printf "\n\n #%s#\n\n" "$(printf '%*s' "$(( $(tput cols) - 4 ))" '' | tr ' ' '-')"
 case "${DISTRO:-}" in
 	arch)
-		printf " Welcome %s, to eZkernel for %s.\n\n The latest Linux kernel in mainline (kernel.org) or mainline + cachyos patch or xanmod/edge (aur.archlinux.org), will be will be sourced, compiled and installed.\n\n" "$USER" "$DISTRO"
+		printf " Welcome %s, to eZkernel for %s.\n\n The latest Linux kernel in mainline (kernel.org) or mainline + cachyos patch (github.com), will be will be sourced, compiled and installed.\n\n" "$USER" "$DISTRO"
 		;;
     debian)
 		printf " Welcome %s, to eZkernel for %s.\n\n The latest Linux kernel in mainline or stable (kernel.org), will be will be sourced, compiled and installed.\n\n" "$USER" "$DISTRO"
@@ -168,7 +168,7 @@ case "${DISTRO:-}" in
                 	URL="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-master.tar.gz"
                 	SRCDIR="${WORKDIR}/linux-upstream-${KVER}"
                 	TARBALL="${SRCDIR}/linux-master.tar.gz"
-					printf "\n\n Selected: mainline latest release\n\n"
+					printf "\n\n Selected: mainline\n\n"
                 	return
                 	;;
             	2)  # cachyos-rc
@@ -179,11 +179,11 @@ case "${DISTRO:-}" in
 					fi
 					KVER=$(curl -s https://www.kernel.org/finger_banner | awk 'NR==2 {print $NF}')
 					URL="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-master.tar.gz"
-					PATCH_URL="https://raw.githubusercontent.com/cachyos/kernel-patches/master/6.18/all/0001-cachyos-base-all.patch"
+					PATCH_URL="https://raw.githubusercontent.com/CachyOS/kernel-patches/refs/heads/master/6.19/all/0001-cachyos-base-all.patch"
                 	SRCDIR="${WORKDIR}/linux-cachyos"
 					PATCH="${SRCDIR}/0001-cachyos-base-all.patch"
                 	TARBALL="${SRCDIR}/linux-cachyos-rc.tar.gz"
-                	printf "\n\n Selected: cachyos-rc\n\n"
+                	printf "\n\n Selected: mainline + cachyos patch\n\n"
 					KCFG=true
 					return
                 	;;
