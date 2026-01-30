@@ -154,9 +154,8 @@ printf " Which kernel sources do you want to use,\n\n"
 case "${DISTRO:-}" in
 	arch)
         choose_source(){
-			KVER=$(curl -s https://www.kernel.org/finger_banner | sed -n '2s/^[^6]*//p')
+			KVER=$(curl -s https://www.kernel.org/finger_banner | awk 'NR==2 {print $NF}')
             URL="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-master.tar.gz"
-            SRCDIR="${WORKDIR}/linux-upstream"
             TARBALL="${SRCDIR}/linux-master.tar.gz"
 			export LD=ld.bfd # use GNU ld instead of ld.lld
 			export KCFLAGS="-g0 -O2"
@@ -168,6 +167,7 @@ case "${DISTRO:-}" in
 	        case $choice in
             	1)  # upstream master snapshot
                 	WORKDIR="/tmp/kernel"
+					SRCDIR="${WORKDIR}/linux-upstream"
 					printf "\n\n Selected: mainline\n\n"
                 	return
                 	;;
@@ -177,6 +177,7 @@ case "${DISTRO:-}" in
 					else
 						WORKDIR="${HOME}/kernel-build"
 					fi
+					SRCDIR="${WORKDIR}/linux-cachyos"
 					PATCH_URL="https://raw.githubusercontent.com/CachyOS/kernel-patches/refs/heads/master/6.19/all/0001-cachyos-base-all.patch"
 					PATCH="${SRCDIR}/0001-cachyos-base-all.patch"
 					KCFG=true
@@ -297,13 +298,17 @@ declare -A FLAVOUR_MAP=(
 
 manage_sources() {
     local msg="" key
-    for key in "${!FLAVOUR_MAP[@]}"; do
-        if [[ "$SRCDIR" =~ $key ]]; then
-            msg=${FLAVOUR_MAP[$key]}
-            break
-        fi
-    done
-    printf " Downloading %s...\n\n" "$msg" # directory-independent message, see flavour map
+	if [[ ${KCFG} == true ]]; then
+		msg=${FLAVOUR_MAP[upstream]}
+	else
+    	for key in "${!FLAVOUR_MAP[@]}"; do
+	        if [[ "$SRCDIR" =~ $key ]]; then # directory-independent message, see flavour map
+    	        msg=${FLAVOUR_MAP[$key]}
+        	    break
+        	fi
+    	done
+	fi
+    printf " Downloading %s...\n\n" "$msg"
     mkdir -p "$SRCDIR"
     cd "$SRCDIR"
     wget -q --show-progress -O "$TARBALL" "$URL" || fatal "error downloading kernel sources."
