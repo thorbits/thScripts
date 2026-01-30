@@ -158,16 +158,16 @@ case "${DISTRO:-}" in
 			export KCFLAGS="-g0 -O2"
 			export HOSTCFLAGS="-g0 -O2"
 			export INSTALL_MOD_STRIP=1 # save space in /lib/modules
+			KVER=$(curl -s https://www.kernel.org/finger_banner | sed -n '2s/^[^6]*//p')
+            URL="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-master.tar.gz"
+            SRCDIR="${WORKDIR}/linux-upstream"
+            TARBALL="${SRCDIR}/linux-master.tar.gz"
     		while true; do
         		printf $'\r\033[2K mainline (1) mainline + cachyos patch (2) [1/2]: '
         		read -n1 -r choice
 	        case $choice in
             	1)  # upstream master snapshot
                 	WORKDIR="/tmp/kernel"
-					KVER=$(curl -s https://www.kernel.org/finger_banner | sed -n '2s/^[^6]*//p')
-                	URL="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-master.tar.gz"
-                	SRCDIR="${WORKDIR}/linux-upstream-${KVER}"
-                	TARBALL="${SRCDIR}/linux-master.tar.gz"
 					printf "\n\n Selected: mainline\n\n"
                 	return
                 	;;
@@ -177,14 +177,10 @@ case "${DISTRO:-}" in
 					else
 						WORKDIR="${HOME}/kernel-build"
 					fi
-					KVER=$(curl -s https://www.kernel.org/finger_banner | awk 'NR==2 {print $NF}')
-					URL="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-master.tar.gz"
 					PATCH_URL="https://raw.githubusercontent.com/CachyOS/kernel-patches/refs/heads/master/6.19/all/0001-cachyos-base-all.patch"
-                	SRCDIR="${WORKDIR}/linux-cachyos"
 					PATCH="${SRCDIR}/0001-cachyos-base-all.patch"
-                	TARBALL="${SRCDIR}/linux-cachyos-rc.tar.gz"
-                	printf "\n\n Selected: mainline + cachyos patch\n\n"
 					KCFG=true
+                	printf "\n\n Selected: mainline + cachyos patch\n\n"
 					return
                 	;;
 			esac
@@ -319,33 +315,6 @@ manage_sources() {
 	rm -f "$TARBALL"
 }
 
-manage_make(){
-    local msg="" key
-    for key in "${!FLAVOUR_MAP[@]}"; do
-        if [[ "$SRCDIR" =~ $key ]]; then
-            msg=${FLAVOUR_MAP[$key]}
-            break
-        fi
-    done
-	printf " Downloading %s...\n\n" "$msg" # directory-independent message, see flavour map
-	mkdir -p "$SRCDIR"
-	chown "${SUDO_USER:-$USER}:root" "$SRCDIR" 2>/dev/null || true
-	chmod 775 "$SRCDIR" 2>/dev/null || true
-	cd "$SRCDIR"
-	wget -q --show-progress -O "$TARBALL" "$URL" || fatal "error downloading "$TARBALL"."
-	printf "\n Extracting snapshot files...\n\n"
-	tar -xzf "${TARBALL}" --strip-components=1
-	time {
-		target="${SUDO_USER:-$USER}" # run makepkg as regular user in a subshell
-		if ! sudo -u "$target" makepkg -s --noconfirm --skipchecksums --skippgpcheck; then
-			fatal "error during kernel compilation process."
-		fi
-		pkgfile=$(find . -maxdepth 1 -name "*.pkg.tar.zst" -print -quit)
-		pacman -U --noconfirm "$pkgfile" || fatal "error installing the built package."
-    	info "$KVER"
-	} 2>&1
-}
-
 manage_patch() {
     local msg=""
     msg=${FLAVOUR_MAP[cachyos]}
@@ -430,6 +399,7 @@ script_opt() {
 choose_cores
 check_deps
 manage_sources
+
 # patch and config management
 if [[ ${KCFG} == true ]]; then
 	manage_patch
