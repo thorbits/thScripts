@@ -335,7 +335,7 @@ manage_patch() {
         fatal "patch does not apply cleanly, possible conflicts."
     fi
     if patch -p"${STRIP_LEVEL}" --no-backup-if-mismatch -i "$PATCH"; then
-        printf "\n\n\e[32m [INFO]\e[0m CachyOS patch applied successfully for kernel %s\n\n" "$KVER"
+        printf "\n\e[32m [INFO]\e[0m CachyOS patch applied successfully for kernel %s\n\n" "$KVER"
     else
         fatal "patch application failed"
     fi
@@ -410,7 +410,6 @@ manage_sources
 if [[ ${KCFG} == true ]]; then
 	manage_patch
 	script_opt
-	fi
 else
 	printf " Generating kernel config...\n\n" && sleep 1
 	if ! (yes '' | make localmodconfig && make menuconfig); then
@@ -423,7 +422,6 @@ fi
 info() {
     printf "\n\e[32m [INFO]\e[0m eZkernel compilation successful for version: %s\n\n Compilation time: \n" "$*"
 }
-
 case "$DISTRO" in
 	arch)
 		time { \
