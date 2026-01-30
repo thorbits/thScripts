@@ -224,13 +224,10 @@ case "${DISTRO:-}" in
 		choose_source
         ;;
 esac
-
-# kernel version check
 printf " Checking kernels versions... please wait" && sleep 2
 printf '\r%-*s\n\n Current kernel version: %s\n It will be updated to : %s\n\n' \
-       "$COLUMNS" " Checking kernels versions... done." \
-       "$(uname -r)" "$KVER"
-
+    "$COLUMNS" " Checking kernels versions... done." \
+    "$(uname -r)" "$KVER"
 while true; do
     printf $'\r\033[2K Press Enter to continue or Ctrl+C to cancel'
     read -n1 -s -r
@@ -290,7 +287,6 @@ check_deps() {
 	printf '\r%-*s\r Progress: 100%% [%-*s] Installed %d new package(s).\n\n' "$COLUMNS" '' "$BAR_MAX" "$bar" "$ok"
 }
 
-# sources management, compilation with make or makepkg
 declare -A FLAVOUR_MAP=(
     [upstream]="latest mainline sources"
     [stable]="latest stable sources"
@@ -354,8 +350,7 @@ reboot_system(){
 	case "$DISTRO" in
 		arch)
 			if [ -d /boot/loader/entries ] && ls /boot/loader/entries/*.conf >/dev/null 2>&1; then
-#				bootctl update
-    			:
+    			: # if necessary: bootctl update
 			elif command -v grub-mkconfig >/dev/null 2>&1; then
     			grub-mkconfig -o /boot/grub/grub.cfg >/dev/null 2>&1 || fatal "failed to update grub."
 			fi
