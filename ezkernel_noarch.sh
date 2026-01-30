@@ -336,8 +336,7 @@ manage_make(){
 	printf "\n Extracting snapshot files...\n\n"
 	tar -xzf "${TARBALL}" --strip-components=1
 	time {
-		# run makepkg as regular user in a subshell
-		target="${SUDO_USER:-$USER}"
+		target="${SUDO_USER:-$USER}" # run makepkg as regular user in a subshell
 		if ! sudo -u "$target" makepkg -s --noconfirm --skipchecksums --skippgpcheck; then
 			fatal "error during kernel compilation process."
 		fi
@@ -353,7 +352,7 @@ manage_patch() {
     printf " Downloading %s...\n\n" "$msg"
     wget -q --show-progress -O "$PATCH" "$PATCH_URL" || fatal "error downloading $PATCH."
     local STRIP_LEVEL="${1:-1}"
-    echo " Checking patch: $PATCH"
+    printf "\n Processing patch: $PATCH"
     if patch -p"${STRIP_LEVEL}" -R --dry-run -i "$PATCH" >/dev/null 2>&1; then
         fatal "patch already applied."
     fi
@@ -403,28 +402,7 @@ reboot_system(){
     /sbin/reboot
 }
 
-# compilation methods
-if [[ ${KCFG} == true ]]; then
-	choose_cores
-	check_deps
-	manage_sources
-	manage_patch
-	reboot_system
-else
-	choose_cores
-	check_deps
-	manage_sources	
-fi
-
-# kernel compilation
-info() {
-    printf "\n\e[32m [INFO]\e[0m eZkernel compilation successful for version: %s\n\n Compilation time: \n" "$*"
-}
-if [[ ${KCFG} == false ]]; then
-	printf " Generating kernel config...\n\n" && sleep 1
-	if ! (yes '' | make localmodconfig && make menuconfig); then
-    	fatal "error generating kernel config."
-	fi
+script_opt() {
 	# disable massive compile-time killers
 	scripts/config --disable DEBUG_INFO
 	scripts/config --disable DEBUG_INFO_BTF      # avoids slow 'pahole' processing
@@ -446,7 +424,28 @@ if [[ ${KCFG} == false ]]; then
 	#scripts/config --disable KERNEL_ZSTD         # ZSTD compression is slow to build
 	#scripts/config --disable KERNEL_XZ
 	make olddefconfig
+}
+
+# main sequence
+choose_cores
+check_deps
+manage_sources
+# patch and config management
+if [[ ${KCFG} == true ]]; then
+	manage_patch
+else
+	printf " Generating kernel config...\n\n" && sleep 1
+	if ! (yes '' | make localmodconfig && make menuconfig); then
+    	fatal "error generating kernel config."
+#		script_opt
+	fi	
 fi
+
+# kernel compilation
+info() {
+    printf "\n\e[32m [INFO]\e[0m eZkernel compilation successful for version: %s\n\n Compilation time: \n" "$*"
+}
+
 case "$DISTRO" in
 	arch)
 		time { \
@@ -467,4 +466,5 @@ case "$DISTRO" in
 		} 2>&1
 		;;
 esac
+
 reboot_system
