@@ -409,12 +409,13 @@ if [[ ${KCFG} == true ]]; then
 	manage_patch
 	if ! (yes '' | make localmodconfig); then
     	fatal "error generating kernel config."
+		script_opt
 	fi
 else
 	printf " Generating kernel config...\n\n" && sleep 1
 	if ! (yes '' | make localmodconfig && make menuconfig); then
     	fatal "error generating kernel config."
-#		script_opt
+		script_opt
 	fi	
 fi
 
