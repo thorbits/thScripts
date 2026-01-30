@@ -128,7 +128,7 @@ fi
 
 # initialise to use ouside function
 KCFG=false
-KVER= URL= SRCDIR= TARBALL=
+KVER= #URL= SRCDIR= TARBALL=
 
 # cpu management
 choose_cores() {
@@ -178,8 +178,8 @@ case "${DISTRO:-}" in
 						WORKDIR="${HOME}/kernel-build"
 					fi
 					SRCDIR="${WORKDIR}/linux-cachyos"
-					PATCH_URL="https://raw.githubusercontent.com/CachyOS/kernel-patches/refs/heads/master/6.19/all/0001-cachyos-base-all.patch"
 					CONFIG_URL="https://raw.githubusercontent.com/CachyOS/linux-cachyos/refs/heads/master/linux-cachyos-rc/config"
+					PATCH_URL="https://raw.githubusercontent.com/CachyOS/kernel-patches/refs/heads/master/6.19/all/0001-cachyos-base-all.patch"
 					PATCH="${SRCDIR}/0001-cachyos-base-all.patch"
 					KCFG=true
                 	printf "\n\n Selected: mainline + cachyos patch\n\n"
