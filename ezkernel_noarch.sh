@@ -154,14 +154,14 @@ printf " Which kernel sources do you want to use,\n\n"
 case "${DISTRO:-}" in
 	arch)
         choose_source(){
-			export LD=ld.bfd # use GNU ld instead of ld.lld
-			export KCFLAGS="-g0 -O2"
-			export HOSTCFLAGS="-g0 -O2"
-			export INSTALL_MOD_STRIP=1 # save space in /lib/modules
 			KVER=$(curl -s https://www.kernel.org/finger_banner | sed -n '2s/^[^6]*//p')
             URL="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-master.tar.gz"
             SRCDIR="${WORKDIR}/linux-upstream"
             TARBALL="${SRCDIR}/linux-master.tar.gz"
+			export LD=ld.bfd # use GNU ld instead of ld.lld
+			export KCFLAGS="-g0 -O2"
+			export HOSTCFLAGS="-g0 -O2"
+			export INSTALL_MOD_STRIP=1 # save space in /lib/modules
     		while true; do
         		printf $'\r\033[2K mainline (1) mainline + cachyos patch (2) [1/2]: '
         		read -n1 -r choice
@@ -321,7 +321,6 @@ manage_patch() {
     printf " Downloading %s...\n\n" "$msg"
     wget -q --show-progress -O "$PATCH" "$PATCH_URL" || fatal "error downloading $PATCH."
     local STRIP_LEVEL="${1:-1}"
-    printf "\n Processing patch: $PATCH"
     if patch -p"${STRIP_LEVEL}" -R --dry-run -i "$PATCH" >/dev/null 2>&1; then
         fatal "patch already applied."
     fi
@@ -403,7 +402,9 @@ manage_sources
 # patch and config management
 if [[ ${KCFG} == true ]]; then
 	manage_patch
-	script_opt
+	if ! (yes '' | make localmodconfig); then
+    	fatal "error generating kernel config."
+	fi
 else
 	printf " Generating kernel config...\n\n" && sleep 1
 	if ! (yes '' | make localmodconfig && make menuconfig); then
@@ -416,7 +417,6 @@ fi
 info() {
     printf "\n\e[32m [INFO]\e[0m eZkernel compilation successful for version: %s\n\n Compilation time: \n" "$*"
 }
-
 case "$DISTRO" in
 	arch)
 		time { \
