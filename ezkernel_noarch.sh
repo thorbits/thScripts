@@ -436,11 +436,11 @@ scripts/config --disable KASAN               # address sanitizer (massive compil
 scripts/config --disable KMSAN
 scripts/config --disable GCOV_KERNEL
 # fastest kernel image compression (VM boot is from virtio-blk/SCSI, decompression is fast anyway)
-scripts/config --enable KERNEL_GZIP
-scripts/config --disable KERNEL_ZSTD         # ZSTD compression is slow to build
-scripts/config --disable KERNEL_XZ
-
+#scripts/config --enable KERNEL_GZIP
+#scripts/config --disable KERNEL_ZSTD         # ZSTD compression is slow to build
+#scripts/config --disable KERNEL_XZ
 make olddefconfig
+
 case "$DISTRO" in
 	arch)
 		time { \
