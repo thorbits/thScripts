@@ -114,7 +114,7 @@ esac
 printf "\n\n #%s#\n\n" "$(printf '%*s' "$(( $(tput cols) - 4 ))" '' | tr ' ' '-')"
 case "${DISTRO:-}" in
 	arch)
-		printf " Welcome %s, to eZkernel for %s.\n\n The latest Linux kernel in mainline (kernel.org) or cachyos/rc or xanmod/edge (aur.archlinux.org), will be will be sourced, compiled and installed.\n\n" "$USER" "$DISTRO"
+		printf " Welcome %s, to eZkernel for %s.\n\n The latest Linux kernel in mainline (kernel.org) or mainline + cachyos patch or xanmod/edge (aur.archlinux.org), will be will be sourced, compiled and installed.\n\n" "$USER" "$DISTRO"
 		;;
     debian)
 		printf " Welcome %s, to eZkernel for %s.\n\n The latest Linux kernel in mainline or stable (kernel.org), will be will be sourced, compiled and installed.\n\n" "$USER" "$DISTRO"
@@ -159,7 +159,7 @@ case "${DISTRO:-}" in
 			export HOSTCFLAGS="-g0 -O2"
 			export INSTALL_MOD_STRIP=1 # save space in /lib/modules
     		while true; do
-        		printf $'\r\033[2K mainline (1) cachyos-rc (2) xanmod-edge (3) [1/2/3]: '
+        		printf $'\r\033[2K mainline (1) mainline + cachyos patch (2) [1/2]: '
         		read -n1 -r choice
 	        case $choice in
             	1)  # upstream master snapshot
@@ -187,22 +187,6 @@ case "${DISTRO:-}" in
 					KCFG=true
 					return
                 	;;
-            	3)  # xanmod-edge
-                	if [[ -n "${SUDO_USER}" ]]; then # use home directory, avoid tmpfs & permission issues
-						WORKDIR=$(eval echo "~${SUDO_USER}/kernel-build")
-					else
-						WORKDIR="${HOME}/kernel-build"
-					fi
-					KVER=$(curl -s https://www.kernel.org/finger_banner | awk 'NR==1 {print $NF}')
-					URL="https://aur.archlinux.org/cgit/aur.git/snapshot/linux-xanmod-edge.tar.gz"
-                	SRCDIR="${WORKDIR}/linux-xanmod"
-                	TARBALL="${SRCDIR}/linux-xanmod-edge.tar.gz"
-					export _microarchitecture=99
-                	printf "\n\n Selected: xanmod-edge\n\n"
-					KCFG=true
-                	return
-                	;;
-            	*)  ;;
 			esac
 			done
 		}
@@ -312,8 +296,7 @@ check_deps() {
 declare -A FLAVOUR_MAP=(
     [upstream]="latest mainline sources"
     [stable]="latest stable sources"
-	[cachyos]="latest cachyos-rc patch"
-	[xanmod]="latest xanmod-edge snapshot"
+	[cachyos]="latest cachyos patch"
 )
 
 manage_sources() {
@@ -364,32 +347,24 @@ manage_make(){
 	} 2>&1
 }
 
-manage_patch(){
-    local msg="" key
-    for key in "${!FLAVOUR_MAP[@]}"; do
-        if [[ "$SRCDIR" =~ $key ]]; then
-            msg=${FLAVOUR_MAP[$key]}
-            break
-        fi
-    done
-printf " Downloading %s...\n\n" "$msg" # directory-independent message, see flavour map
-wget -q --show-progress -O "$PATCH" "$PATCH_URL" || fatal "error downloading "$PATCH"."
-STRIP_LEVEL="${1:-1}" # default -p1 strips first dir level
-echo " Checking patch: $PATCH"
-# check if already applied (reverse dry-run test)
-if patch -p${STRIP_LEVEL} -R --dry-run -i "$PATCH" >/dev/null 2>&1; then
-     fatal "patch already applied."
-fi
-# test if patch applies cleanly
-if ! patch -p${STRIP_LEVEL} --dry-run -i "$PATCH" >/dev/null 2>&1; then
-     fatal "patch does not apply cleanly, possible conflicts."
-fi
-# apply the patch
-if patch -p${STRIP_LEVEL} --no-backup-if-mismatch -i "$PATCH"; then
-     printf "\n\n patch applied successfully\n\n"
-else
-     fatal "patch application failed"
-fi
+manage_patch() {
+    local msg=""
+    msg=${FLAVOUR_MAP[cachyos]}
+    printf " Downloading %s...\n\n" "$msg"
+    wget -q --show-progress -O "$PATCH" "$PATCH_URL" || fatal "error downloading $PATCH."
+    local STRIP_LEVEL="${1:-1}"
+    echo " Checking patch: $PATCH"
+    if patch -p"${STRIP_LEVEL}" -R --dry-run -i "$PATCH" >/dev/null 2>&1; then
+        fatal "patch already applied."
+    fi
+    if ! patch -p"${STRIP_LEVEL}" --dry-run -i "$PATCH" >/dev/null 2>&1; then
+        fatal "patch does not apply cleanly, possible conflicts."
+    fi
+    if patch -p"${STRIP_LEVEL}" --no-backup-if-mismatch -i "$PATCH"; then
+        printf "\n\n patch applied successfully\n\n"
+    else
+        fatal "patch application failed"
+    fi
 }
 
 # cleanup and reboot
