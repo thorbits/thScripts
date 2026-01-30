@@ -178,8 +178,10 @@ case "${DISTRO:-}" in
 						WORKDIR="${HOME}/kernel-build"
 					fi
 					KVER=$(curl -s https://www.kernel.org/finger_banner | awk 'NR==2 {print $NF}')
-					URL="https://aur.archlinux.org/cgit/aur.git/snapshot/linux-cachyos-rc.tar.gz"
+					URL="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-master.tar.gz"
+					PATCH_URL="https://raw.githubusercontent.com/cachyos/kernel-patches/master/6.18/all/0001-cachyos-base-all.patch"
                 	SRCDIR="${WORKDIR}/linux-cachyos"
+					PATCH="${SRCDIR}/0001-cachyos-base-all.patch"
                 	TARBALL="${SRCDIR}/linux-cachyos-rc.tar.gz"
                 	printf "\n\n Selected: cachyos-rc\n\n"
 					KCFG=true
@@ -196,7 +198,6 @@ case "${DISTRO:-}" in
                 	SRCDIR="${WORKDIR}/linux-xanmod"
                 	TARBALL="${SRCDIR}/linux-xanmod-edge.tar.gz"
 					export _microarchitecture=99
-#					export use_numa=n
                 	printf "\n\n Selected: xanmod-edge\n\n"
 					KCFG=true
                 	return
@@ -311,8 +312,8 @@ check_deps() {
 declare -A FLAVOUR_MAP=(
     [upstream]="latest mainline sources"
     [stable]="latest stable sources"
-	[cachyos]="latest cachyos/rc snapshot"
-	[xanmod]="latest xanmod/edge snapshot"
+	[cachyos]="latest cachyos-rc patch"
+	[xanmod]="latest xanmod-edge snapshot"
 )
 
 manage_sources() {
@@ -364,7 +365,31 @@ manage_make(){
 }
 
 manage_patch(){
-	
+    local msg="" key
+    for key in "${!FLAVOUR_MAP[@]}"; do
+        if [[ "$SRCDIR" =~ $key ]]; then
+            msg=${FLAVOUR_MAP[$key]}
+            break
+        fi
+    done
+printf " Downloading %s...\n\n" "$msg" # directory-independent message, see flavour map
+wget -q --show-progress -O "$PATCH" "$PATCH_URL" || fatal "error downloading "$PATCH"."
+STRIP_LEVEL="${1:-1}" # default -p1 strips first dir level
+echo " Checking patch: $PATCH"
+# check if already applied (reverse dry-run test)
+if patch -p${STRIP_LEVEL} -R --dry-run -i "$PATCH" >/dev/null 2>&1; then
+     fatal "patch already applied."
+fi
+# test if patch applies cleanly
+if ! patch -p${STRIP_LEVEL} --dry-run -i "$PATCH" >/dev/null 2>&1; then
+     fatal "patch does not apply cleanly, possible conflicts."
+fi
+# apply the patch
+if patch -p${STRIP_LEVEL} --no-backup-if-mismatch -i "$PATCH"; then
+     printf "\n\n patch applied successfully\n\n"
+else
+     fatal "patch application failed"
+fi
 }
 
 # cleanup and reboot
@@ -407,7 +432,8 @@ reboot_system(){
 if [[ ${KCFG} == true ]]; then
 	choose_cores
 	check_deps
-	manage_make
+	manage_sources
+	manage_patch
 	reboot_system
 else
 	choose_cores
@@ -419,32 +445,33 @@ fi
 info() {
     printf "\n\e[32m [INFO]\e[0m eZkernel compilation successful for version: %s\n\n Compilation time: \n" "$*"
 }
-printf " Generating kernel config...\n\n" && sleep 1
-if ! (yes '' | make localmodconfig && make menuconfig); then
-    fatal "error generating kernel config."
+if [[ ${KCFG} == false ]]; then
+	printf " Generating kernel config...\n\n" && sleep 1
+	if ! (yes '' | make localmodconfig && make menuconfig); then
+    	fatal "error generating kernel config."
+	fi
+	# disable massive compile-time killers
+	scripts/config --disable DEBUG_INFO
+	scripts/config --disable DEBUG_INFO_BTF      # avoids slow 'pahole' processing
+	scripts/config --disable LTO_CLANG           # LTO increases build time 2-5x
+	scripts/config --disable LTO_GCC
+	scripts/config --disable LTO_NONE            # explicitly select none if needed, or just disable the others
+	# VM-specific: No Secure Boot needed, skip slow signing
+	scripts/config --disable MODULE_SIG
+	scripts/config --disable MODULE_SIG_ALL
+	# skip compression overhead (VM CPU is precious, disk is cheap/fast enough)
+	scripts/config --disable MODULE_COMPRESS     # faster 'make modules_install', faster module loading
+	# disable kernel debugging features that slow compile (VMs don't need these)
+	scripts/config --disable KCOV                # kernel coverage (slows compile significantly)
+	scripts/config --disable KASAN               # address sanitizer (massive compile slowdown)
+	scripts/config --disable KMSAN
+	scripts/config --disable GCOV_KERNEL
+	# fastest kernel image compression (VM boot is from virtio-blk/SCSI, decompression is fast anyway)
+	#scripts/config --enable KERNEL_GZIP
+	#scripts/config --disable KERNEL_ZSTD         # ZSTD compression is slow to build
+	#scripts/config --disable KERNEL_XZ
+	make olddefconfig
 fi
-# disable massive compile-time killers
-scripts/config --disable DEBUG_INFO
-scripts/config --disable DEBUG_INFO_BTF      # avoids slow 'pahole' processing
-scripts/config --disable LTO_CLANG           # LTO increases build time 2-5x
-scripts/config --disable LTO_GCC
-scripts/config --disable LTO_NONE            # explicitly select none if needed, or just disable the others
-# VM-specific: No Secure Boot needed, skip slow signing
-scripts/config --disable MODULE_SIG
-scripts/config --disable MODULE_SIG_ALL
-# skip compression overhead (VM CPU is precious, disk is cheap/fast enough)
-scripts/config --disable MODULE_COMPRESS     # faster 'make modules_install', faster module loading
-# disable kernel debugging features that slow compile (VMs don't need these)
-scripts/config --disable KCOV                # kernel coverage (slows compile significantly)
-scripts/config --disable KASAN               # address sanitizer (massive compile slowdown)
-scripts/config --disable KMSAN
-scripts/config --disable GCOV_KERNEL
-# fastest kernel image compression (VM boot is from virtio-blk/SCSI, decompression is fast anyway)
-#scripts/config --enable KERNEL_GZIP
-#scripts/config --disable KERNEL_ZSTD         # ZSTD compression is slow to build
-#scripts/config --disable KERNEL_XZ
-make olddefconfig
-
 case "$DISTRO" in
 	arch)
 		time { \
@@ -466,4 +493,3 @@ case "$DISTRO" in
 		;;
 esac
 reboot_system
-
