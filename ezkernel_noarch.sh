@@ -126,9 +126,9 @@ if ! command -v curl >/dev/null 2>&1 || ! command -v wget >/dev/null 2>&1; then
 	"${PM[@]}" curl wget >/dev/null 2>&1
 fi
 
-# path variables
+# initialise to use ouside function
 KCFG=false
-KVER= URL= SRCDIR= TARBALL=	# initialise to use ouside function
+KVER= URL= SRCDIR= TARBALL=
 
 # cpu management
 choose_cores() {
