@@ -363,6 +363,10 @@ manage_make(){
 	} 2>&1
 }
 
+manage_patch(){
+	
+}
+
 # cleanup and reboot
 reboot_system(){
 	cd ~ && rm -rf "${WORKDIR}" 
@@ -462,3 +466,4 @@ case "$DISTRO" in
 		;;
 esac
 reboot_system
+
