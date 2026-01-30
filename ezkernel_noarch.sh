@@ -179,6 +179,7 @@ case "${DISTRO:-}" in
 					fi
 					SRCDIR="${WORKDIR}/linux-cachyos"
 					PATCH_URL="https://raw.githubusercontent.com/CachyOS/kernel-patches/refs/heads/master/6.19/all/0001-cachyos-base-all.patch"
+					CONFIG_URL="https://raw.githubusercontent.com/CachyOS/linux-cachyos/refs/heads/master/linux-cachyos-rc/config"
 					PATCH="${SRCDIR}/0001-cachyos-base-all.patch"
 					KCFG=true
                 	printf "\n\n Selected: mainline + cachyos patch\n\n"
@@ -324,6 +325,7 @@ manage_patch() {
     local msg=""
     msg=${FLAVOUR_MAP[cachyos]}
     printf " Downloading %s...\n\n" "$msg"
+	wget -q -O .config "$CONFIG_URL"
     wget -q --show-progress -O "$PATCH" "$PATCH_URL" || fatal "error downloading $PATCH."
     local STRIP_LEVEL="${1:-1}"
     if patch -p"${STRIP_LEVEL}" -R --dry-run -i "$PATCH" >/dev/null 2>&1; then
@@ -333,7 +335,7 @@ manage_patch() {
         fatal "patch does not apply cleanly, possible conflicts."
     fi
     if patch -p"${STRIP_LEVEL}" --no-backup-if-mismatch -i "$PATCH"; then
-        printf "\n\n patch applied successfully\n\n"
+        printf "\n\n\e[32m [INFO]\e[0m CachyOS patch applied successfully for kernel %s\n\n" "$KVER"
     else
         fatal "patch application failed"
     fi
@@ -407,9 +409,7 @@ manage_sources
 # patch and config management
 if [[ ${KCFG} == true ]]; then
 	manage_patch
-	if ! (yes '' | make localmodconfig); then
-    	fatal "error generating kernel config."
-		script_opt
+	script_opt
 	fi
 else
 	printf " Generating kernel config...\n\n" && sleep 1
@@ -423,6 +423,7 @@ fi
 info() {
     printf "\n\e[32m [INFO]\e[0m eZkernel compilation successful for version: %s\n\n Compilation time: \n" "$*"
 }
+
 case "$DISTRO" in
 	arch)
 		time { \
