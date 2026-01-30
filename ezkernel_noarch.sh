@@ -157,7 +157,6 @@ case "${DISTRO:-}" in
 			KVER=$(curl -s https://www.kernel.org/finger_banner | awk 'NR==2 {print $NF}')
             URL="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-master.tar.gz"
             TARBALL="${SRCDIR}/linux-master.tar.gz"
-			export LD=ld.bfd # use GNU ld instead of ld.lld
 			export KCFLAGS="-g0 -O2"
 			export HOSTCFLAGS="-g0 -O2"
 			export INSTALL_MOD_STRIP=1 # save space in /lib/modules
@@ -168,6 +167,7 @@ case "${DISTRO:-}" in
             	1)  # upstream master snapshot
                 	WORKDIR="/tmp/kernel"
 					SRCDIR="${WORKDIR}/linux-upstream"
+					export LD=ld.bfd # use GNU ld instead of ld.lld
 					printf "\n\n Selected: mainline\n\n"
                 	return
                 	;;
