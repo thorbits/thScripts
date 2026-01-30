@@ -154,10 +154,10 @@ printf " Which kernel sources do you want to use,\n\n"
 case "${DISTRO:-}" in
 	arch)
         choose_source(){
-			export DEBUG_INFO=n
 			export LD=ld.bfd # use GNU ld instead of ld.lld
 			export KCFLAGS="-g0 -O2"
 			export HOSTCFLAGS="-g0 -O2"
+			export INSTALL_MOD_STRIP=1 # save space in /lib/modules
     		while true; do
         		printf $'\r\033[2K mainline (1) cachyos-rc (2) xanmod-edge (3) [1/2/3]: '
         		read -n1 -r choice
@@ -210,7 +210,6 @@ case "${DISTRO:-}" in
     debian)
         choose_source(){
 			WORKDIR="/tmp/kernel"
-			export CC="ccache gcc"
 			export LD=ld.bfd # use GNU ld instead of ld.lld
 			export KCFLAGS="-g0 -O2"
 			export HOSTCFLAGS="-g0 -O2"
@@ -420,7 +419,28 @@ printf " Generating kernel config...\n\n" && sleep 1
 if ! (yes '' | make localmodconfig && make menuconfig); then
     fatal "error generating kernel config."
 fi
-#sed -i 's/CONFIG_DEBUG_INFO=y/# CONFIG_DEBUG_INFO is not set/' .config
+# disable massive compile-time killers
+scripts/config --disable DEBUG_INFO
+scripts/config --disable DEBUG_INFO_BTF      # avoids slow 'pahole' processing
+scripts/config --disable LTO_CLANG           # LTO increases build time 2-5x
+scripts/config --disable LTO_GCC
+scripts/config --disable LTO_NONE            # explicitly select none if needed, or just disable the others
+# VM-specific: No Secure Boot needed, skip slow signing
+scripts/config --disable MODULE_SIG
+scripts/config --disable MODULE_SIG_ALL
+# skip compression overhead (VM CPU is precious, disk is cheap/fast enough)
+scripts/config --disable MODULE_COMPRESS     # faster 'make modules_install', faster module loading
+# disable kernel debugging features that slow compile (VMs don't need these)
+scripts/config --disable KCOV                # kernel coverage (slows compile significantly)
+scripts/config --disable KASAN               # address sanitizer (massive compile slowdown)
+scripts/config --disable KMSAN
+scripts/config --disable GCOV_KERNEL
+# fastest kernel image compression (VM boot is from virtio-blk/SCSI, decompression is fast anyway)
+scripts/config --enable KERNEL_GZIP
+scripts/config --disable KERNEL_ZSTD         # ZSTD compression is slow to build
+scripts/config --disable KERNEL_XZ
+
+make olddefconfig
 case "$DISTRO" in
 	arch)
 		time { \
