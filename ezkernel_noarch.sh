@@ -404,7 +404,7 @@ manage_sources
 # patch and config management
 if [[ ${KCFG} == true ]]; then
 	manage_patch
-	script_opt
+#	script_opt
 else
 	printf " Generating kernel config...\n\n" && sleep 1
 	if ! (yes '' | make localmodconfig && make menuconfig); then
