@@ -134,7 +134,7 @@ KVER= #URL= SRCDIR= TARBALL=
 choose_cores() {
     local cores total
     total=$(nproc)
-    printf "\n\n How many CPU cores of the system (in %%) do you want to use for compilation?\n\n"
+    printf "\n\n How many CPU cores of the system (in %%) do you want to use for compilation\n\n"
     printf " 25%% : %d cores   50%% : %d cores   100%% : %d cores\n\n" $((total/4)) $((total/2)) "$total"
     while read -rn1 -p ' Choose (1=25%%  2=50%%  3=100%%): ' choice; do
         case $choice in
@@ -150,7 +150,7 @@ choose_cores() {
 }
 
 # sources selection
-printf " Which kernel sources do you want to use,\n\n"
+printf " Which kernel sources do you want to use\n\n"
 case "${DISTRO:-}" in
 	arch)
         choose_source(){
