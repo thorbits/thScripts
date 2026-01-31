@@ -406,12 +406,12 @@ manage_sources
 # patch and config management
 if [[ ${KCFG} == true ]]; then
 	manage_patch
-	script_opt #make olddefconfig
+	make olddefconfig
 else
 	printf " Generating kernel config...\n\n" && sleep 1
 	if ! (yes '' | make localmodconfig && make menuconfig); then
     	fatal "error generating kernel config."
-		script_opt
+		#script_opt
 	fi	
 fi
 
