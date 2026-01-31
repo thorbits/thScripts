@@ -162,7 +162,7 @@ case "${DISTRO:-}" in
 			export HOSTCFLAGS="-g0 -O2"
 			export INSTALL_MOD_STRIP=1 # save space in /lib/modules
     		while true; do
-        		printf $'\r\033[2K mainline (1) mainline + cachyos patch (2) [1/2]: '
+        		printf $'\r\033[2K mainline (1)  mainline + cachyos patch (2)  [1/2]: '
         		read -n1 -r choice
 	        case $choice in
             	1)  # upstream master snapshot
@@ -198,7 +198,7 @@ case "${DISTRO:-}" in
 			export HOSTCFLAGS="-g0 -O2"
 			export INSTALL_MOD_STRIP=1 # save space in /lib/modules
     		while true; do
-        		printf $'\r\033[2K mainline (1) stable (2) [1/2]: '
+        		printf $'\r\033[2K mainline (1)  stable (2)  [1/2]: '
         		read -n1 -r choice
 	        case $choice in
             	1)  # mainline
