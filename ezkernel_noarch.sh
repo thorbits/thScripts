@@ -156,9 +156,9 @@ case "${DISTRO:-}" in
         choose_source(){
 			KVER=$(curl -s https://www.kernel.org/finger_banner | awk 'NR==2 {print $NF}')
             URL="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-master.tar.gz"
-            TARBALL="${SRCDIR}/linux-master.tar.gz"
-			export LD=ld.bfd # use GNU ld instead of ld.lld
-			export KCFLAGS="-g0 -O2"
+			export LD=/usr/bin/ld.bfd # use GNU ld instead of ld.lld
+			export LDFLAGS="-fuse-ld=bfd"
+			export KCFLAGS="-g0 -O2 -fuse-ld=bfd"
 			export HOSTCFLAGS="-g0 -O2"
 			export INSTALL_MOD_STRIP=1 # save space in /lib/modules
     		while true; do
@@ -168,6 +168,7 @@ case "${DISTRO:-}" in
             	1)  # upstream master snapshot
                 	WORKDIR="/tmp/kernel"
 					SRCDIR="${WORKDIR}/linux-upstream"
+					TARBALL="${SRCDIR}/linux-master.tar.gz"
 					printf "\n\n Selected: mainline\n\n"
                 	return
                 	;;
@@ -178,6 +179,7 @@ case "${DISTRO:-}" in
 						WORKDIR="${HOME}/kernel-build"
 					fi
 					SRCDIR="${WORKDIR}/linux-cachyos"
+					TARBALL="${SRCDIR}/linux-master.tar.gz"
 					CONFIG_URL="https://raw.githubusercontent.com/CachyOS/linux-cachyos/refs/heads/master/linux-cachyos-rc/config"
 					PATCH_URL="https://raw.githubusercontent.com/CachyOS/kernel-patches/refs/heads/master/6.19/all/0001-cachyos-base-all.patch"
 					PATCH="${SRCDIR}/0001-cachyos-base-all.patch"
@@ -417,6 +419,7 @@ fi
 info() {
     printf "\n\e[32m [INFO]\e[0m eZkernel compilation successful for version: %s\n\n Compilation time: \n" "$*"
 }
+
 case "$DISTRO" in
 	arch)
 		time { \
@@ -437,4 +440,5 @@ case "$DISTRO" in
 		} 2>&1
 		;;
 esac
+
 reboot_system
