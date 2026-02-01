@@ -146,10 +146,6 @@ choose_cores() {
 
 # sources selection
 printf " Which kernel sources do you want to use\n\n"
-export LD=/usr/bin/ld.bfd # use GNU ld instead of ld.lld
-export LDFLAGS="-fuse-ld=bfd"
-export KCFLAGS="-g0 -O2 -fuse-ld=bfd"
-export HOSTCFLAGS="-g0 -O2"
 case "${DISTRO:-}" in
 	arch)
         choose_source(){
@@ -180,7 +176,6 @@ case "${DISTRO:-}" in
 			esac
 			done
 		}
-		choose_source
 		;;
     debian)
         choose_source(){
@@ -208,9 +203,9 @@ case "${DISTRO:-}" in
         	esac
     		done
 		}
-		choose_source
         ;;
 esac
+
 printf " Checking kernels versions... please wait" && sleep 1
 printf '\r%-*s\n\n Current kernel version: %s\n It will be updated to : %s\n\n' \
     "$COLUMNS" " Checking kernels versions... done." \
@@ -273,7 +268,7 @@ declare -A FLAVOUR_MAP=(
 	[cachyos]="latest cachyos patch"
 )
 
-manage_sources() {
+manage_source() {
     local msg="" key
 	if [[ ${KCFG} == true ]]; then
 		msg=${FLAVOUR_MAP[upstream]}
@@ -378,9 +373,9 @@ script_opt() {
 
 # main sequence
 choose_cores
+choose_source
 check_deps
-manage_sources
-
+manage_source
 # patch and config management
 if [[ "${KCFG}" == true ]]; then
     manage_patch
@@ -395,6 +390,11 @@ if (yes '' | make localmodconfig); then
 else
     fatal "error generating kernel config."
 fi
+
+export LD=/usr/bin/ld.bfd # use GNU ld instead of ld.lld
+export LDFLAGS="-fuse-ld=bfd"
+export KCFLAGS="-g0 -O2 -fuse-ld=bfd"
+export HOSTCFLAGS="-g0 -O2"
 
 # kernel compilation
 info() {
