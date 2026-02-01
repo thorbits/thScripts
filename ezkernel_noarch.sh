@@ -186,6 +186,7 @@ case "${DISTRO:-}" in
                 	printf "\n\n Selected: mainline + cachyos patch\n\n"
 					return
                 	;;
+            	*)  ;;
 			esac
 			done
 		}
@@ -206,15 +207,15 @@ case "${DISTRO:-}" in
                 	URL="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-master.tar.gz"
                 	SRCDIR="${WORKDIR}/linux-upstream"
                 	TARBALL="${SRCDIR}/linux-master.tar.gz"
-                	printf "\n\n Selected: mainline latest release\n\n"
+                	printf "\n\n Selected: mainline\n\n"
                 	return
                 	;;
             	2)  # stable
                 	KVER=$(curl -s https://www.kernel.org/finger_banner | sed -n '1s/^[^6]*//p')
                 	URL="https://www.kernel.org/pub/linux/kernel/v6.x/linux-${KVER}.tar.xz"
-                	SRCDIR="${WORKDIR}/linux-stable-${KVER}"
+                	SRCDIR="${WORKDIR}/linux-stable"
                 	TARBALL="${SRCDIR}/linux_${KVER}.tar.xz"
-                	printf "\n\n Selected: stable latest release\n\n"
+                	printf "\n\n Selected: stable\n\n"
                 	return
                 	;;
             	*)  ;;
@@ -257,33 +258,26 @@ check_deps() {
             ;;
 	esac
 
-    local -i total=${#pkgs[@]} ok=0 i=0 pct=-1 filled
-    local -r BAR_MAX=30 BAR_CHAR='|'
-    local -r bar=$(printf "%${BAR_MAX}s" '' | tr ' ' "$BAR_CHAR")
-    local -i max_len=0
-    for q in "${pkgs[@]}"; do (( ${#q} > max_len )) && max_len=${#q}; done
+	local -i total=${#pkgs[@]} ok=0 i=0 pct=-1 filled
+	local -r BAR_MAX=30 BAR_CHAR='|'
+	local -r bar=$(printf "%${BAR_MAX}s" '' | tr ' ' "$BAR_CHAR")
 
-    for p in "${pkgs[@]}"; do
-        ((i++))
-		"${PM_CHK[@]}" "$p" &>/dev/null || "${PM[@]}" "$p" &>/dev/null && ((ok++))
-
-        filled=$(( i * 100 / total ))
-        ((filled==pct)) && continue
-        pct=$filled
-		filled_len=$(( filled * BAR_MAX / 100 ))
-        empty_len=$(( BAR_MAX - filled_len ))
-		bar_filled=$(printf '%*s' $filled_len '' | tr ' ' "$BAR_CHAR")
-		bar_empty=$(printf '%*s' $empty_len '')
-		name_width=$(( max_len - 60 ))
-		pad_width=$(( name_width - ${#p} ))
-		(( pad_width < 0 )) && pad_width=0
-        printf "\r Progress: %3d%% [%s%s] Verifying/installing: %-*s%*s" \
-               "$pct" \
-               "$bar_filled" \
-               "$bar_empty" \
-               $name_width "$p" \
-               $pad_width ''
-    done
+	for p in "${pkgs[@]}"; do
+    	((i++))
+    	"${PM_CHK[@]}" "$p" &>/dev/null || "${PM[@]}" "$p" &>/dev/null && ((ok++))
+    	filled=$(( i * 100 / total ))
+    	((filled==pct)) && continue
+    	pct=$filled
+    	filled_len=$(( filled * BAR_MAX / 100 ))
+    	empty_len=$(( BAR_MAX - filled_len ))
+    	bar_filled=$(printf '%*s' $filled_len '' | tr ' ' "$BAR_CHAR")
+    	bar_empty=$(printf '%*s' $empty_len '')
+    	printf "\r Progress: %3d%% [%s%s] Verifying/installing: %s\033[K" \
+           "$pct" \
+           "$bar_filled" \
+           "$bar_empty" \
+           "$p"
+	done
 	printf '\r%-*s\r Progress: 100%% [%-*s] Installed %d new package(s).\n\n' "$COLUMNS" '' "$BAR_MAX" "$bar" "$ok"
 }
 
