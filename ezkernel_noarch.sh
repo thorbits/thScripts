@@ -262,7 +262,7 @@ check_deps() {
 	printf '\r%-*s\r Progress: 100%% [%-*s] Installed %d new package(s).\n\n' "$COLUMNS" '' "$BAR_MAX" "$bar" "$ok"
 }
 
-# custom message for sources and patch
+# custom message for source and patch
 declare -A FLAVOUR_MAP=(
     [upstream]="latest mainline sources"
     [stable]="latest stable sources"
@@ -421,5 +421,5 @@ case "$DISTRO" in
 		} 2>&1
 		;;
 esac
-reboot_system
 
+reboot_system
