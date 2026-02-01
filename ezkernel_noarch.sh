@@ -152,20 +152,19 @@ if [[ -n "${SUDO_USER}" ]]; then # use home directory, avoid tmpfs & permission 
 else
 	WORKDIR="${HOME}/kernel-build"
 fi
-#KVER= #URL= SRCDIR= TARBALL=
 
 # sources selection
 printf " Which kernel sources do you want to use\n\n"
+export LD=/usr/bin/ld.bfd # use GNU ld instead of ld.lld
+export LDFLAGS="-fuse-ld=bfd"
+export KCFLAGS="-g0 -O2 -fuse-ld=bfd"
+export HOSTCFLAGS="-g0 -O2"
 case "${DISTRO:-}" in
 	arch)
         choose_source(){
 			KVER=$(curl -s https://www.kernel.org/finger_banner | awk 'NR==2 {print $NF}')
             URL="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-master.tar.gz"
-			export LD=/usr/bin/ld.bfd # use GNU ld instead of ld.lld
-			export LDFLAGS="-fuse-ld=bfd"
-			export KCFLAGS="-g0 -O2 -fuse-ld=bfd"
-			export HOSTCFLAGS="-g0 -O2"
-			export INSTALL_MOD_STRIP=1 # save space in /lib/modules
+			#export INSTALL_MOD_STRIP=1 # save space in /lib/modules
     		while true; do
         		printf $'\r\033[2K mainline (1)  mainline + cachyos patch (2)  [1/2]: '
         		read -n1 -r choice
@@ -179,7 +178,7 @@ case "${DISTRO:-}" in
             	2)  # cachyos-rc
 					SRCDIR="${WORKDIR}/linux-cachyos"
 					TARBALL="${SRCDIR}/linux-master.tar.gz"
-					CONFIG_URL="https://raw.githubusercontent.com/CachyOS/linux-cachyos/refs/heads/master/linux-cachyos-rc/config"
+					#CONFIG_URL="https://raw.githubusercontent.com/CachyOS/linux-cachyos/refs/heads/master/linux-cachyos-rc/config"
 					PATCH_URL="https://raw.githubusercontent.com/CachyOS/kernel-patches/refs/heads/master/6.19/all/0001-cachyos-base-all.patch"
 					PATCH="${SRCDIR}/0001-cachyos-base-all.patch"
 					KCFG=true
@@ -194,10 +193,6 @@ case "${DISTRO:-}" in
 		;;
     debian)
         choose_source(){
-			export LD=/usr/bin/ld.bfd # use GNU ld instead of ld.lld
-			export LDFLAGS="-fuse-ld=bfd"
-			export KCFLAGS="-g0 -O2 -fuse-ld=bfd"
-			export HOSTCFLAGS="-g0 -O2"
     		while true; do
         		printf $'\r\033[2K mainline (1)  stable (2)  [1/2]: '
         		read -n1 -r choice
