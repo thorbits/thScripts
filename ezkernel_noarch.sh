@@ -176,6 +176,7 @@ case "${DISTRO:-}" in
 			esac
 			done
 		}
+		choose_source
 		;;
     debian)
         choose_source(){
@@ -203,6 +204,7 @@ case "${DISTRO:-}" in
         	esac
     		done
 		}
+		choose_source
         ;;
 esac
 
@@ -373,7 +375,6 @@ script_opt() {
 
 # main sequence
 choose_cores
-choose_source
 check_deps
 manage_source
 # patch and config management
@@ -421,5 +422,4 @@ case "$DISTRO" in
 		} 2>&1
 		;;
 esac
-
 reboot_system
