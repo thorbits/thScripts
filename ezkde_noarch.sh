@@ -18,10 +18,8 @@
 #	 along with with PipeWire audio and a minimum of utilities.
 #    ----------------------------------------------------------#
 
-if [[ "$(id -u)" -ne 0 ]]; then
-    printf "\n This script must be run as root. Use sudo.\n"
-    exit 1
-fi
+(return 0 2>/dev/null) && { echo "Error: This script must be executed, do not source." >&2; return 1; }
+[ "$(id -u)" -eq 0 ] || { echo "Error: This script must be run as root (sudo)" >&2; exit 1; }
 
 set -euo pipefail
 
@@ -548,5 +546,3 @@ main() {
 	end_install
     deinit-term
 }
-
-[[ ${BASH_SOURCE[0]} == "$0" ]] && main "$@" # run only when executed, not sourced
