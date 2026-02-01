@@ -220,7 +220,7 @@ case "${DISTRO:-}" in
 		choose_source
         ;;
 esac
-printf " Checking kernels versions... please wait" && sleep 2
+printf " Checking kernels versions... please wait" && sleep 1
 printf '\r%-*s\n\n Current kernel version: %s\n It will be updated to : %s\n\n' \
     "$COLUMNS" " Checking kernels versions... done." \
     "$(uname -r)" "$KVER"
