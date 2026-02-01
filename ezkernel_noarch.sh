@@ -56,13 +56,6 @@ case "$DISTRO" in
     ;;
 esac
 
-KCFG=false # initialise to use ouside function
-if [[ -n "${SUDO_USER}" ]]; then # use home directory, avoid tmpfs & permission issues
-	WORKDIR=$(eval echo "~${SUDO_USER}/kernel-build")
-else
-	WORKDIR="${HOME}/kernel-build"
-fi
-
 #intro
 clear; echo
 case "$DISTRO" in
@@ -146,6 +139,12 @@ choose_cores() {
 
 # sources selection
 printf " Which kernel sources do you want to use\n\n"
+KCFG=false # initialise to use ouside function
+if [[ -n "${SUDO_USER}" ]]; then # use home directory, avoid tmpfs & permission issues
+	WORKDIR=$(eval echo "~${SUDO_USER}/kernel-build")
+else
+	WORKDIR="${HOME}/kernel-build"
+fi
 case "${DISTRO:-}" in
 	arch)
         choose_source(){
@@ -423,3 +422,4 @@ case "$DISTRO" in
 		;;
 esac
 reboot_system
+
