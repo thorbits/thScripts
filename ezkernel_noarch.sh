@@ -36,7 +36,6 @@ trap abort INT TERM QUIT
 os_release() {
     awk -F= '/^ID=/{gsub(/"/,""); print tolower($2)}' /etc/os-release | cut -d- -f1
 }
-
 DISTRO=$(os_release)
 
 # map each distro to its required kernel compilation dependencies
@@ -63,9 +62,15 @@ case "$DISTRO" in
     ;;
 esac
 
+KCFG=false # initialise to use ouside function
+if [[ -n "${SUDO_USER}" ]]; then # use home directory, avoid tmpfs & permission issues
+	WORKDIR=$(eval echo "~${SUDO_USER}/kernel-build")
+else
+	WORKDIR="${HOME}/kernel-build"
+fi
+
 #intro
-clear
-echo
+clear; echo
 case "$DISTRO" in
         arch)
             cat << 'ART'
@@ -145,14 +150,6 @@ choose_cores() {
     done
 }
 
-# initialise to use ouside function
-KCFG=false
-if [[ -n "${SUDO_USER}" ]]; then # use home directory, avoid tmpfs & permission issues
-	WORKDIR=$(eval echo "~${SUDO_USER}/kernel-build")
-else
-	WORKDIR="${HOME}/kernel-build"
-fi
-
 # sources selection
 printf " Which kernel sources do you want to use\n\n"
 export LD=/usr/bin/ld.bfd # use GNU ld instead of ld.lld
@@ -231,7 +228,7 @@ while true; do
     [[ -z "$REPLY" ]] && break # continue if Enter was pressed
 done
 
-# packages install with progress bar
+# per package group, map all individual dependencies
 check_deps() {
     printf "\n\n Checking compilation dependencies for %s...\n\n" "$DISTRO"
 	local -a pkgs
@@ -252,11 +249,10 @@ check_deps() {
             mapfile -t pkgs < <("${LIST_CMD[@]}" ${KRNL_GROUP[$DISTRO]} | awk '/^Inst / {print $2}')
             ;;
 	esac
-
+# fixed lengh progress bar
 	local -i total=${#pkgs[@]} ok=0 i=0 pct=-1 filled
 	local -r BAR_MAX=30 BAR_CHAR='|'
 	local -r bar=$(printf "%${BAR_MAX}s" '' | tr ' ' "$BAR_CHAR")
-
 	for p in "${pkgs[@]}"; do
     	((i++))
     	"${PM_CHK[@]}" "$p" &>/dev/null || "${PM[@]}" "$p" &>/dev/null && ((ok++))
@@ -395,11 +391,14 @@ if [[ "${KCFG}" == true ]]; then
     manage_patch
 fi
 printf " Generating kernel config...\n\n" && sleep 1
-if ! (yes '' | make localmodconfig && make menuconfig); then
+if (yes '' | make localmodconfig); then
+    if [ "$DISTRO" = "arch" ]; then
+        make olddefconfig
+    else
+        make menuconfig
+    fi
+else
     fatal "error generating kernel config."
-fi
-if [ "$DISTRO" = "arch" ]; then
-    script_opt
 fi
 
 # kernel compilation
@@ -427,4 +426,5 @@ case "$DISTRO" in
 		} 2>&1
 		;;
 esac
+
 reboot_system
