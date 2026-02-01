@@ -188,14 +188,10 @@ printf "\n\n #%s#\n\n" "$(printf '%*s' "$(( $(tput cols) - 4 ))" '' | tr ' ' '-'
 printf " Welcome %s, to eZkde for %s.\n\n The latest version of KDE 6.5.x (Wayland session) will be installed with audio support (Pipewire) SDDM and a minimum of utilities.\n\n" "$USER" "$DISTRO"
 
 while true; do
-    printf "\r\033[2K Press Enter to continue or Ctrl+C to cancel."
+    printf $'\r\033[2K Press Enter to continue or Ctrl+C to cancel'
     read -n1 -s -r
-    if (( $? != 0 )); then # check if Ctrl+C
-        exit 1
-    fi
-    if [[ -z "$REPLY" ]]; then  # check if Enter (empty input)
-        break
-    fi
+    (( $? != 0 )) && exit 1 # exit if Ctrl+C was pressed
+    [[ -z "$REPLY" ]] && break # continue if Enter was pressed
 done
 
 "${UPDATE[@]}" >/dev/null 2>&1 || fatal " no internet connection detected."
