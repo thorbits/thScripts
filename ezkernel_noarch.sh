@@ -315,7 +315,7 @@ manage_patch() {
     local msg=""
     msg=${FLAVOUR_MAP[cachyos]}
     printf " Downloading %s...\n\n" "$msg"
-	wget -q -O .config "$CONFIG_URL"
+	#wget -q -O .config "$CONFIG_URL"
     wget -q --show-progress -O "$PATCH" "$PATCH_URL" || fatal "error downloading $PATCH."
     local STRIP_LEVEL="${1:-1}"
     if patch -p"${STRIP_LEVEL}" -R --dry-run -i "$PATCH" >/dev/null 2>&1; then
