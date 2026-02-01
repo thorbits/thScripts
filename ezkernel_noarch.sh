@@ -126,10 +126,6 @@ if ! command -v curl >/dev/null 2>&1 || ! command -v wget >/dev/null 2>&1; then
 	"${PM[@]}" curl wget >/dev/null 2>&1
 fi
 
-# initialise to use ouside function
-KCFG=false
-KVER= #URL= SRCDIR= TARBALL=
-
 # cpu management
 choose_cores() {
     local cores total
@@ -149,6 +145,15 @@ choose_cores() {
     done
 }
 
+# initialise to use ouside function
+KCFG=false
+if [[ -n "${SUDO_USER}" ]]; then # use home directory, avoid tmpfs & permission issues
+	WORKDIR=$(eval echo "~${SUDO_USER}/kernel-build")
+else
+	WORKDIR="${HOME}/kernel-build"
+fi
+#KVER= #URL= SRCDIR= TARBALL=
+
 # sources selection
 printf " Which kernel sources do you want to use\n\n"
 case "${DISTRO:-}" in
@@ -166,18 +171,12 @@ case "${DISTRO:-}" in
         		read -n1 -r choice
 	        case $choice in
             	1)  # upstream master snapshot
-                	WORKDIR="/tmp/kernel"
 					SRCDIR="${WORKDIR}/linux-upstream"
 					TARBALL="${SRCDIR}/linux-master.tar.gz"
 					printf "\n\n Selected: mainline\n\n"
                 	return
                 	;;
             	2)  # cachyos-rc
-                	if [[ -n "${SUDO_USER}" ]]; then # use home directory, avoid tmpfs & permission issues
-						WORKDIR=$(eval echo "~${SUDO_USER}/kernel-build")
-					else
-						WORKDIR="${HOME}/kernel-build"
-					fi
 					SRCDIR="${WORKDIR}/linux-cachyos"
 					TARBALL="${SRCDIR}/linux-master.tar.gz"
 					CONFIG_URL="https://raw.githubusercontent.com/CachyOS/linux-cachyos/refs/heads/master/linux-cachyos-rc/config"
@@ -194,12 +193,10 @@ case "${DISTRO:-}" in
 		;;
     debian)
         choose_source(){
-			WORKDIR="/tmp/kernel"
 			export LD=/usr/bin/ld.bfd # use GNU ld instead of ld.lld
 			export LDFLAGS="-fuse-ld=bfd"
 			export KCFLAGS="-g0 -O2 -fuse-ld=bfd"
 			export HOSTCFLAGS="-g0 -O2"
-#			export INSTALL_MOD_STRIP=1 # save space in /lib/modules
     		while true; do
         		printf $'\r\033[2K mainline (1)  stable (2)  [1/2]: '
         		read -n1 -r choice
@@ -441,5 +438,4 @@ case "$DISTRO" in
 		} 2>&1
 		;;
 esac
-
 reboot_system
