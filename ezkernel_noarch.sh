@@ -11,9 +11,8 @@
 #
 # -------------------------------------------------------------------#
 
-(if (return 0 2>/dev/null); then return 0; fi)
-
-[[ $EUID -eq 0 ]] || { echo " This script must be run as root (or sudo)" >&2; exit 1; }
+(return 0 2>/dev/null) && { echo "Error: This script must be executed, do not source." >&2; return 1; }
+[ "$(id -u)" -eq 0 ] || { echo "Error: This script must be run as root (sudo)" >&2; exit 1; }
 
 #set -euo pipefail
 
@@ -272,6 +271,7 @@ check_deps() {
 	printf '\r%-*s\r Progress: 100%% [%-*s] Installed %d new package(s).\n\n' "$COLUMNS" '' "$BAR_MAX" "$bar" "$ok"
 }
 
+# custom message for sources and patch
 declare -A FLAVOUR_MAP=(
     [upstream]="latest mainline sources"
     [stable]="latest stable sources"
