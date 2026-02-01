@@ -195,10 +195,11 @@ case "${DISTRO:-}" in
     debian)
         choose_source(){
 			WORKDIR="/tmp/kernel"
-			export LD=ld.bfd # use GNU ld instead of ld.lld
-			export KCFLAGS="-g0 -O2"
+			export LD=/usr/bin/ld.bfd # use GNU ld instead of ld.lld
+			export LDFLAGS="-fuse-ld=bfd"
+			export KCFLAGS="-g0 -O2 -fuse-ld=bfd"
 			export HOSTCFLAGS="-g0 -O2"
-			export INSTALL_MOD_STRIP=1 # save space in /lib/modules
+#			export INSTALL_MOD_STRIP=1 # save space in /lib/modules
     		while true; do
         		printf $'\r\033[2K mainline (1)  stable (2)  [1/2]: '
         		read -n1 -r choice
@@ -206,7 +207,7 @@ case "${DISTRO:-}" in
             	1)  # mainline
                 	KVER=$(curl -s https://www.kernel.org/finger_banner | sed -n '2s/^[^6]*//p')
                 	URL="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-master.tar.gz"
-                	SRCDIR="${WORKDIR}/linux-upstream-${KVER}"
+                	SRCDIR="${WORKDIR}/linux-upstream"
                 	TARBALL="${SRCDIR}/linux-master.tar.gz"
                 	printf "\n\n Selected: mainline latest release\n\n"
                 	return
@@ -406,7 +407,7 @@ manage_sources
 # patch and config management
 if [[ ${KCFG} == true ]]; then
 	manage_patch
-	make olddefconfig
+	make menuconfig
 else
 	printf " Generating kernel config...\n\n" && sleep 1
 	if ! (yes '' | make localmodconfig && make menuconfig); then
