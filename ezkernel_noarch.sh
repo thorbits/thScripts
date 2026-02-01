@@ -396,15 +396,19 @@ check_deps
 manage_sources
 
 # patch and config management
-if [[ ${KCFG} == true ]]; then
-	manage_patch
-	make menuconfig
+if [[ "${KCFG}" == true ]]; then
+    manage_patch
+    if ! make menuconfig; then
+        fatal "error running menuconfig."
+    fi
 else
-	printf " Generating kernel config...\n\n" && sleep 1
-	if ! (yes '' | make localmodconfig && make menuconfig); then
-    	fatal "error generating kernel config."
-		#script_opt
-	fi	
+    printf " Generating kernel config...\n\n" && sleep 1
+    if ! (yes '' | make localmodconfig && make menuconfig); then
+        fatal "error generating kernel config."
+    fi
+fi
+if [ "$DISTRO" = "arch" ]; then
+    script_opt
 fi
 
 # kernel compilation
@@ -432,4 +436,5 @@ case "$DISTRO" in
 		} 2>&1
 		;;
 esac
+
 reboot_system
