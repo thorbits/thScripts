@@ -22,6 +22,25 @@
 
 set -euo pipefail
 
+fatal() {
+    printf '\n\n\e[31m [WARNING]\e[0m %s\n\n' "$*" >&2
+    exit 1
+}
+restore_cursor() {
+    	[[ -t 1 ]] && tput cnorm
+}
+abort() {
+	restore_cursor
+    fatal "process aborted by user."
+}
+trap restore_cursor EXIT
+trap abort INT TERM QUIT
+
+os_release() {
+    awk -F= '/^ID=/{gsub(/"/,""); print tolower($2)}' /etc/os-release | cut -d- -f1
+}
+DISTRO=$(os_release)
+
 # default tunables, see usage
 BATCHSIZE=${BATCHSIZE:-1}
 BAR_CHAR=${BAR_CHAR:-'|'}
@@ -45,17 +64,6 @@ usage() {
  
 EOF
 }
-
-fatal() {
-    printf "\n [WARNING] %s Exiting...\n\n" "$*" >&2 # critical error message
-    exit 1
-}
-
-os_release() {
-    awk -F= '/^ID=/{gsub(/"/,""); print tolower($2)}' /etc/os-release | cut -d- -f1
-}
-
-DISTRO=$(os_release)
 
 case "$DISTRO" in
     arch)
