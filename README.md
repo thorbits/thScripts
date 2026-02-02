@@ -91,7 +91,7 @@ This script aims to provide a streamlined installation experience, especially fo
 
 <div align="center">
 
-# eZkernel - Interactive Linux Kernel Compilation Script
+# eZkernel - Interactive Linux Kernel Compilation Script for Arch/Debian
 </div>
 
 <div align="center">
@@ -103,7 +103,7 @@ This script aims to provide a streamlined installation experience, especially fo
 <div>
   <p><br></p>
 
-eZkernel is a semi-automated shell script designed for Debian-based systems to simplify the process of compiling and installing the latest Linux kernel from git.kernel.org.  
+eZkernel is a semi-automated shell script designed for Arch and Debian systems to simplify the process of compiling and installing the latest Linux kernel from git.kernel.org.  
 This script aims to provide a user-friendly experience, automating key steps like source code download, dependency checking, and system configuration.
 
 **⚠️ Important Disclaimer -** Compiling and installing a new kernel can be a complex process.  
@@ -113,7 +113,7 @@ While ezkernel strives to minimize risks, incorrect configuration or unforeseen 
 
 ## Prerequisites
 
-*   A Debian-based Linux distribution (Debian, Ubuntu..)
+*   Arch or Debian Linux distribution
 *   Administrative privileges (sudo or root access) are required to install packages and modify system configurations.
 *   A stable internet connection for downloading sources and dependencies.
 *   Approximately 20GB of free disk space
