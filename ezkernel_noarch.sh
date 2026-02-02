@@ -134,7 +134,7 @@ select_source() {
 						SRCDIR="${WORKDIR}/linux-upstream"
 						TARBALL="${SRCDIR}/linux-master.tar.gz"
 						printf "\n\n Selected: mainline\n\n"
-                		return
+                		break
                 		;;
             		2)  # cachyos-rc
 						SRCDIR="${WORKDIR}/linux-cachyos"
@@ -144,7 +144,7 @@ select_source() {
 						PATCH="${SRCDIR}/0001-cachyos-base-all.patch"
 						KMOD=true
                 		printf "\n\n Selected: mainline + cachyos patch\n\n"
-						return
+						break
                 		;;
             		*)  ;;
 				esac
@@ -161,7 +161,7 @@ select_source() {
                 		SRCDIR="${WORKDIR}/linux-upstream"
                 		TARBALL="${SRCDIR}/linux-master.tar.gz"
                 		printf "\n\n Selected: mainline\n\n"
-                		return
+                		break
                 		;;
             		2)  # stable
                 		KVER=$(curl -s https://www.kernel.org/finger_banner | sed -n '1s/^[^6]*//p')
@@ -169,7 +169,7 @@ select_source() {
                 		SRCDIR="${WORKDIR}/linux-stable"
                 		TARBALL="${SRCDIR}/linux_${KVER}.tar.xz"
                 		printf "\n\n Selected: stable\n\n"
-                		return
+                		break
                 		;;
             		*)  ;;
         		esac
@@ -420,4 +420,5 @@ case "$DISTRO" in
 		} 2>&1
 		;;
 esac
+
 reboot_system
