@@ -118,7 +118,6 @@ if ! command -v curl >/dev/null 2>&1 || ! command -v wget >/dev/null 2>&1; then
 	"${PM[@]}" curl wget >/dev/null 2>&1
 fi
 
-# cpu management
 choose_cores() {
     local cores total
     total=$(nproc)
@@ -137,10 +136,18 @@ choose_cores() {
     done
 }
 
+custom_config(){
+	printf " Do you need to customize the kernel .config file?\n\n"
+    KCFG=false # default fallback
+    read -p "yes or no [y/N]: " -n1 -r
+    echo
+    [[ $REPLY == [Yy] ]] && KCFG=true
+}
+
 # sources selection
 printf " Which kernel sources do you want to use\n\n"
-KCFG=false # initialise to use ouside function
-if [[ -n "${SUDO_USER}" ]]; then # use home directory, avoid tmpfs & permission issues
+KMOD=false # default fallback
+if [[ -n "${SUDO_USER}" ]]; then # home dir avoid tmpfs, permission issues
 	WORKDIR=$(eval echo "~${SUDO_USER}/kernel-build")
 else
 	WORKDIR="${HOME}/kernel-build"
@@ -167,7 +174,7 @@ case "${DISTRO:-}" in
 					#CONFIG_URL="https://raw.githubusercontent.com/CachyOS/linux-cachyos/refs/heads/master/linux-cachyos-rc/config"
 					PATCH_URL="https://raw.githubusercontent.com/CachyOS/kernel-patches/refs/heads/master/6.19/all/0001-cachyos-base-all.patch"
 					PATCH="${SRCDIR}/0001-cachyos-base-all.patch"
-					KCFG=true
+					KMOD=true
                 	printf "\n\n Selected: mainline + cachyos patch\n\n"
 					return
                 	;;
@@ -271,7 +278,7 @@ declare -A FLAVOUR_MAP=(
 
 manage_source() {
     local msg="" key
-	if [[ ${KCFG} == true ]]; then
+	if [[ ${KMOD} == true ]]; then
 		msg=${FLAVOUR_MAP[upstream]}
 	else
     	for key in "${!FLAVOUR_MAP[@]}"; do
@@ -293,7 +300,22 @@ manage_source() {
 	rm -f "$TARBALL"
 }
 
+manage_config() {
+    printf " Generating kernel config...\n\n" && sleep 1
+    if ! (yes '' | make localmodconfig); then
+        fatal "error generating kernel config."
+    fi
+    if [[ "$KCFG" == true ]]; then
+        if [[ "$DISTRO" == "arch" ]]; then
+            make olddefconfig
+        else
+            make menuconfig
+        fi
+    fi
+}
+
 manage_patch() {
+	[[ "$KMOD" == true ]] || return
     local msg=""
     msg=${FLAVOUR_MAP[cachyos]}
     printf " Downloading %s...\n\n" "$msg"
@@ -374,29 +396,18 @@ script_opt() {
 
 # main sequence
 choose_cores
+custom_config
 check_deps
 manage_source
-# patch and config management
-if [[ "${KCFG}" == true ]]; then
-    manage_patch
-fi
-printf " Generating kernel config...\n\n" && sleep 1
-if (yes '' | make localmodconfig); then
-    if [ "$DISTRO" = "arch" ]; then
-        make olddefconfig
-    else
-        make menuconfig
-    fi
-else
-    fatal "error generating kernel config."
-fi
+manage_config
+manage_patch
 
+# kernel compilation
 export LD=/usr/bin/ld.bfd # use GNU ld instead of ld.lld
 export LDFLAGS="-fuse-ld=bfd"
 export KCFLAGS="-g0 -O2 -fuse-ld=bfd"
 export HOSTCFLAGS="-g0 -O2"
 
-# kernel compilation
 info() {
     printf "\n\e[32m [INFO]\e[0m eZkernel compilation successful for version: %s\n\n Compilation time: \n" "$*"
 }
@@ -421,5 +432,4 @@ case "$DISTRO" in
 		} 2>&1
 		;;
 esac
-
 reboot_system
