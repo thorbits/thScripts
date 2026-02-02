@@ -26,6 +26,7 @@ trap abort INT TERM QUIT
 os_release() {
     awk -F= '/^ID=/{gsub(/"/,""); print tolower($2)}' /etc/os-release | cut -d- -f1
 }
+
 DISTRO=$(os_release)
 
 declare -A KRNL_GROUP # map each distro to its required kernel compilation dependencies
@@ -270,8 +271,8 @@ manage_source() {
 		msg=${FLAVOUR_MAP[upstream]}
 	else
     	for key in "${!FLAVOUR_MAP[@]}"; do
-	        if [[ "$SRCDIR" =~ $key ]]; then # directory-independent message, see flavour map
-    	        msg=${FLAVOUR_MAP[$key]}
+	        if [[ "$SRCDIR" =~ $key ]]; then
+    	        msg=${FLAVOUR_MAP[$key]} # directory-independent message, see flavour map
         	    break
         	fi
     	done
@@ -294,8 +295,8 @@ manage_config() {
         fatal "error generating kernel config."
     fi
     if [[ "$KCFG" == true ]]; then
-        if [[ "$DISTRO" == "arch" ]]; then
-            make olddefconfig
+        if [[ "$DISTRO" == "arch" && "$KMOD" == true ]]; then
+            make olddefconfig # arch+patch uses olddefconfig only
         else
             make menuconfig
         fi
