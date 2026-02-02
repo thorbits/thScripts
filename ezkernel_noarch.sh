@@ -226,7 +226,7 @@ while true; do
 done
 
 check_deps() {
-    printf "\n\n Checking compilation dependencies for %s...\n\n" "$DISTRO"
+    printf "\n Checking compilation dependencies for %s...\n\n" "$DISTRO"
 	# per package group, map all individual dependencies
 	local -a pkgs
     case "$DISTRO" in
