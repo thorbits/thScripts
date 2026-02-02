@@ -137,7 +137,7 @@ choose_cores() {
 }
 
 custom_config(){
-	printf " Do you need to customize the kernel .config file?\n\n"
+	printf "\n\n Do you need to customize the kernel .config file?\n\n"
     KCFG=false # default fallback
     read -p "yes or no [y/N]: " -n1 -r
     echo
