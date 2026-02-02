@@ -227,7 +227,7 @@ check_deps() {
 			mapfile -t pkgs < <("${LIST_CMD[@]}" ${KRNL_GROUP[$DISTRO]} | grep -Fxvf <(pacman -Qq))
 			;;
         debian)
-            # inherit the current locale not to block install
+            # inherit the current locale for install
             current_locale=${LC_ALL:-${LANG:-C.UTF-8}}
             current_locale=${current_locale%%.*}.UTF-8
             {
