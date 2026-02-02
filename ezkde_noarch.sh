@@ -494,8 +494,10 @@ main() {
             # inherit the current locale for install
             current_locale=${LC_ALL:-${LANG:-C.UTF-8}}
             current_locale=${current_locale%%.*}.UTF-8
-            echo "locales locales/default_environment_locale select $current_locale" | debconf-set-selections
-            echo "locales locales/locales_to_be_generated multiselect $current_locale UTF-8" | debconf-set-selections
+            {
+              echo "locales locales/default_environment_locale select $current_locale"
+              echo "locales locales/locales_to_be_generated multiselect $current_locale UTF-8"
+            } | debconf-set-selections
             export DEBIAN_FRONTEND=noninteractive
             
             mapfile -t packages < <(
