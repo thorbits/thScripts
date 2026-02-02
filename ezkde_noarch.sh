@@ -480,7 +480,7 @@ main() {
     trap 'init-term; progress-bar "$current" "$total"' WINCH
     init-term
 
-    # build exact list of packages that will be installed
+    # # per package group, map all individual dependencies
     IFS=' ' read -r -a pkg_names <<< "${KDE_GROUP[$DISTRO]}"
     local packages=() total
 
