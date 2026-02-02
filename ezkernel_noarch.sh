@@ -139,7 +139,7 @@ choose_cores() {
 custom_config(){
 	printf "\n\n Do you need to customize the kernel .config file?\n\n"
     KCFG=false # default fallback
-    read -p "yes or no [y/N]: " -n1 -r
+    read -p " yes / no  [y/n]: " -n1 -r
     echo
     [[ $REPLY == [Yy] ]] && KCFG=true
 }
