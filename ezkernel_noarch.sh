@@ -18,14 +18,9 @@ fatal() {
     printf '\n\n\e[31m [WARNING]\e[0m %s\n\n' "$*" >&2
     exit 1
 }
-restore_cursor() {
-    	[[ -t 1 ]] && tput cnorm
-}
 abort() {
-	restore_cursor
     fatal "process aborted by user."
 }
-trap restore_cursor EXIT
 trap abort INT TERM QUIT
 
 os_release() {
@@ -117,7 +112,82 @@ if ! command -v curl >/dev/null 2>&1 || ! command -v wget >/dev/null 2>&1; then
 	"${PM[@]}" curl wget >/dev/null 2>&1
 fi
 
-choose_cores() {
+select_source() {
+	printf " Which kernel sources do you want to use\n\n"
+	KMOD=false # default no patch
+	if [[ -n "${SUDO_USER}" ]]; then # home dir avoid tmpfs, permission issues
+		WORKDIR=$(eval echo "~${SUDO_USER}/kernel-build")
+	else
+		WORKDIR="${HOME}/kernel-build"
+	fi
+	local choice
+	case "${DISTRO:-}" in
+		arch)
+			KVER=$(curl -s https://www.kernel.org/finger_banner | awk 'NR==2 {print $NF}')
+            URL="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-master.tar.gz"
+			#export INSTALL_MOD_STRIP=1 # save space in /lib/modules
+    		while true; do
+        		printf $'\r\033[2K mainline (1)  mainline + cachyos patch (2)  [1/2]: '
+        		read -n1 -r choice
+	        	case $choice in
+            		1)  # upstream master snapshot
+						SRCDIR="${WORKDIR}/linux-upstream"
+						TARBALL="${SRCDIR}/linux-master.tar.gz"
+						printf "\n\n Selected: mainline\n\n"
+                		return
+                		;;
+            		2)  # cachyos-rc
+						SRCDIR="${WORKDIR}/linux-cachyos"
+						TARBALL="${SRCDIR}/linux-master.tar.gz"
+						#CONFIG_URL="https://raw.githubusercontent.com/CachyOS/linux-cachyos/refs/heads/master/linux-cachyos-rc/config"
+						PATCH_URL="https://raw.githubusercontent.com/CachyOS/kernel-patches/refs/heads/master/6.19/all/0001-cachyos-base-all.patch"
+						PATCH="${SRCDIR}/0001-cachyos-base-all.patch"
+						KMOD=true
+                		printf "\n\n Selected: mainline + cachyos patch\n\n"
+						return
+                		;;
+            		*)  ;;
+				esac
+			done
+			;;
+    	debian)
+    		while true; do
+        		printf $'\r\033[2K mainline (1)  stable (2)  [1/2]: '
+        		read -n1 -r choice
+	        	case $choice in
+            		1)  # mainline
+                		KVER=$(curl -s https://www.kernel.org/finger_banner | sed -n '2s/^[^6]*//p')
+                		URL="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-master.tar.gz"
+                		SRCDIR="${WORKDIR}/linux-upstream"
+                		TARBALL="${SRCDIR}/linux-master.tar.gz"
+                		printf "\n\n Selected: mainline\n\n"
+                		return
+                		;;
+            		2)  # stable
+                		KVER=$(curl -s https://www.kernel.org/finger_banner | sed -n '1s/^[^6]*//p')
+                		URL="https://www.kernel.org/pub/linux/kernel/v6.x/linux-${KVER}.tar.xz"
+                		SRCDIR="${WORKDIR}/linux-stable"
+                		TARBALL="${SRCDIR}/linux_${KVER}.tar.xz"
+                		printf "\n\n Selected: stable\n\n"
+                		return
+                		;;
+            		*)  ;;
+        		esac
+    		done
+	esac
+	printf " Checking kernels versions... please wait" && sleep 1
+	printf '\r%-*s\n\n Current kernel version: %s\n It will be updated to : %s\n\n' \
+    "$COLUMNS" " Checking kernels versions... done." \
+    "$(uname -r)" "$KVER"
+	while true; do
+    	printf $'\r\033[2K Press Enter to continue or Ctrl+C to cancel'
+    	read -n1 -s -r
+    	(( $? != 0 )) && exit 1 # exit if Ctrl+C was pressed
+    	[[ -z "$REPLY" ]] && break # continue if Enter was pressed
+	done
+}
+
+select_cores() {
     local cores total
     total=$(nproc)
     printf "\n\n How many CPU cores of the system (in %%) do you want to use for compilation\n\n"
@@ -136,94 +206,13 @@ choose_cores() {
     done
 }
 
-custom_config(){
+select_config(){
 	printf "\n Do you need to customize the kernel .config file?\n\n"
-    KCFG=false # default fallback
+    KCFG=false # default no change to .config
     read -p " yes / no  [y/n]: " -n1 -r
     echo
     [[ $REPLY == [Yy] ]] && KCFG=true
 }
-
-# sources selection
-printf " Which kernel sources do you want to use\n\n"
-KMOD=false # default fallback
-if [[ -n "${SUDO_USER}" ]]; then # home dir avoid tmpfs, permission issues
-	WORKDIR=$(eval echo "~${SUDO_USER}/kernel-build")
-else
-	WORKDIR="${HOME}/kernel-build"
-fi
-case "${DISTRO:-}" in
-	arch)
-        choose_source(){
-			KVER=$(curl -s https://www.kernel.org/finger_banner | awk 'NR==2 {print $NF}')
-            URL="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-master.tar.gz"
-			#export INSTALL_MOD_STRIP=1 # save space in /lib/modules
-    		while true; do
-        		printf $'\r\033[2K mainline (1)  mainline + cachyos patch (2)  [1/2]: '
-        		read -n1 -r choice
-	        case $choice in
-            	1)  # upstream master snapshot
-					SRCDIR="${WORKDIR}/linux-upstream"
-					TARBALL="${SRCDIR}/linux-master.tar.gz"
-					printf "\n\n Selected: mainline\n\n"
-                	return
-                	;;
-            	2)  # cachyos-rc
-					SRCDIR="${WORKDIR}/linux-cachyos"
-					TARBALL="${SRCDIR}/linux-master.tar.gz"
-					#CONFIG_URL="https://raw.githubusercontent.com/CachyOS/linux-cachyos/refs/heads/master/linux-cachyos-rc/config"
-					PATCH_URL="https://raw.githubusercontent.com/CachyOS/kernel-patches/refs/heads/master/6.19/all/0001-cachyos-base-all.patch"
-					PATCH="${SRCDIR}/0001-cachyos-base-all.patch"
-					KMOD=true
-                	printf "\n\n Selected: mainline + cachyos patch\n\n"
-					return
-                	;;
-            	*)  ;;
-			esac
-			done
-		}
-		choose_source
-		;;
-    debian)
-        choose_source(){
-    		while true; do
-        		printf $'\r\033[2K mainline (1)  stable (2)  [1/2]: '
-        		read -n1 -r choice
-	        case $choice in
-            	1)  # mainline
-                	KVER=$(curl -s https://www.kernel.org/finger_banner | sed -n '2s/^[^6]*//p')
-                	URL="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-master.tar.gz"
-                	SRCDIR="${WORKDIR}/linux-upstream"
-                	TARBALL="${SRCDIR}/linux-master.tar.gz"
-                	printf "\n\n Selected: mainline\n\n"
-                	return
-                	;;
-            	2)  # stable
-                	KVER=$(curl -s https://www.kernel.org/finger_banner | sed -n '1s/^[^6]*//p')
-                	URL="https://www.kernel.org/pub/linux/kernel/v6.x/linux-${KVER}.tar.xz"
-                	SRCDIR="${WORKDIR}/linux-stable"
-                	TARBALL="${SRCDIR}/linux_${KVER}.tar.xz"
-                	printf "\n\n Selected: stable\n\n"
-                	return
-                	;;
-            	*)  ;;
-        	esac
-    		done
-		}
-		choose_source
-        ;;
-esac
-
-printf " Checking kernels versions... please wait" && sleep 1
-printf '\r%-*s\n\n Current kernel version: %s\n It will be updated to : %s\n\n' \
-    "$COLUMNS" " Checking kernels versions... done." \
-    "$(uname -r)" "$KVER"
-while true; do
-    printf $'\r\033[2K Press Enter to continue or Ctrl+C to cancel'
-    read -n1 -s -r
-    (( $? != 0 )) && exit 1 # exit if Ctrl+C was pressed
-    [[ -z "$REPLY" ]] && break # continue if Enter was pressed
-done
 
 check_deps() {
     printf "\n Checking compilation dependencies for %s...\n\n" "$DISTRO"
@@ -269,12 +258,11 @@ check_deps() {
 	printf '\r%-*s\r Progress: 100%% [%-*s] Installed %d new package(s).\n\n' "$COLUMNS" '' "$BAR_MAX" "$bar" "$ok"
 }
 
-# custom message for source and patch
 declare -A FLAVOUR_MAP=(
     [upstream]="latest mainline sources"
     [stable]="latest stable sources"
 	[cachyos]="latest cachyos patch"
-)
+) # custom message for source and patch download
 
 manage_source() {
     local msg="" key
@@ -335,7 +323,6 @@ manage_patch() {
     fi
 }
 
-# cleanup and reboot
 reboot_system(){
 	cd ~ && rm -rf "${WORKDIR}" 
 	printf "\n System must be rebooted to load the new kernel.\n\n"
@@ -395,8 +382,9 @@ script_opt() {
 }
 
 # main sequence
-choose_cores
-custom_config
+select_source
+select_cores
+select_config
 check_deps
 manage_source
 manage_config
