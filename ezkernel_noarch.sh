@@ -33,8 +33,7 @@ os_release() {
 }
 DISTRO=$(os_release)
 
-# map each distro to its required kernel compilation dependencies
-declare -A KRNL_GROUP
+declare -A KRNL_GROUP # map each distro to its required kernel compilation dependencies
 KRNL_GROUP[arch]="base-devel bc cpio gettext libelf pahole perl python rust rust-bindgen rust-src tar xz zstd"
 KRNL_GROUP[debian]="build-essential libdw-dev libelf-dev zlib1g-dev libncurses-dev libssl-dev bison bc flex rsync debhelper python3"
 
@@ -138,7 +137,7 @@ choose_cores() {
 }
 
 custom_config(){
-	printf "\n\n Do you need to customize the kernel .config file?\n\n"
+	printf "\n Do you need to customize the kernel .config file?\n\n"
     KCFG=false # default fallback
     read -p " yes / no  [y/n]: " -n1 -r
     echo
@@ -434,4 +433,3 @@ case "$DISTRO" in
 		;;
 esac
 reboot_system
-
