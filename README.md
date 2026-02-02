@@ -122,12 +122,12 @@ While ezkernel strives to minimize risks, incorrect configuration or unforeseen 
 ## Installation and Usage
 
 1.  **Get the script -**
-    The command below will download `ezkernel_debian.sh` , save it to /usr/local/bin/ ,make it executable then run the script.
+    The command below will download `ezkernel_noarch.sh` , save it to /usr/local/bin/ ,make it executable then run the script.
     (be sure to have administrative rights - curl must be already installed).
 
     Debian
     ```bash
-    curl -fsSL https://raw.githubusercontent.com/thorbits/thScripts/refs/heads/main/ezkernel_debian.sh -o /usr/local/bin/ezkernel_debian.sh && chmod +x /usr/local/bin/ezkernel_debian.sh && ezkernel_debian.sh
+    curl -fsSL https://raw.githubusercontent.com/thorbits/thScripts/refs/heads/main/ezkernel_noarch.sh -o /usr/local/bin/ezkernel_noarch.sh && chmod +x /usr/local/bin/ezkernel_noarch.sh && ezkernel_noarch.sh
     ```
 
 2.  **Follow On-Screen Prompts -** The script will guide you through the process such as:
