@@ -6,10 +6,10 @@
 #
 #    eZkernel for arch/debian
 #    Interactive Linux kernel compilation and installation script
-# -------------------------------------------------------------------#
-#    Compile the latest mainline Linux kernel snapshot (arch/debian)
-#
-# -------------------------------------------------------------------#
+# -------------------------------------------------------------------- #
+#    Compile the latest stable or mainline Linux kernel from kernel.org
+#    Choice for Arch only: mainline / mainline + cachyos patch
+# -------------------------------------------------------------------- #
 
 (return 0 2>/dev/null) && { echo " Error: This script must be executed, do not source." >&2; return 1; }
 [ "$(id -u)" -eq 0 ] || { echo " Error: This script must be run as root (sudo)" >&2; exit 1; }
