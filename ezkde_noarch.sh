@@ -29,17 +29,6 @@ abort() {
 }
 trap abort INT TERM QUIT
 
-os_release() {
-    awk -F= '/^ID=/{gsub(/"/,""); print tolower($2)}' /etc/os-release | cut -d- -f1
-}
-DISTRO=$(os_release)
-
-# default tunables, see usage
-BATCHSIZE=${BATCHSIZE:-1}
-BAR_CHAR=${BAR_CHAR:-'|'}
-EMPTY_CHAR=${EMPTY_CHAR:-' '}
-USE_SWAP=false
-
 usage() {
 	local prog=${0##*/}
 	cat <<-EOF
@@ -57,6 +46,17 @@ usage() {
  
 EOF
 }
+
+os_release() {
+    awk -F= '/^ID=/{gsub(/"/,""); print tolower($2)}' /etc/os-release | cut -d- -f1
+}
+DISTRO=$(os_release)
+
+# default tunables, see usage
+BATCHSIZE=${BATCHSIZE:-1}
+BAR_CHAR=${BAR_CHAR:-'|'}
+EMPTY_CHAR=${EMPTY_CHAR:-' '}
+USE_SWAP=false
 
 case "$DISTRO" in
     arch)
@@ -194,7 +194,7 @@ while true; do
     [[ -z "$REPLY" ]] && break # continue if Enter was pressed
 done
 
-"${UPDATE[@]}" >/dev/null 2>&1 || fatal " no internet connection detected."
+"${UPDATE[@]}" >/dev/null 2>&1 || fatal "no internet connection detected."
 
 # fix wayland on nvidia gpu
 nvidia_fix=false 
