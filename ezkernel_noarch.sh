@@ -19,7 +19,7 @@ fatal() {
     exit 1
 }
 abort() {
-    fatal "process interupted by user."
+    fatal "process interrupted by user."
 }
 trap abort INT TERM QUIT
 
