@@ -19,7 +19,7 @@ fatal() {
     exit 1
 }
 abort() {
-    fatal "process interrupted by user."
+    fatal "process interrupted by $USER"
 }
 trap abort INT TERM QUIT
 
@@ -357,30 +357,6 @@ reboot_system(){
     	sleep 1
 	done
     /sbin/reboot
-}
-
-script_opt() {
-	# disable massive compile-time killers
-	scripts/config --disable DEBUG_INFO
-	scripts/config --disable DEBUG_INFO_BTF      # avoids slow 'pahole' processing
-	scripts/config --disable LTO_CLANG           # LTO increases build time 2-5x
-	scripts/config --disable LTO_GCC
-	scripts/config --disable LTO_NONE            # explicitly select none if needed, or just disable the others
-	# VM-specific: No Secure Boot needed, skip slow signing
-	scripts/config --disable MODULE_SIG
-	scripts/config --disable MODULE_SIG_ALL
-	# skip compression overhead (VM CPU is precious, disk is cheap/fast enough)
-	scripts/config --disable MODULE_COMPRESS     # faster 'make modules_install', faster module loading
-	# disable kernel debugging features that slow compile (VMs don't need these)
-	scripts/config --disable KCOV                # kernel coverage (slows compile significantly)
-	scripts/config --disable KASAN               # address sanitizer (massive compile slowdown)
-	scripts/config --disable KMSAN
-	scripts/config --disable GCOV_KERNEL
-	# fastest kernel image compression (VM boot is from virtio-blk/SCSI, decompression is fast anyway)
-	#scripts/config --enable KERNEL_GZIP
-	#scripts/config --disable KERNEL_ZSTD         # ZSTD compression is slow to build
-	#scripts/config --disable KERNEL_XZ
-	make olddefconfig
 }
 
 # main sequence
