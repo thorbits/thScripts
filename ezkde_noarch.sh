@@ -551,3 +551,4 @@ main() {
 	end_install
     deinit-term
 }
+main "$@"
