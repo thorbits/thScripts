@@ -11,15 +11,15 @@
 #
 # -------------------------------------------------------------------#
 
-(return 0 2>/dev/null) && { echo "Error: This script must be executed, do not source." >&2; return 1; }
-[ "$(id -u)" -eq 0 ] || { echo "Error: This script must be run as root (sudo)" >&2; exit 1; }
+(return 0 2>/dev/null) && { echo " Error: This script must be executed, do not source." >&2; return 1; }
+[ "$(id -u)" -eq 0 ] || { echo " Error: This script must be run as root (sudo)" >&2; exit 1; }
 
 fatal() {
     printf '\n\n\e[31m [WARNING]\e[0m %s\n\n' "$*" >&2
     exit 1
 }
 abort() {
-    fatal "process aborted by user."
+    fatal "process interupted by user."
 }
 trap abort INT TERM QUIT
 
@@ -98,6 +98,7 @@ ART
 ART
         ;;
 esac
+
 printf "\n\n #%s#\n\n" "$(printf '%*s' "$(( $(tput cols) - 4 ))" '' | tr ' ' '-')"
 case "${DISTRO:-}" in
 	arch)
@@ -203,7 +204,7 @@ select_cores() {
         cores=$(( total * pct / 100 ))
         export MAKEFLAGS="-j$cores"
 		echo
-        return
+        break
     done
 }
 
@@ -223,8 +224,7 @@ check_deps() {
 		arch)
 			mapfile -t pkgs < <("${LIST_CMD[@]}" ${KRNL_GROUP[$DISTRO]} | grep -Fxvf <(pacman -Qq))
 			;;
-        debian)
-            # inherit the current locale for install
+        debian) # inherit the current locale not to block install
             current_locale=${LC_ALL:-${LANG:-C.UTF-8}}
             current_locale=${current_locale%%.*}.UTF-8
             {
@@ -398,7 +398,11 @@ export KCFLAGS="-g0 -O2 -fuse-ld=bfd"
 export HOSTCFLAGS="-g0 -O2"
 
 info() {
-    printf "\n\e[32m [INFO]\e[0m eZkernel compilation successful for version: %s\n\n Compilation time: \n" "$*"
+	if [[ "$KMOD" == true ]]; then
+    	printf "\n\e[32m [INFO]\e[0m eZkernel compilation successful for version: %s + cachyos patch\n\n Compilation time: \n" "$*"
+	else
+		printf "\n\e[32m [INFO]\e[0m eZkernel compilation successful for version: %s\n\n Compilation time: \n" "$*"
+	fi
 }
 
 case "$DISTRO" in
@@ -421,5 +425,4 @@ case "$DISTRO" in
 		} 2>&1
 		;;
 esac
-
 reboot_system
