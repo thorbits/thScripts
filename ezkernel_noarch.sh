@@ -209,8 +209,11 @@ select_cores() {
 }
 
 select_config(){
-	printf "\n Do you need to customize the kernel .config file?\n\n"
-    KCFG=false # default no change to .config
+    KCFG=false  # default no change to .config
+	if [[ "$KMOD" == true ]]; then # if using patch, skip customization
+        return
+    fi
+    printf "\n Do you need to customize the kernel .config file?\n\n"
     read -p " yes / no  [y/n]: " -n1 -r
     echo
     [[ $REPLY == [Yy] ]] && KCFG=true
@@ -294,12 +297,10 @@ manage_config() {
     if ! (yes '' | make localmodconfig); then
         fatal "error generating kernel config."
     fi
-    if [[ "$KCFG" == true ]]; then
-        if [[ "$DISTRO" == "arch" && "$KMOD" == true ]]; then
-            make olddefconfig # arch+patch uses olddefconfig only
-        else
-            make menuconfig
-        fi
+    if [[ "$KCFG" == true && "$DISTRO" == "arch" && "$KMOD" = true ]]; then
+        make olddefconfig
+    elif [[ "$KCFG" == true ]]; then
+        make menuconfig
     fi
 }
 
@@ -318,7 +319,7 @@ manage_patch() {
         fatal "patch does not apply cleanly, possible conflicts."
     fi
     if patch -p"${STRIP_LEVEL}" --no-backup-if-mismatch -i "$PATCH"; then
-        printf "\n\e[32m [INFO]\e[0m CachyOS patch applied successfully for kernel %s\n\n" "$KVER"
+        printf "\n\e[32m [INFO]\e[0m cachyos patch applied successfully for kernel %s\n\n" "$KVER"
     else
         fatal "patch application failed"
     fi
