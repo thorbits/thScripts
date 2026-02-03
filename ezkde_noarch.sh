@@ -365,7 +365,7 @@ progress-bar() {
 
 install_packages() {
     for pkg in "$@"; do
-		printf '\r%-*s' " -> Now downloading and installing: $pkg\033[K"
+		printf '\r%-*s' " -> Now downloading and installing: $pkg \033[K"
 #        printf '\r%-*s' "$COLUMNS" " -> Now downloading and installing: $pkg"
         "${PM[@]}" "$pkg" </dev/null >/dev/null 2>&1
 		sleep .2
