@@ -102,10 +102,10 @@ esac
 printf "\n\n #%s#\n\n" "$(printf '%*s' "$(( $(tput cols) - 4 ))" '' | tr ' ' '-')"
 case "${DISTRO:-}" in
 	arch)
-		printf " Welcome %s, to eZkernel for %s.\n\n The latest Linux kernel in mainline (kernel.org) or mainline + cachyos patch (github.com), will be will be sourced, compiled and installed.\n\n" "$USER" "$DISTRO"
+		printf " Welcome %s, to eZkernel for %s.\n\n The latest Linux kernel in mainline (kernel.org) or mainline + cachyos patch (github.com), will be sourced, compiled and installed.\n\n" "$USER" "$DISTRO"
 		;;
     debian)
-		printf " Welcome %s, to eZkernel for %s.\n\n The latest Linux kernel in mainline or stable (kernel.org), will be will be sourced, compiled and installed.\n\n" "$USER" "$DISTRO"
+		printf " Welcome %s, to eZkernel for %s.\n\n The latest Linux kernel in mainline or stable (kernel.org), will be sourced, compiled and installed.\n\n" "$USER" "$DISTRO"
 		;;
 esac	
 
@@ -179,7 +179,7 @@ select_source() {
 	esac
 	printf " Checking kernels versions... please wait" && sleep 1
 	printf '\r%-*s\n\n Current kernel version: %s\n It will be updated to : %s\n\n' \
-    "$COLUMNS" " Checking kernels versions... done." \
+    "$COLUMNS" " Checking kernels versions... done" \
     "$(uname -r)" "$KVER"
 	while true; do
     	printf $'\r\033[2K Press Enter to continue or Ctrl+C to cancel'
