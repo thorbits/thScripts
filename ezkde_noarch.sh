@@ -365,7 +365,8 @@ progress-bar() {
 
 install_packages() {
     for pkg in "$@"; do
-        printf '\r%-*s' "$COLUMNS" " -> Now downloading and installing: $pkg"
+		printf '\r%-*s' " -> Now downloading and installing: $pkg\033[K"
+#        printf '\r%-*s' "$COLUMNS" " -> Now downloading and installing: $pkg"
         "${PM[@]}" "$pkg" </dev/null >/dev/null 2>&1
 		sleep .2
     done
@@ -435,11 +436,9 @@ end_install() {
             printf "\r\033[2K Reboot (r) or start KDE now (k)? [r/k]: "
         fi
 		read -n1 -s -r choice
-		
-        if (( $? != 0 )); then # check if Ctrl+C
+		if (( $? != 0 )); then # check if Ctrl+C
             exit 1
         fi
-
         case "${choice,,}" in
             k) systemctl start sddm; break ;;
             r) printf "\n"; echo; (for ((i=5; i>0; i--)); do printf "\r Rebooting in %d...\033[0K" "$i"; sleep 1; done) && reboot; break ;;
@@ -460,19 +459,15 @@ main() {
 #            \?) echo "Unknown option: -$OPTARG" >&2; usage; exit 1 ;;
         esac
     done
-
     if [ "$USE_SWAP" = true ]; then
     	create_swap
 	fi
-
     shopt -s globstar nullglob checkwinsize
     # ensure LINES and COLUMNS are set
     (:)
-
     trap deinit-term exit
     trap 'init-term; progress-bar "$current" "$total"' WINCH
     init-term
-
     # # per package group, map all individual dependencies
     IFS=' ' read -r -a pkg_names <<< "${KDE_GROUP[$DISTRO]}"
     local packages=() total
@@ -484,7 +479,6 @@ main() {
 			)
 			;;
         debian)
-            # inherit the current locale for install
             current_locale=${LC_ALL:-${LANG:-C.UTF-8}}
             current_locale=${current_locale%%.*}.UTF-8
             {
@@ -512,7 +506,6 @@ main() {
 #               awk '/new/ {for(i=1;i<=NF;i++) if ($i ~ /^[a-zA-Z0-9.-]+$/) print $i}' | grep -v "Mozilla" | grep -v "vlc" | grep -v "x11" | grep -v "xorg" | head -n -5 
             ;;
     esac
-	
 	total=${#packages[@]}
     if (( total == 0 )); then
 		    if [ "$USE_SWAP" = true ]; then
@@ -522,7 +515,6 @@ main() {
 		enable_dm
 		end_install
 	fi
-
     # array installation loop
     local current=0
     for ((i = 0; i < total; i += BATCHSIZE)); do
@@ -533,11 +525,9 @@ main() {
         fi
         progress-bar "$current" "$total"
     done
-
 	if [ "$USE_SWAP" = true ]; then
 		remove_swap
 	fi
-
 	printf '\r%-*s' "$COLUMNS" '' # clear the installation line
 	enable_dm
     printf " eZkde for %s installation successful.\n\n" "$DISTRO"
