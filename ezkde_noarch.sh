@@ -17,23 +17,16 @@
 #	 along with with PipeWire audio and a minimum of utilities.
 #    ----------------------------------------------------------#
 
-(return 0 2>/dev/null) && { echo "Error: This script must be executed, do not source." >&2; return 1; }
-[ "$(id -u)" -eq 0 ] || { echo "Error: This script must be run as root (sudo)" >&2; exit 1; }
-
-set -euo pipefail
+(return 0 2>/dev/null) && { echo " Error: This script must be executed, do not source." >&2; return 1; }
+[ "$(id -u)" -eq 0 ] || { echo " Error: This script must be run as root (sudo)" >&2; exit 1; }
 
 fatal() {
     printf '\n\n\e[31m [WARNING]\e[0m %s\n\n' "$*" >&2
     exit 1
 }
-restore_cursor() {
-    	[[ -t 1 ]] && tput cnorm
-}
 abort() {
-	restore_cursor
-    fatal "process aborted by user."
+    fatal "process interrupted by $USER"
 }
-trap restore_cursor EXIT
 trap abort INT TERM QUIT
 
 os_release() {
@@ -385,6 +378,7 @@ manage_dm(){
             systemctl set-default graphical.target >/dev/null 2>&1
         fi
 }
+
 enable_dm() {
 local dm_unit
     case "$DISTRO" in
@@ -434,7 +428,6 @@ end_install() {
 #    if [ "$nvidia_fix" = true ]; then
 #        upd_bootloader
 #    fi
-
     while true; do
         if [ "$nvidia_fix" = true ]; then
             printf "\r\033[2K Press (r) to reboot: "
