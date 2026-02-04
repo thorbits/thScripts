@@ -295,26 +295,22 @@ manage_source() {
 
 manage_config() {
     printf " Generating kernel config...\n\n" && sleep 1
-	if [[ "$KMOD" == true && "$DISTRO" == "arch" ]]; then
-        if ! make olddefconfig; then # specific patch application
-        	fatal "error generating olddefconfig."
-    	fi
-		return
-	fi
-    if ! make olddefconfig; then # sync with new kernel source options
+    if ! make olddefconfig; then # update config with new kernel options
         fatal "error generating olddefconfig."
     fi
-    if ! (yes '' | make localmodconfig); then # restrict config to currently loaded modules 
+    [[ "$KMOD" == true && "$DISTRO" == "arch" ]] && return # if patch, stop here
+    if ! yes '' | make localmodconfig; then # currently loaded modules only
         fatal "error generating localmodconfig."
     fi
-    if [[ "$KCFG" == true ]]; then # final interactive customization if chosen
-		if ! make menuconfig; then
+    if [[ "$KCFG" == true ]]; then # customize if chosen
+        if ! make menuconfig; then
             fatal "error generating menuconfig."
         fi
     fi
 }
 
 manage_patch() {
+	[[ "$KMOD" == true ]] || return
     local msg=""
     msg=${FLAVOUR_MAP[cachyos]}
     printf " Downloading %s...\n\n" "$msg"
