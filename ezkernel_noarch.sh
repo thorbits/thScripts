@@ -402,4 +402,3 @@ case "$DISTRO" in
 		;;
 esac
 reboot_system
-
