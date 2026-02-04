@@ -295,17 +295,13 @@ manage_source() {
 
 manage_config() {
     printf " Generating kernel config...\n\n" && sleep 1
-    if ! make olddefconfig; then # update config with new kernel options
-        fatal "error generating olddefconfig."
+    if ! (yes '' | make localmodconfig); then
+        fatal "error generating kernel config."
     fi
-    [[ "$KMOD" == true && "$DISTRO" == "arch" ]] && return # if patch, stop here
-    if ! yes '' | make localmodconfig; then # currently loaded modules only
-        fatal "error generating localmodconfig."
-    fi
-    if [[ "$KCFG" == true ]]; then # customize if chosen
-        if ! make menuconfig; then
-            fatal "error generating menuconfig."
-        fi
+    if [[ "$DISTRO" == "arch" && "$KMOD" = true ]]; then
+        make olddefconfig
+    elif [[ "$KCFG" == true ]]; then
+        make menuconfig
     fi
 }
 
@@ -406,3 +402,4 @@ case "$DISTRO" in
 		;;
 esac
 reboot_system
+
