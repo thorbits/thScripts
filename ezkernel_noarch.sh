@@ -387,7 +387,7 @@ case "$DISTRO" in
 			if ! make bzImage modules; then
                 fatal "error during kernel compilation process."
             fi
-            make modules_install install
+            make INSTALL_MOD_STRIP=1 modules_install # make modules_install install
     		info "$KVER"
 		} 2>&1
 		;;
@@ -402,3 +402,4 @@ case "$DISTRO" in
 		;;
 esac
 reboot_system
+
