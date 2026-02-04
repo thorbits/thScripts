@@ -8,7 +8,8 @@
 #    Interactive Linux kernel compilation and installation script
 # -------------------------------------------------------------------- #
 #    Compile the latest stable or mainline Linux kernel from kernel.org
-#    Choice for Arch only: mainline / mainline + cachyos patch
+#    Choice for debian: mainline / stable
+#    Choice for arch: mainline / mainline + cachyos patch
 # -------------------------------------------------------------------- #
 
 (return 0 2>/dev/null) && { echo " Error: This script must be executed, do not source." >&2; return 1; }
@@ -139,10 +140,11 @@ select_source() {
                 		break
                 		;;
             		2)  # cachyos-rc
+						local PVER=$(curl -s https://www.kernel.org/finger_banner | awk 'NR==2 {print $NF}' | grep -oP '^\d+\.\d+')
 						SRCDIR="${WORKDIR}/linux-cachyos"
 						TARBALL="${SRCDIR}/linux-master.tar.gz"
 						#CONFIG_URL="https://raw.githubusercontent.com/CachyOS/linux-cachyos/refs/heads/master/linux-cachyos-rc/config"
-						PATCH_URL="https://raw.githubusercontent.com/CachyOS/kernel-patches/refs/heads/master/6.19/all/0001-cachyos-base-all.patch"
+						PATCH_URL="https://raw.githubusercontent.com/CachyOS/kernel-patches/refs/heads/master/${PVER}/all/0001-cachyos-base-all.patch"
 						PATCH="${SRCDIR}/0001-cachyos-base-all.patch"
 						KMOD=true
                 		printf "\n\n Selected: mainline + cachyos patch\n\n"
@@ -239,9 +241,8 @@ check_deps() {
             mapfile -t pkgs < <("${LIST_CMD[@]}" ${KRNL_GROUP[$DISTRO]} | awk '/^Inst / {print $2}')
             ;;
 	esac
-	# fixed lengh progress bar
 	local -i total=${#pkgs[@]} ok=0 i=0 pct=-1 filled
-	local -r BAR_MAX=30 BAR_CHAR='|'
+	local -r BAR_MAX=30 BAR_CHAR='|' # fixed lengh progress bar
 	local -r bar=$(printf "%${BAR_MAX}s" '' | tr ' ' "$BAR_CHAR")
 	for p in "${pkgs[@]}"; do
     	((i++))
@@ -259,12 +260,12 @@ check_deps() {
            "$bar_empty" \
            "$p"
 	done
-	printf '\r%-*s\r Progress: 100%% [%-*s] Installed %d new package(s).\n\n' "$COLUMNS" '' "$BAR_MAX" "$bar" "$ok"
+	printf '\r\033[K Progress: 100%% [%-*s] Installed %d new package(s).\n\n' "$BAR_MAX" "$bar" "$ok"
 }
 
 declare -A FLAVOUR_MAP=(
-    [upstream]="latest mainline sources"
-    [stable]="latest stable sources"
+    [upstream]="latest mainline source"
+    [stable]="latest stable source"
 	[cachyos]="latest cachyos patch"
 ) # custom message for source and patch download
 
@@ -283,8 +284,8 @@ manage_source() {
     printf " Downloading %s...\n\n" "$msg"
     mkdir -p "$SRCDIR"
     cd "$SRCDIR"
-    wget -q --show-progress -O "$TARBALL" "$URL" || fatal "error downloading kernel sources."
-	printf "\n Extracting kernel sources...\n\n"
+    wget -q --show-progress -O "$TARBALL" "$URL" || fatal "error downloading kernel source."
+	printf "\n Extracting kernel source...\n\n"
 	case "$TARBALL" in
     	*.tar.gz)  tar -xzf "${TARBALL}" --strip-components=1 ;;
     	*.tar.xz)  tar -xJf "${TARBALL}" --strip-components=1 ;;
@@ -373,7 +374,6 @@ export LD=/usr/bin/ld.bfd # use GNU ld instead of ld.lld
 export LDFLAGS="-fuse-ld=bfd"
 export KCFLAGS="-g0 -O2 -fuse-ld=bfd"
 export HOSTCFLAGS="-g0 -O2"
-
 info() {
 	if [[ "$KMOD" == true ]]; then
     	printf "\n\e[32m [INFO]\e[0m eZkernel compilation successful for version: %s + cachyos patch\n\n Compilation time: \n" "$*"
@@ -381,7 +381,6 @@ info() {
 		printf "\n\e[32m [INFO]\e[0m eZkernel compilation successful for version: %s\n\n Compilation time: \n" "$*"
 	fi
 }
-
 case "$DISTRO" in
 	arch)
 		time { \
