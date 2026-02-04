@@ -116,7 +116,7 @@ if ! command -v curl >/dev/null 2>&1 || ! command -v wget >/dev/null 2>&1; then
 fi
 
 select_source() {
-	printf " Which kernel sources do you want to use\n\n"
+	printf " Which kernel source do you want to use\n\n"
 	KMOD=false # default no patch
 	if [[ -n "${SUDO_USER}" ]]; then # home dir avoid tmpfs, permission issues
 		WORKDIR=$(eval echo "~${SUDO_USER}/kernel-build")
