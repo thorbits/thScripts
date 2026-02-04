@@ -20,7 +20,7 @@ fatal() {
     exit 1
 }
 abort() {
-    fatal "process interrupted by $USER"
+    fatal "process interrupted by: $USER"
 }
 trap abort INT TERM QUIT
 
