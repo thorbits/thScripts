@@ -370,11 +370,8 @@ manage_patch
 
 # kernel compilation
 export LD=/usr/bin/ld.bfd # use GNU ld instead of ld.lld
-export KCFLAGS="-g0 -O2" # KCFLAGS="-g0 -O2 -fuse-ld=bfd"
+export KCFLAGS="-g0 -O2"
 export HOSTCFLAGS="-g0 -O2"
-export KBUILD_LDFLAGS="--no-warn-section-align --no-warn-mismatch" # silence warnings
-#export LDFLAGS="-z noexecstack" # export LDFLAGS="-fuse-ld=bfd"
-#export INSTALL_MOD_STRIP=1 # save space in /lib/modules
 info() {
 	if [[ "$KMOD" == true ]]; then
     	printf "\n\e[32m [INFO]\e[0m eZkernel compilation successful for version: %s + cachyos patch\n\n Compilation time: \n" "$*"
@@ -385,10 +382,16 @@ info() {
 case "$DISTRO" in
 	arch)
 		time { \
-			if ! make bzImage modules; then
-                fatal "error during kernel compilation process."
-            fi
-            make INSTALL_MOD_STRIP=1 modules_install && make install # make modules_install install
+			if [[ "$KMOD" == true ]]; then
+				if ! make bzImage modules 2>&1 | grep -v "warning: orphan section"; then
+                    fatal "error during kernel compilation process."
+                fi
+			else
+				if ! make bzImage modules; then
+					fatal "error during kernel compilation process."
+	    		fi
+			fi
+            make modules_install install
     		info "$KVER"
 		} 2>&1
 		;;
