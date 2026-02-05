@@ -27,7 +27,6 @@ trap abort INT TERM QUIT
 os_release() {
     awk -F= '/^ID=/{gsub(/"/,""); print tolower($2)}' /etc/os-release | cut -d- -f1
 }
-
 DISTRO=$(os_release)
 
 declare -A KRNL_GROUP # map each distro to its required kernel compilation dependencies
@@ -99,7 +98,6 @@ ART
 ART
         ;;
 esac
-
 printf "\n\n #%s#\n\n" "$(printf '%*s' "$(( $(tput cols) - 4 ))" '' | tr ' ' '-')"
 case "${DISTRO:-}" in
 	arch)
@@ -204,8 +202,7 @@ select_cores() {
         esac
         cores=$(( total * pct / 100 ))
         export MAKEFLAGS="-j$cores"
-		echo
-        break
+		echo; break
     done
 }
 
