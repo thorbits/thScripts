@@ -370,10 +370,10 @@ manage_patch
 
 # kernel compilation
 export LD=/usr/bin/ld.bfd # use GNU ld instead of ld.lld
-export KCFLAGS="-g0 -O2 -fno-asynchronous-unwind-tables -fno-unwind-tables" # KCFLAGS="-g0 -O2 -fuse-ld=bfd"
+export KCFLAGS="-g0 -O2" # KCFLAGS="-g0 -O2 -fuse-ld=bfd"
+export HOSTCFLAGS="-g0 -O2"
+export KBUILD_LDFLAGS="--no-warn-section-align --no-warn-mismatch" # silence warnings
 #export LDFLAGS="-z noexecstack" # export LDFLAGS="-fuse-ld=bfd"
-export KBUILD_LDFLAGS="--orphan-handling=place" # keep orphan sections but silence warnings
-export HOSTCFLAGS="-g0 -O2 -fno-asynchronous-unwind-tables" # HOSTCFLAGS="-g0 -O2"
 #export INSTALL_MOD_STRIP=1 # save space in /lib/modules
 info() {
 	if [[ "$KMOD" == true ]]; then
