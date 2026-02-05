@@ -294,7 +294,7 @@ manage_source() {
 
 manage_config() {
     printf " Generating kernel config...\n\n" && sleep 1
-    if ! (yes '' | make localmodconfig); then
+    if ! yes '' | make localmodconfig; then
         fatal "error generating kernel config."
     fi
     if [[ "$DISTRO" == "arch" && "$KMOD" = true ]]; then
@@ -383,7 +383,7 @@ case "$DISTRO" in
 	arch)
 		time { \
 			if [[ "$KMOD" == true ]]; then
-				if ! make bzImage modules | grep -v "LD orphan section"; then
+				if ! make bzImage modules | grep -v "warning: orphan section"; then
                     fatal "error during kernel compilation process."
                 fi
 			else
