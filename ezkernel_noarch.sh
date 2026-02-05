@@ -371,8 +371,8 @@ manage_patch
 
 # kernel compilation
 export LD=/usr/bin/ld.bfd # use GNU ld instead of ld.lld
-export LDFLAGS="-fuse-ld=bfd"
-export KCFLAGS="-g0 -O2 -fuse-ld=bfd"
+export KCFLAGS="-g0 -O2 -fno-asynchronous-unwind-tables" # KCFLAGS="-g0 -O2 -fuse-ld=bfd"
+export LDFLAGS="-z noexecstack" # export LDFLAGS="-fuse-ld=bfd"
 export HOSTCFLAGS="-g0 -O2"
 info() {
 	if [[ "$KMOD" == true ]]; then
