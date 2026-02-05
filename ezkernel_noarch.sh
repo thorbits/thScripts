@@ -383,7 +383,7 @@ case "$DISTRO" in
 	arch)
 		time { \
 			if [[ "$KMOD" == true ]]; then
-				if ! make bzImage modules 2>&1 | grep -v "warning: orphan section"; then
+				if ! make bzImage modules | grep -v "warning: orphan section"; then
                     fatal "error during kernel compilation process."
                 fi
 			else
