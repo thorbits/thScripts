@@ -128,7 +128,6 @@ select_source() {
 		arch)
 			KVER=$(curl -s https://www.kernel.org/finger_banner | awk 'NR==2 {print $NF}')
             URL="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-master.tar.gz"
-			#export INSTALL_MOD_STRIP=1 # save space in /lib/modules
     		while true; do
         		printf $'\r\033[2K mainline (1)  mainline + cachyos patch (2)  [1/2]: '
         		read -n1 -r choice
@@ -328,7 +327,7 @@ manage_patch() {
 
 reboot_system(){
 	cd ~ && rm -rf "${WORKDIR}" 
-	printf "\n System must be rebooted to load the new kernel.\n\n"
+	printf "\n System must be rebooted to load the new kernel\n\n"
 	while : ; do
     read -r -s -n1 -p $' Press Enter to continue or Ctrl+C to cancel' REPLY
     if [[ -z "$REPLY" ]]; then # Enter only, no other key
@@ -371,9 +370,11 @@ manage_patch
 
 # kernel compilation
 export LD=/usr/bin/ld.bfd # use GNU ld instead of ld.lld
-export KCFLAGS="-g0 -O2 -fno-asynchronous-unwind-tables" # KCFLAGS="-g0 -O2 -fuse-ld=bfd"
-export LDFLAGS="-z noexecstack" # export LDFLAGS="-fuse-ld=bfd"
-export HOSTCFLAGS="-g0 -O2"
+export KCFLAGS="-g0 -O2 -fno-asynchronous-unwind-tables -fno-unwind-tables" # KCFLAGS="-g0 -O2 -fuse-ld=bfd"
+#export LDFLAGS="-z noexecstack" # export LDFLAGS="-fuse-ld=bfd"
+export KBUILD_LDFLAGS="--orphan-handling=place" # keep orphan sections but silence warnings
+export HOSTCFLAGS="-g0 -O2 -fno-asynchronous-unwind-tables" # HOSTCFLAGS="-g0 -O2"
+#export INSTALL_MOD_STRIP=1 # save space in /lib/modules
 info() {
 	if [[ "$KMOD" == true ]]; then
     	printf "\n\e[32m [INFO]\e[0m eZkernel compilation successful for version: %s + cachyos patch\n\n Compilation time: \n" "$*"
