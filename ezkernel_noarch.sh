@@ -2,7 +2,7 @@
 
 #   _______
 #   |__ __|
-#     ||horbits
+#     ||horbits presents
 #
 #    eZkernel for arch/debian
 #    Interactive Linux kernel compilation and installation script
