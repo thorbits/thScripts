@@ -20,14 +20,36 @@
 (return 0 2>/dev/null) && { echo " Error: This script must be executed, do not source." >&2; return 1; }
 [ "$(id -u)" -eq 0 ] || { echo " Error: This script must be run as root (sudo)" >&2; exit 1; }
 
-fatal() {
-    printf '\n\n\e[31m [WARNING]\e[0m %s\n\n' "$*" >&2
-    exit 1
+# global cleanup system
+declare -A cleanup_items=()
+cleanup_add() { cleanup_items["$1"]="$2"; }
+run_cleanup() {
+    for name in "${!cleanup_items[@]}"; do
+        eval "${cleanup_items[$name]}" 2>/dev/null || true
+    done
 }
-abort() {
-    fatal "process interrupted by $USER"
-}
+fatal() { printf '\n\n\e[31m[WARNING]\e[0m %s\n\n' "$*" >&2; exit 1; }
+abort() { printf '\n\n\e[31m[ABORTED]\e[0m interrupted by %s\n\n' "$USER" >&2; exit 130; }
 trap abort INT TERM QUIT
+trap run_cleanup EXIT
+remove_swap() {
+    local swap_file="/var/tmp/ezkde_swap"
+    swapoff "$swap_file" >/dev/null 2>&1 || true
+    rm -f "$swap_file"
+    sysctl -qw vm.swappiness=60 >/dev/null 2>&1 || true
+}
+cleanup_add "swap" 'remove_swap'
+create_swap() {
+    local swap_file="/var/tmp/ezkde_swap"
+	trap - ERR  # disable any ERR trap
+    if ! dd if=/dev/zero of="$swap_file" bs=1M count=1024 status=none 2>/dev/null; then
+        fatal "cannot write to $swap_file"
+    fi
+    chmod 600 "$swap_file" || { rm -f "$swap_file"; fatal "failed to set permissions"; }
+    mkswap "$swap_file" >/dev/null 2>&1 || { rm -f "$swap_file"; fatal "failed to format"; }
+    swapon "$swap_file" -p 100 >/dev/null 2>&1 || { rm -f "$swap_file"; fatal "failed to enable"; }
+    sysctl -qw vm.swappiness=80 >/dev/null 2>&1 || true
+}
 
 usage() {
 	local prog=${0##*/}
@@ -242,63 +264,32 @@ fix_nvidia_modeset() {
 nvidia_warning() {
     if lspci -nnk 2>/dev/null | grep -iA3 "VGA" | grep -iq "nvidia"; then
         printf " INFO: NVIDIA GPU detected, checking DRM modeset configuration..."
-        
         local modeset_status="0"
         local conf_file="/etc/modprobe.d/nvidia.conf"
-
-        # Check the current running kernel module (if loaded)
+        # check the current running kernel module (if loaded)
         if [[ -f /sys/module/nvidia_drm/parameters/modeset ]]; then
             modeset_status=$(cat /sys/module/nvidia_drm/parameters/modeset)
-        # If not loaded, check the config file
+        # if not loaded, check the config file
         elif [[ -f "$conf_file" ]]; then
             if grep -qF "options nvidia_drm modeset=1" "$conf_file"; then
                 modeset_status="Y"
+            elif grep -q "^#" "$conf_file" 2>/dev/null || ! grep -q "modeset" "$conf_file" 2>/dev/null; then
+                # file exists but contains only comments or no modeset entry → still need to fix
+                modeset_status="0"
+            else
+                # file exists, has a line, but not the right one (e.g., modeset=0 or wrong option)
+                modeset_status="0"
             fi
         fi
-
-        # If modeset is disabled (N), 0, or not found, run the fix
+        # if modeset is disabled (N), 0, or not found, run the fix
         if [[ "$modeset_status" != "Y" && "$modeset_status" != "1" ]]; then
             fix_nvidia_modeset
-			nvidia_fix=true
-			printf " NVIDIA Wayland fix applied. You will need to reboot your system.\n Proceeding with KDE installation..."
-		else
-			printf " %s is already correct.\n Proceeding with KDE installation..." "$conf_file"
+            nvidia_fix=true
+            printf " NVIDIA Wayland fix applied. You will need to reboot your system.\n Proceeding with KDE installation..."
+        else
+            printf " %s is already correct.\n Proceeding with KDE installation..." "$conf_file"
         fi
     fi
-}
-
-nvidia_warning
-
-printf "\n\n Preparing KDE packages for %s...\n\n" "$DISTRO"
-
-create_swap() {
-    local swap_file="/var/tmp/ezkde_swap"
-    if ! dd if=/dev/zero of="$swap_file" bs=1M count=1024 status=none 2>/dev/null; then # create 1GB file
-        fatal " cannot write to $swap_file."
-    fi
-    if ! chmod 600 "$swap_file"; then
-		rm -f "$swap_file"
-        fatal " failed to set permissions for $swap_file."
-    fi
-    if ! mkswap "$swap_file" >/dev/null 2>&1; then
-		rm -f "$swap_file"
-        fatal " failed to format $swap_file as swap."
-    fi
-    if ! swapon "$swap_file" -p 100 >/dev/null 2>&1; then # force the kernel to use swap file
-		rm -f "$swap_file"
-        fatal " failed to enable $swap_file."
-    fi
-    sysctl -w vm.swappiness=80 >/dev/null 2>&1 # force the system to use swap sooner
-    return 0
-}
-
-remove_swap() {
-    local swap_file="/var/tmp/ezkde_swap"
-    if [[ -f "$swap_file" ]]; then
-        swapoff "$swap_file" >/dev/null 2>&1
-        rm -f "$swap_file"
-    fi
-    sysctl -w vm.swappiness=60 >/dev/null 2>&1 # reset swappiness to default 60
 }
 
 init-term() {
@@ -534,4 +525,8 @@ main() {
 	end_install
     deinit-term
 }
+
+# main sequence
+nvidia_warning
+printf "\n\n Preparing KDE packages for %s...\n\n" "$DISTRO"
 main "$@"
