@@ -219,30 +219,27 @@ done
 "${UPDATE[@]}" >/dev/null 2>&1 || fatal "no internet connection detected."
 
 # fix wayland on nvidia gpu
-nvidia_fix=false 
+nvidia_fix=false
 fix_nvidia_modeset() {
     local conf_file="/etc/modprobe.d/nvidia.conf"
     local required_line="options nvidia_drm modeset=1"
-
     # ensure the config directory exists
     mkdir -p "$(dirname "$conf_file")"
-    # add the configuration line if it's missing
-    if ! grep -q "$required_line" "$conf_file" 2>/dev/null; then
-        echo "$required_line" >> "$conf_file"
+    # safely append only if not already present
+    if ! grep -qxF "$required_line" "$conf_file" 2>/dev/null; then
+        printf '%s\n' "$required_line" | tee -a "$conf_file"
     fi
-
     # update Initramfs - required for the change to work at boot
     case "$DISTRO" in
         arch)
             local mkinitconf="/etc/mkinitcpio.conf"
-            # ensure 'nvidia' and 'nvidia_drm' are in the MODULES array
             if [[ -f "$mkinitconf" ]]; then
-                # check if 'nvidia' is already present to avoid adding duplicates
-                if ! grep -q "^MODULES=(.*nvidia" "$mkinitconf"; then
-                    # append modules inside the parentheses
-                    # this regex finds the closing ')' on the MODULES line and inserts before it
-                    sed -i '/^MODULES=/ s/)/ nvidia nvidia_drm)/' "$mkinitconf"
-                fi
+                # add nvidia and nvidia_drm only if missing
+                for mod in nvidia nvidia_drm; do
+                    if ! grep -qE "^MODULES=.*\b${mod}\b" "$mkinitconf" 2>/dev/null; then
+                        sed -i "/^MODULES=/ s/)/ ${mod})/" "$mkinitconf"
+                    fi
+                done
             fi
             if command -v mkinitcpio >/dev/null 2>&1; then
                 mkinitcpio -P >/dev/null
@@ -258,7 +255,7 @@ fix_nvidia_modeset() {
                 dracut --regenerate-all --force >/dev/null
             fi
             ;;
-	esac
+    esac
 }
 
 nvidia_warning() {
@@ -266,22 +263,19 @@ nvidia_warning() {
         printf " INFO: NVIDIA GPU detected, checking DRM modeset configuration..."
         local modeset_status="0"
         local conf_file="/etc/modprobe.d/nvidia.conf"
-        # check the current running kernel module (if loaded)
+        # check live module (if loaded)
         if [[ -f /sys/module/nvidia_drm/parameters/modeset ]]; then
             modeset_status=$(cat /sys/module/nvidia_drm/parameters/modeset)
-        # if not loaded, check the config file
+        # if not loaded, check config file robustly
         elif [[ -f "$conf_file" ]]; then
-            if grep -qF "options nvidia_drm modeset=1" "$conf_file"; then
+            # safer: is there a *non-commented* line containing `nvidia_drm ... modeset`?
+            if grep -qE "^[^#]*nvidia_drm.*modeset=1" "$conf_file" 2>/dev/null; then
                 modeset_status="Y"
-            elif grep -q "^#" "$conf_file" 2>/dev/null || ! grep -q "modeset" "$conf_file" 2>/dev/null; then
-                # file exists but contains only comments or no modeset entry → still need to fix
-                modeset_status="0"
             else
-                # file exists, has a line, but not the right one (e.g., modeset=0 or wrong option)
                 modeset_status="0"
             fi
         fi
-        # if modeset is disabled (N), 0, or not found, run the fix
+        # if modeset is not properly enabled (≠ "1" and ≠ "Y"), apply fix
         if [[ "$modeset_status" != "Y" && "$modeset_status" != "1" ]]; then
             fix_nvidia_modeset
             nvidia_fix=true
@@ -526,7 +520,6 @@ main() {
 	end_install
     deinit-term
 }
-
 # main sequence
 nvidia_warning
 main "$@"
