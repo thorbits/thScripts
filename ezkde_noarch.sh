@@ -28,8 +28,8 @@ run_cleanup() {
         eval "${cleanup_items[$name]}" 2>/dev/null || true
     done
 }
-fatal() { printf '\n\n\e[31m[WARNING]\e[0m %s\n\n' "$*" >&2; exit 1; }
-abort() { printf '\n\n\e[31m[ABORTED]\e[0m interrupted by %s\n\n' "$USER" >&2; exit 130; }
+fatal() { printf '\n\n\e[31m [WARNING]\e[0m %s\n\n' "$*" >&2; exit 1; }
+abort() { printf '\n\n\e[31m [WARNING]\e[0m process interrupted by: %s\n\n' "$USER" >&2; exit 130; }
 trap abort INT TERM QUIT
 trap run_cleanup EXIT
 remove_swap() {
