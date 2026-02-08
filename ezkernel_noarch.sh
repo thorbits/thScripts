@@ -15,13 +15,8 @@
 (return 0 2>/dev/null) && { echo " Error: This script must be executed, do not source." >&2; return 1; }
 [ "$(id -u)" -eq 0 ] || { echo " Error: This script must be run as root (sudo)" >&2; exit 1; }
 
-fatal() {
-    printf '\n\n\e[31m [WARNING]\e[0m %s\n\n' "$*" >&2
-    exit 1
-}
-abort() {
-    fatal "process interrupted by: $USER"
-}
+fatal() { printf '\n\n\e[31m [WARNING]\e[0m %s\n\n' "$*" >&2; exit 1; }
+abort() { printf '\n\n\e[31m [WARNING]\e[0m process interrupted by: %s\n\n' "$USER" >&2; exit 130; }
 trap abort INT TERM QUIT
 
 os_release() {
