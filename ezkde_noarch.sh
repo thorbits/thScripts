@@ -12,10 +12,10 @@
 #
 #    eZkde for Arch / Debian / Fedora / OpenSuse
 #    Automated KDE installation script
-#    ----------------------------------------------------------#
+#    ---------------------------------------------------------#
 #    Install the latest KDE 6.5.x / 6.6 beta (Wayland session)
 #	 along with with PipeWire audio and a minimum of utilities.
-#    ----------------------------------------------------------#
+#    ---------------------------------------------------------#
 
 (return 0 2>/dev/null) && { echo " Error: This script must be executed, do not source." >&2; return 1; }
 [ "$(id -u)" -eq 0 ] || { echo " Error: This script must be run as root (sudo)" >&2; exit 1; }
@@ -69,16 +69,16 @@ usage() {
 EOF
 }
 
-os_release() {
-    awk -F= '/^ID=/{gsub(/"/,""); print tolower($2)}' /etc/os-release | cut -d- -f1
-}
-DISTRO=$(os_release)
-
 # default tunables, see usage
 BATCHSIZE=${BATCHSIZE:-1}
 BAR_CHAR=${BAR_CHAR:-'|'}
 EMPTY_CHAR=${EMPTY_CHAR:-' '}
 USE_SWAP=false
+
+os_release() {
+    awk -F= '/^ID=/{gsub(/"/,""); print tolower($2)}' /etc/os-release | cut -d- -f1
+}
+DISTRO=$(os_release)
 
 case "$DISTRO" in
     arch)
@@ -459,7 +459,8 @@ main() {
     trap deinit-term exit
     trap 'init-term; progress-bar "$current" "$total"' WINCH
     init-term
-    # # per package group, map all individual dependencies
+    printf "\n\n Preparing KDE packages for %s...\n\n" "$DISTRO"
+	# # per package group, map all individual dependencies
     IFS=' ' read -r -a pkg_names <<< "${KDE_GROUP[$DISTRO]}"
     local packages=() total
 
@@ -528,5 +529,4 @@ main() {
 
 # main sequence
 nvidia_warning
-printf "\n\n Preparing KDE packages for %s...\n\n" "$DISTRO"
 main "$@"
