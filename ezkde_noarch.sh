@@ -114,7 +114,7 @@ KDE_GROUP[opensuse]="plasma6-desktop plasma6-workspace kwin6 konsole dolphin sdd
 #KDE_GROUP[fedora]="plasma-desktop plasma-settings plasma-nm sddm-wayland-plasma kde-baseapps konsole kscreen sddm startplasma-wayland dolphin discover"
 #KDE_GROUP[opensuse]="discover6 sddm patterns-kde-kde_plasma" #plasma6-desktop dolphin sddm sddm-config-wayland
 
-# intro, DISTRO and UPDATE are set
+# intro
 clear
 case "$DISTRO" in
         arch)
@@ -295,11 +295,11 @@ init-term() {
 }
 
 deinit-term() {
-    printf '\e7'		# save the cursor location
+    printf '\e7'	# save the cursor location
     printf '\e[%d;%dr' 0 "$LINES" # reset the scrollable region (margin)
     printf '\e[%d;%dH' "$LINES" 0 # move cursor to the bottom line
-    printf '\e[0K'		# clear the line
-    printf '\e8'		# reset the cursor location
+    printf '\e[0K'	# clear the line
+    printf '\e8'	# reset the cursor location
 }
 
 progress-bar() {
@@ -322,36 +322,16 @@ progress-bar() {
     s+=']'
     s+=$suffix
 
-    printf '\e7'		# save the cursor location
+    printf '\e7'	# save the cursor location
     printf '\e[%d;%dH' "$LINES" 0 # move cursor to the bottom line
-    printf '\e[0K'		# clear the line
-    printf '%s' "$s"	# print the progress bar
-    printf '\e8'		# restore the cursor location
+    printf '\e[0K'	# clear the line
+    printf '%s' "$s" # print the progress bar
+    printf '\e8'	# restore the cursor location
 }
-
-#recover_pacman() {
-#    rm -f /var/lib/pacman/db.lck >/dev/null 2>&1
-#    pacman -Sy --noconfirm >/dev/null 2>&1 || true
-#}
-#
-#recover_dpkg() {
-#    rm -f /var/lib/dpkg/lock-frontend /var/lib/dpkg/lock /var/cache/apt/archives/lock  >/dev/null 2>&1
-#    dpkg --configure -a >/dev/null 2>&1
-#    DEBIAN_FRONTEND=noninteractive apt-get install -f -y 2>/dev/null || true
-#}
-#
-#recover_rpm() {
-#    rm -f /var/lib/rpm/.rpm.lock /var/lib/rpm/__db.* 2>/dev/null
-#    rpm --rebuilddb 2>/dev/null || true
-#    if [[ "$DISTRO" == "OpenSuse" ]]; then
-#        zypper verify --no-refresh 2>/dev/null || true
-#    fi
-#}
 
 install_packages() {
     for pkg in "$@"; do
 		printf '\r\033[K -> Now downloading and installing: %s' "$pkg"
-#        printf '\r%-*s' "$COLUMNS" " -> Now downloading and installing: $pkg"
         "${PM[@]}" "$pkg" </dev/null >/dev/null 2>&1
 		sleep .2
     done
@@ -454,7 +434,7 @@ main() {
     trap 'init-term; progress-bar "$current" "$total"' WINCH
     init-term
     printf "\n\n Preparing KDE packages for %s...\n\n" "$DISTRO"
-	# # per package group, map all individual dependencies
+	# per package group, map all individual dependencies
     IFS=' ' read -r -a pkg_names <<< "${KDE_GROUP[$DISTRO]}"
     local packages=() total
 
@@ -484,8 +464,7 @@ main() {
             ;;
         opensuse)
             mapfile -t packages < <(
-				"${LIST_CMD[@]}" "${pkg_names[@]}" 2>&1 |
-				awk '/new/ {for(i=1;i<=NF;i++) if ($i ~ /^[a-zA-Z0-9.-]+$/) print $i}' | grep -v "session-x11" | grep -v "kwin6-x11" | grep -v "patterns-base-x11" | head -n -5 
+				"${LIST_CMD[@]}" "${pkg_names[@]}" 2>&1 | awk '/new/ {for(i=1;i<=NF;i++) if ($i ~ /^[a-zA-Z0-9.-]+$/) print $i}' | head -n -5 
 			)
 #				zypper in -y -D patterns-kde-kde_plasma konsole dolphin pipewire sddm | head -n -18 | tail -n +9 | xargs -n 1
 #				zypper se --requires kde konsole dolphin pipewire sddm | sed '/pattern$/d'
@@ -520,6 +499,7 @@ main() {
 	end_install
     deinit-term
 }
+
 # main sequence
 nvidia_warning
 main "$@"
