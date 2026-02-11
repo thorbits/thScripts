@@ -188,7 +188,7 @@ select_cores() {
     total=$(nproc)
     printf "\n\n How many CPU cores of the system (in %%) do you want to use for compilation\n\n"
     printf " 25%% : %d cores   50%% : %d cores   100%% : %d cores\n\n" $((total/4)) $((total/2)) "$total"
-    while read -rn1 -p ' Choose (1=25%%  2=50%%  3=100%%): ' choice; do
+    while read -rn1 -p ' Choose (1=25%%  2=50%%  3=100%): ' choice; do
         case $choice in
             1) pct=25 ;;
             2) pct=50 ;;
@@ -206,7 +206,7 @@ select_config(){
 	if [[ "$KMOD" == true ]]; then # if using patch, skip customization
         return
     fi
-    printf "\n Do you need to customize the kernel .config file\n\n"
+    printf "\n Do you need to customize the kernel config\n\n"
     read -p " yes / no  [y/n]: " -n1 -r
     echo
     [[ $REPLY == [Yy] ]] && KCFG=true
