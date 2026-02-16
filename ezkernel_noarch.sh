@@ -32,7 +32,7 @@ case "$DISTRO" in
     arch)
     	LIST_CMD=(pacman -Sp --print-format '%n')
 		PM=(pacman -S --needed --noconfirm)
-		PM_CHK=("pacman -Qq")
+		PM_CHK=(pacman -Qq)
     	UPDATE=(pacman -Sy)
 	;;
 	debian)
