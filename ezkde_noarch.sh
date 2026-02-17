@@ -13,8 +13,8 @@
 #    eZkde for Arch / Debian / Fedora / OpenSuse
 #    Automated KDE installation script
 #    ---------------------------------------------------------#
-#    Install the latest KDE 6.5.x / 6.6 beta (Wayland session)
-#	 along with with PipeWire audio and a minimum of utilities.
+#    Install the latest KDE 6.6.x (Wayland session) along with
+#	 SDDM, PipeWire audio and a minimum of utilities.
 #    ---------------------------------------------------------#
 
 (return 0 2>/dev/null) && { echo " Error: This script must be executed, do not source." >&2; return 1; }
@@ -207,7 +207,7 @@ ART
 esac
 
 printf "\n\n #%s#\n\n" "$(printf '%*s' "$(( $(tput cols) - 4 ))" '' | tr ' ' '-')"
-printf " Welcome %s, to eZkde for %s.\n\n The latest version of KDE 6.5.x (Wayland session) will be installed with audio support (Pipewire) SDDM and a minimum of utilities.\n\n" "$USER" "$DISTRO"
+printf " Welcome %s, to eZkde for %s.\n\n The latest version of KDE 6.6.x (Wayland session) will be installed with audio support (Pipewire) SDDM and a minimum of utilities.\n\n" "$USER" "$DISTRO"
 
 while true; do
     printf $'\r\033[2K Press Enter to continue or Ctrl+C to cancel'
