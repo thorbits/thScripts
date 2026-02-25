@@ -120,7 +120,8 @@ select_source() {
 	case "${DISTRO:-}" in
 		arch)
 			KVER=$(curl -s https://www.kernel.org/finger_banner | awk 'NR==2 {print $NF}')
-            URL="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-master.tar.gz"
+            #URL="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-master.tar.gz"
+			URL="https://git.kernel.org/torvalds/t/linux-${KVER}.tar.gz"
     		while true; do
         		printf $'\r\033[2K mainline (1)  mainline + cachyos patch (2)  [1/2]: '
         		read -n1 -r choice
@@ -359,7 +360,6 @@ check_deps
 manage_source
 manage_config
 manage_patch
-
 # kernel compilation
 export LD=/usr/bin/ld.bfd # use GNU ld instead of ld.lld
 export KCFLAGS="-g0 -O2"
