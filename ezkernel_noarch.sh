@@ -128,7 +128,7 @@ select_source() {
 	        	case $choice in
             		1)  # upstream master snapshot
 						SRCDIR="${WORKDIR}/linux-upstream"
-						TARBALL="${SRCDIR}/linux-master.tar.gz"
+						TARBALL="${SRCDIR}/linux-${KVER}.tar.gz"
 						printf "\n\n Selected: mainline\n\n"
                 		break
                 		;;
