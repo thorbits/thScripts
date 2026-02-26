@@ -153,7 +153,7 @@ select_source() {
         		read -n1 -r choice
 	        	case $choice in
             		1)  # mainline
-                		KVER=$(curl -s https://www.kernel.org/finger_banner | sed -n '2s/^[^6]*//p')
+                		KVER=$(curl -s https://www.kernel.org/finger_banner | sed -n '2s/^[^7]*//p')
                 		URL="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-master.tar.gz"
                 		SRCDIR="${WORKDIR}/linux-upstream"
                 		TARBALL="${SRCDIR}/linux-master.tar.gz"
