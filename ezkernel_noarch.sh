@@ -24,8 +24,8 @@ os_release() {
 }
 DISTRO=$(os_release)
 
-declare -A KRNL_GROUP # map each distro to its required kernel compilation dependencies
-KRNL_GROUP[arch]="base-devel bc cpio gettext perl python rust rust-bindgen rust-src tar xz zstd elfutils zlib dwarves libbpf"
+declare -A KRNL_GROUP # map distro to required compilation dependencies
+KRNL_GROUP[arch]="bc cpio gettext libelf pahole perl python rust rust-bindgen rust-src tar xz zstd" #"base-devel bc cpio gettext perl python rust rust-bindgen rust-src tar xz zstd elfutils zlib dwarves libbpf"
 KRNL_GROUP[debian]="build-essential libdw-dev libelf-dev zlib1g-dev libncurses-dev libssl-dev bison bc flex rsync debhelper python3 rustc bindgen sparse"
 
 case "$DISTRO" in
