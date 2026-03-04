@@ -25,7 +25,7 @@ os_release() {
 DISTRO=$(os_release)
 
 declare -A KRNL_GROUP # map distro to required compilation dependencies
-KRNL_GROUP[arch]="base-devel cpio gettext pahole perl python rust rust-bindgen rust-src"
+KRNL_GROUP[arch]="base-devel bc cpio gettext pahole perl python rust rust-bindgen rust-src"
 KRNL_GROUP[debian]="build-essential libdw-dev libelf-dev zlib1g-dev libncurses-dev libssl-dev bison bc flex rsync debhelper python3 rustc bindgen sparse"
 
 case "$DISTRO" in
@@ -398,4 +398,3 @@ case "$DISTRO" in
 		;;
 esac
 reboot_system
-
