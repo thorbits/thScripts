@@ -25,7 +25,7 @@ os_release() {
 DISTRO=$(os_release)
 
 declare -A KRNL_GROUP # map distro to required compilation dependencies
-KRNL_GROUP[arch]="base-devel bc cpio gettext pahole perl python rust rust-bindgen rust-src"
+KRNL_GROUP[arch]="base-devel bc cpio gettext pahole perl python rust rust-bindgen rust-src zstd"
 KRNL_GROUP[debian]="build-essential libdw-dev libelf-dev zlib1g-dev libncurses-dev libssl-dev bison bc flex rsync debhelper python3 rustc bindgen sparse"
 
 case "$DISTRO" in
@@ -46,7 +46,6 @@ case "$DISTRO" in
     ;;
 esac
 
-#intro
 clear; echo
 case "$DISTRO" in
         arch)
@@ -373,6 +372,7 @@ info() {
 }
 case "$DISTRO" in
 	arch)
+		#export KBUILD_OPTIONS=-D__DISABLE_BTF__
 		time { \
 			if [[ "$KMOD" == true ]]; then
 				if ! make bzImage modules 2>&1 | grep -v "orphan section"; then
