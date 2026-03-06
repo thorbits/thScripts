@@ -125,7 +125,7 @@ select_source() {
         		printf $'\r\033[2K mainline (1)  mainline + cachyos patch (2)  [1/2]: '
         		read -n1 -r choice
 	        	case $choice in
-            		1)  # upstream master snapshot
+            		1)  # mainline
 						SRCDIR="${WORKDIR}/linux-upstream"
 						TARBALL="${SRCDIR}/linux-${KVER}.tar.gz"
 						printf "\n\n Selected: mainline\n\n"
@@ -134,7 +134,7 @@ select_source() {
             		2)  # cachyos-rc
 						local PVER=$(curl -s https://www.kernel.org/finger_banner | awk 'NR==2 {print $NF}' | grep -oP '^\d+\.\d+')
 						SRCDIR="${WORKDIR}/linux-cachyos"
-						TARBALL="${SRCDIR}/linux-master.tar.gz"
+						TARBALL="${SRCDIR}/linux-${KVER}.tar.gz"
 						#CONFIG_URL="https://raw.githubusercontent.com/CachyOS/linux-cachyos/refs/heads/master/linux-cachyos-rc/config"
 						PATCH_URL="https://raw.githubusercontent.com/CachyOS/kernel-patches/refs/heads/master/${PVER}/all/0001-cachyos-base-all.patch"
 						PATCH="${SRCDIR}/0001-cachyos-base-all.patch"
